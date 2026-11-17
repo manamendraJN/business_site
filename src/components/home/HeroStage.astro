@@ -1,0 +1,57 @@
+---
+/**
+ * The Home hero: Scenes 1 and 2 as one sticky, scroll-scrubbed stage.
+ * With motion: the two scenes are stacked in one screen and the hook
+ * tears open to reveal the turn. When the delivery is done, the stage
+ * stays put and the next section (the proof) rises over it like a new
+ * sheet of paper, while the hero sinks back and darkens beneath it.
+ * Without motion (or with reduced motion): two still, readable sections.
+ */
+import SceneHook from "./SceneHook.astro";
+import SceneTurn from "./SceneTurn.astro";
+---
+<section data-scene="hero" class="hero relative" aria-label="Your website today, and what it could be">
+  <div class="hero-stage" data-hero-stage>
+    <SceneHook />
+    <SceneTurn />
+    <div class="hero-shade" data-hero-shade aria-hidden="true"></div>
+  </div>
+</section>
+
+<style>
+  .hero-stage { position: relative; }
+  .hero-shade { display: none; }
+
+  /* Scroll length of the hero story (the tear + the delivery). */
+  .hero { --hero-scroll: 300svh; }
+  @media (max-width: 767px) {
+    .hero { --hero-scroll: 230svh; }
+  }
+
+  /* With motion: the story plays while the stage is stuck to the screen,
+     then it stays stuck for one more screen while the proof rises over it. */
+  :global(html.motion) .hero {
+    height: calc(var(--hero-scroll) + 200svh);
+    background: var(--color-paper-deep);
+  }
+  :global(html.motion) .hero-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+    will-change: transform;
+  }
+  :global(html.motion) .hero-stage > :global(.scene-hook),
+  :global(html.motion) .hero-stage > :global(.scene-turn) { position: absolute; inset: 0; min-height: 0; }
+  :global(html.motion) .hero-stage > :global(.scene-hook) { z-index: 2; }
+  :global(html.motion) .hero-stage > :global(.scene-turn) { z-index: 1; }
+  :global(html.motion) .hero-shade {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: var(--color-ink);
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>

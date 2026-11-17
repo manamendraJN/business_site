@@ -1,0 +1,192 @@
+---
+/**
+ * Enquiry form, ready for Formspree (or your own backend).
+ * Set the endpoint in src/content/site.ts → form.endpoint.
+ * - Without JavaScript it posts normally to the endpoint.
+ * - With JavaScript it sends in the background and shows a thank-you note.
+ * - "?service=launch-page" in the URL pre-selects that service.
+ */
+import { form, contactPage as c, services, contact } from "@/content/site";
+const f = c.fields;
+---
+<form class="enquiry" action={form.endpoint} method="POST" data-enquiry novalidate>
+  <input type="hidden" name="_subject" value="New project enquiry from the website" />
+  <!-- spam trap: real people never see or fill this -->
+  <div class="hidden" aria-hidden="true">
+    <label>Leave this empty <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
+  <div class="grid gap-x-8 gap-y-7 sm:grid-cols-2">
+    <label class="field">
+      <span>{f.name} *</span>
+      <input name="name" type="text" autocomplete="name" required />
+    </label>
+    <label class="field">
+      <span>{f.business}</span>
+      <input name="business" type="text" autocomplete="organization" />
+    </label>
+    <label class="field">
+      <span>{f.email} *</span>
+      <input name="email" type="email" autocomplete="email" required />
+    </label>
+    <label class="field">
+      <span>{f.phone}</span>
+      <input name="phone" type="tel" autocomplete="tel" />
+    </label>
+    <label class="field">
+      <span>{f.businessType}</span>
+      <select name="business_type">
+        <option value="">Choose one</option>
+        {f.businessTypes.map((t) => <option>{t}</option>)}
+      </select>
+    </label>
+    <label class="field">
+      <span>{f.website}</span>
+      <input name="website" type="url" inputmode="url" placeholder="https://" />
+    </label>
+  </div>
+
+  <fieldset class="mt-9">
+    <legend class="field-label">{f.service}</legend>
+    <div class="mt-3 flex flex-wrap gap-2">
+      {services.map((s) => (
+        <label class="chip">
+          <input type="radio" name="service" value={s.name} data-slug={s.slug} class="sr-only" />
+          <span>{s.name}</span>
+        </label>
+      ))}
+      <label class="chip">
+        <input type="radio" name="service" value={f.notSure} class="sr-only" checked />
+        <span>{f.notSure}</span>
+      </label>
+    </div>
+  </fieldset>
+
+  <label class="field mt-9 block">
+    <span>{f.message} *</span>
+    <textarea name="message" rows="5" required placeholder={f.messagePlaceholder}></textarea>
+  </label>
+
+  <fieldset class="mt-9">
+    <legend class="field-label">{f.contactBy}</legend>
+    <div class="mt-3 flex flex-wrap gap-2">
+      {f.contactOptions.map((o, i) => (
+        <label class="chip">
+          <input type="radio" name="contact_by" value={o} class="sr-only" checked={i === 0} />
+          <span>{o}</span>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+
+  <div class="mt-10 flex flex-wrap items-center gap-6">
+    <button type="submit" class="btn-cta cursor-pointer" data-magnetic data-submit>
+      <span data-submit-label>{f.submit}</span>
+      <svg class="btn-arrow h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    </button>
+    <p class="text-sm text-ink-soft">{c.privacy}</p>
+  </div>
+
+  <p class="form-error mt-6 hidden rounded-paper bg-clay-deep p-4 font-semibold text-paper" role="alert" data-form-error>
+    {c.error} <a class="underline" href={`mailto:${contact.email}`}>{contact.email}</a>
+  </p>
+</form>
+
+<div class="form-success hidden" role="status" tabindex="-1" data-form-success>
+  <svg viewBox="0 0 120 80" class="h-20 w-28" aria-hidden="true">
+    <path d="M6 14h108v60H6z" fill="var(--color-paper)" />
+    <path d="M6 14l54 38 54-38" fill="none" stroke="var(--color-clay)" stroke-width="5" stroke-linejoin="round" />
+    <circle cx="96" cy="16" r="14" fill="var(--color-marigold)" />
+  </svg>
+  <h2 class="mt-6 text-big">{c.success.title}</h2>
+  <p class="mt-4 max-w-[40ch] text-lead">{c.success.text}</p>
+</div>
+
+<script>
+  function bindEnquiry() {
+    const formEl = document.querySelector<HTMLFormElement>("[data-enquiry]");
+    if (!formEl) return;
+    const success = document.querySelector<HTMLElement>("[data-form-success]");
+    const error = formEl.querySelector<HTMLElement>("[data-form-error]");
+    const submit = formEl.querySelector<HTMLButtonElement>("[data-submit]");
+    const label = formEl.querySelector<HTMLElement>("[data-submit-label]");
+    const idleText = label?.textContent ?? "";
+
+    // Pre-select a service from ?service=slug
+    const wanted = new URLSearchParams(location.search).get("service");
+    if (wanted) {
+      const radio = formEl.querySelector<HTMLInputElement>(`input[data-slug="${CSS.escape(wanted)}"]`);
+      if (radio) radio.checked = true;
+    }
+
+    formEl.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      error?.classList.add("hidden");
+      if (!formEl.checkValidity()) {
+        formEl.reportValidity();
+        return;
+      }
+      if (submit) submit.disabled = true;
+      if (label) label.textContent = "Sending…";
+      try {
+        const res = await fetch(formEl.action, {
+          method: "POST",
+          body: new FormData(formEl),
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        formEl.classList.add("hidden");
+        success?.classList.remove("hidden");
+        success?.focus();
+      } catch {
+        error?.classList.remove("hidden");
+      } finally {
+        if (submit) submit.disabled = false;
+        if (label) label.textContent = idleText;
+      }
+    });
+  }
+  document.addEventListener("astro:page-load", bindEnquiry);
+</script>
+
+<style>
+  .field { display: flex; flex-direction: column; gap: 0.35rem; }
+  .field > span, .field-label { font-weight: 700; font-size: 0.95rem; }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    padding: 0.55rem 0.1rem;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid var(--color-ink-soft);
+    border-radius: 0;
+    font: inherit;
+    color: var(--color-ink);
+    transition: border-color 0.2s;
+  }
+  .field textarea {
+    resize: vertical;
+    line-height: 2rem;
+    /* writing lines, like a letter */
+    background-image: repeating-linear-gradient(180deg, transparent 0 calc(2rem - 1px), var(--color-paper-shade) calc(2rem - 1px) 2rem);
+    background-attachment: local;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--color-clay); }
+  .field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible {
+    box-shadow: 0 2px 0 0 var(--color-clay);
+  }
+  .field ::placeholder { color: var(--color-ink-soft); opacity: 0.7; }
+
+  .chip span {
+    display: inline-block;
+    padding: 0.6rem 1rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, transform 0.25s var(--ease-paper);
+  }
+  .chip span:hover { transform: translateY(-2px); }
+  .chip input:checked + span { background: var(--color-ink); color: var(--color-paper); }
+  .chip input:focus-visible + span { outline: 3px solid var(--color-clay); outline-offset: 2px; }
+  .btn-cta:disabled { opacity: 0.6; cursor: progress; }
+</style>

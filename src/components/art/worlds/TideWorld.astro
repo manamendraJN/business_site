@@ -1,0 +1,63 @@
+---
+/** Tide House (surf hotel): low sun, horizon, rolling waves, warm sand and a surfboard. */
+function wave(y: number, amp: number, closed = true) {
+  const crests = Array.from({ length: 9 }, (_, i) => `Q ${i * 100 + 50} ${y - amp} ${i * 100 + 100} ${y}`).join(" ");
+  return `M0 ${y} ${crests}${closed ? " V600 H0Z" : ""}`;
+}
+const spray = [
+  { x: 90, y: 380, r: 7 },
+  { x: 140, y: 350, r: 5 },
+  { x: 380, y: 340, r: 6 },
+  { x: 520, y: 370, r: 8 },
+  { x: 600, y: 330, r: 5 },
+];
+---
+<div class="absolute inset-0 overflow-hidden" aria-hidden="true">
+  <div class="layer" data-layer="bg"><div data-depth="0.08" class="tide-sky">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <circle cx="560" cy="250" r="90" fill="var(--color-marigold)" />
+      <circle cx="560" cy="250" r="60" fill="var(--color-clay)" opacity="0.8" />
+      <rect x="90" y="120" width="180" height="22" rx="11" fill="var(--color-paper)" opacity="0.7" />
+    </svg>
+  </div></div>
+  <div class="layer layer-far" data-layer="far"><div data-depth="0.22">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <path d="M120 300c40-50 90-60 140-30 30-20 60-14 80 30z" fill="var(--color-sea-deep)" />
+      <rect x="0" y="296" width="800" height="304" fill="var(--color-sea)" />
+      <rect x="430" y="316" width="260" height="6" rx="3" fill="var(--color-marigold-soft)" opacity="0.7" />
+      <rect x="480" y="336" width="160" height="5" rx="3" fill="var(--color-marigold-soft)" opacity="0.5" />
+    </svg>
+  </div></div>
+  <div class="layer layer-mid" data-layer="mid"><div data-depth="0.45">
+    <svg class="anim-bob" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <path d={wave(380, 34)} fill="var(--color-sea)" />
+      <path d={wave(382, 34, false)} fill="none" stroke="var(--color-mint)" stroke-width="8" />
+      <path d={wave(430, 28)} fill="var(--color-mint)" />
+      <path d={wave(432, 28, false)} fill="none" stroke="var(--color-paper)" stroke-width="9" />
+    </svg>
+  </div></div>
+  <div class="layer layer-near" data-layer="near"><div data-depth="0.75">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <path d="M0 500C180 450 420 470 800 520V600H0Z" fill="var(--color-marigold-soft)" />
+      <path d="M0 540C220 500 500 520 800 560V600H0Z" fill="var(--color-paper-shade)" />
+      <g transform="rotate(14 230 420)">
+        <ellipse cx="230" cy="420" rx="34" ry="130" fill="var(--color-clay)" />
+        <rect x="226" y="294" width="8" height="250" fill="var(--color-paper)" />
+      </g>
+      <path d="M660 560C670 440 690 340 720 250" stroke="var(--color-ink-soft)" stroke-width="16" fill="none" stroke-linecap="round" />
+      <path d="M720 250c-60-10-110 20-130 60 50-30 90-36 130-60z" fill="var(--color-moss)" />
+      <path d="M720 250c40-40 90-44 120-20-50 0-90 10-120 20z" fill="var(--color-moss-deep)" />
+      <path d="M720 250c-20-50-60-74-100-70 40 20 70 40 100 70z" fill="var(--color-moss-deep)" />
+      <path d="M720 250c50 0 90 30 100 70-34-34-70-50-100-70z" fill="var(--color-moss)" />
+    </svg>
+  </div></div>
+  <div class="layer" data-layer="fg"><div data-depth="1.1">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      {spray.map((s) => <circle cx={s.x} cy={s.y} r={s.r} fill="var(--color-paper)" />)}
+      <path d="M420 575c0-24 40-24 40 0z" fill="var(--color-blush)" />
+    </svg>
+  </div></div>
+</div>
+<style>
+  .tide-sky { background: linear-gradient(180deg, var(--color-dawn) 0%, var(--color-blush) 100%); }
+</style>

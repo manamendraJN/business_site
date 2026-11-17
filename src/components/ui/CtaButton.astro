@@ -1,0 +1,16 @@
+---
+/** The main call to action. Magnetic on desktop: it gently pulls toward the visitor. */
+interface Props {
+  href: string;
+  label: string;
+  class?: string;
+  magnetic?: boolean;
+}
+const { href, label, class: className = "", magnetic = true } = Astro.props;
+---
+<a href={href} class:list={["btn-cta", className]} data-magnetic={magnetic ? "" : undefined}>
+  <span>{label}</span>
+  <svg class="btn-arrow h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+</a>

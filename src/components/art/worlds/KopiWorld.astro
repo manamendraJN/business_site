@@ -1,0 +1,71 @@
+---
+/** Kopi Corner (cafe): warm wall, shelf of jars, wooden counter, a big cup with steam. */
+const planks = [420, 452, 484, 516, 548, 580];
+const jars = [
+  { x: 120, h: 70, c: "var(--color-sea)" },
+  { x: 190, h: 54, c: "var(--color-clay-deep)" },
+  { x: 250, h: 80, c: "var(--color-paper-shade)" },
+  { x: 560, h: 62, c: "var(--color-moss)" },
+  { x: 620, h: 76, c: "var(--color-clay)" },
+];
+const beans = [
+  { x: 90, y: 560, r: -20 },
+  { x: 130, y: 580, r: 30 },
+  { x: 700, y: 548, r: 60 },
+  { x: 740, y: 575, r: -40 },
+  { x: 660, y: 585, r: 10 },
+];
+const steam = [
+  { x: 360, cls: "anim-rise" },
+  { x: 400, cls: "anim-rise-2" },
+  { x: 440, cls: "anim-rise-3" },
+];
+---
+<div class="absolute inset-0 overflow-hidden" aria-hidden="true">
+  <div class="layer" data-layer="bg"><div data-depth="0.08">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <rect width="800" height="600" fill="var(--color-marigold-soft)" />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => <rect x={i * 110 + 20} y="0" width="40" height="600" fill="var(--color-dawn)" opacity="0.6" />)}
+      <circle cx="610" cy="150" r="110" fill="var(--color-marigold)" />
+    </svg>
+  </div></div>
+  <div class="layer layer-far" data-layer="far"><div data-depth="0.22">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <rect x="80" y="230" width="640" height="14" rx="3" fill="var(--color-clay-deep)" />
+      {jars.map((j) => <rect x={j.x} y={230 - j.h} width="46" height={j.h} rx="10" fill={j.c} />)}
+      <rect x="330" y="90" width="190" height="130" rx="8" fill="var(--color-ink-soft)" />
+      {[0, 1, 2, 3].map((i) => <rect x="352" y={116 + i * 24} width={i % 2 ? 110 : 146} height="7" rx="3" fill="var(--color-paper)" opacity="0.75" />)}
+    </svg>
+  </div></div>
+  <div class="layer layer-mid" data-layer="mid"><div data-depth="0.4">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      <rect x="0" y="390" width="800" height="210" fill="var(--color-clay-deep)" />
+      {planks.map((y) => <rect x="0" y={y} width="800" height="3" fill="var(--color-ink)" opacity="0.18" />)}
+      <rect x="0" y="378" width="800" height="22" fill="var(--color-clay)" />
+    </svg>
+  </div></div>
+  <div class="layer layer-near" data-layer="near"><div data-depth="0.7">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      {steam.map((s) => (
+        <path class={s.cls} d={`M${s.x} 300c-20-30 20-50 0-80s20-50 0-80`} fill="none" stroke="var(--color-paper)" stroke-width="12" stroke-linecap="round" opacity="0.9" />
+      ))}
+      <ellipse cx="400" cy="452" rx="170" ry="30" fill="var(--color-paper-deep)" />
+      <ellipse cx="400" cy="446" rx="150" ry="22" fill="var(--color-paper)" />
+      <path d="M290 320h220l-18 110a30 30 0 0 1-30 24H338a30 30 0 0 1-30-24z" fill="var(--color-paper)" />
+      <path d="M296 356h208l-6 36H302z" fill="var(--color-clay)" />
+      <path d="M510 340c50 0 50 70 0 70" fill="none" stroke="var(--color-paper)" stroke-width="18" stroke-linecap="round" />
+      <ellipse cx="400" cy="320" rx="110" ry="16" fill="var(--color-ink-soft)" />
+      <ellipse cx="380" cy="318" rx="34" ry="5" fill="var(--color-marigold-soft)" opacity="0.6" />
+    </svg>
+  </div></div>
+  <div class="layer" data-layer="fg"><div data-depth="1.1">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+      {beans.map((b) => (
+        <g transform={`rotate(${b.r} ${b.x} ${b.y})`}>
+          <ellipse cx={b.x} cy={b.y} rx="18" ry="12" fill="var(--color-ink-soft)" />
+          <path d={`M${b.x - 14} ${b.y}q14 -6 28 0`} stroke="var(--color-ink)" stroke-width="2.5" fill="none" />
+        </g>
+      ))}
+    </svg>
+  </div></div>
+</div>

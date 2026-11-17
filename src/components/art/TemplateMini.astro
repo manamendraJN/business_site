@@ -1,0 +1,26 @@
+---
+/** A tiny grey "before" website card for a project. */
+interface Props {
+  title: string;
+  text: string;
+  label: string;
+  class?: string;
+}
+const { title, text, label, class: className = "" } = Astro.props;
+---
+<div class:list={["tpl-mini bg-dull-50 font-dull text-dull-700 shadow-lift", className]} data-before>
+  <div class="flex items-center gap-1 bg-dull-100 px-2 py-1.5">
+    <i class="h-1.5 w-1.5 rounded-full bg-dull-300"></i><i class="h-1.5 w-1.5 rounded-full bg-dull-300"></i><i class="h-1.5 w-1.5 rounded-full bg-dull-300"></i>
+    <span class="ml-auto rounded-sm bg-dull-700 px-1.5 py-0.5 font-display text-[0.6rem] font-bold uppercase tracking-widest text-dull-50">{label}</span>
+  </div>
+  <div class="p-3">
+    <div class="mb-2 grid aspect-[16/7] place-items-center border border-dull-300 bg-dull-100">
+      <svg class="h-full w-full" viewBox="0 0 100 44" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 0L100 44M100 0L0 44" stroke="var(--color-dull-300)" stroke-width="0.6" vector-effect="non-scaling-stroke" />
+      </svg>
+    </div>
+    <p class="text-sm font-bold leading-tight">{title}</p>
+    <p class="mt-1 text-xs leading-snug text-dull-500">{text}</p>
+    <span class="mt-2 inline-block bg-dull-300 px-2 py-1 text-[0.65rem] text-dull-50">Read more</span>
+  </div>
+</div>

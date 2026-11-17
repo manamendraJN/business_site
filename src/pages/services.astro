@@ -1,0 +1,139 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PopText from "@/components/ui/PopText.astro";
+import CtaButton from "@/components/ui/CtaButton.astro";
+import TornEdge from "@/components/ui/TornEdge.astro";
+import ServiceEmblem from "@/components/art/ServiceEmblem.astro";
+import SceneMethod from "@/components/home/SceneMethod.astro";
+import { meta, servicesPage as sp, services, cta, home } from "@/content/site";
+
+const tones = [
+  { bg: "bg-marigold", token: "marigold", text: "text-ink", accent: "text-clay-deep" },
+  { bg: "bg-sea", token: "sea", text: "text-paper", accent: "text-marigold" },
+  { bg: "bg-clay-deep", token: "clay-deep", text: "text-paper", accent: "text-marigold-soft" },
+  { bg: "bg-paper-deep", token: "paper-deep", text: "text-ink", accent: "text-clay-deep" },
+];
+---
+<BaseLayout title={meta.services.title} description={meta.services.description}>
+  <!-- Hero + a "contents page" of the four services -->
+  <section class="px-gutter pt-[calc(var(--spacing-header)+4rem)] pb-section">
+    <div class="grid gap-10 md:grid-cols-12">
+      <div class="md:col-span-7">
+        <p class="eyebrow text-clay-deep">{sp.eyebrow}</p>
+        <PopText as="h1" pop="load" text={sp.headline} class="mt-3 text-mega" emClass="text-clay-deep" />
+      </div>
+      <p class="max-w-[36ch] self-end text-lead md:col-span-5">{sp.intro}</p>
+    </div>
+
+    <ol class="contents-list mt-20 border-t-2 border-ink">
+      {services.map((s, i) => (
+        <li>
+          <a href={`#${s.slug}`} class="contents-row group grid grid-cols-[3rem_1fr] items-center gap-x-4 border-b-2 border-ink py-5 md:grid-cols-[6rem_1fr_1.2fr_auto] md:py-7">
+            <span class="serif-em text-[2.4rem] leading-none text-clay-deep md:text-[3.5rem]">0{i + 1}</span>
+            <span class="text-title font-extrabold tracking-tight md:text-big">{s.name}</span>
+            <span class="col-start-2 text-ink-soft md:col-start-auto">{s.short}</span>
+            <span class="contents-arrow hidden md:block" aria-hidden="true">
+              <svg viewBox="0 0 24 24" class="h-8 w-8"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+    <a href="#how-we-work" class="link-ink mt-8 inline-flex items-center gap-2 font-bold text-clay-deep">
+      {sp.howLink}
+      <svg viewBox="0 0 24 24" class="h-5 w-5 rotate-90" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    </a>
+  </section>
+
+  {services.map((s, i) => {
+    const t = tones[i % tones.length];
+    return (
+      <section id={s.slug} class={`service-sheet relative scroll-mt-16 ${t.bg} ${t.text}`} aria-labelledby={`${s.slug}-title`} data-service-sheet>
+        <TornEdge color={t.token} side="top" seed={100 + i} class="absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
+        {/* dark copies that fade in when the next sheet covers this one */}
+        <TornEdge color="ink" side="top" seed={100 + i} class="service-shade absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
+        <div class="service-shade service-shade-body" aria-hidden="true"></div>
+        <div class="grid gap-12 px-gutter py-section md:grid-cols-12" data-service-body>
+          <div class:list={["md:col-span-5", i % 2 && "md:order-2"]}>
+            <div class="relative">
+              <span class="serif-em pointer-events-none absolute -top-10 left-0 text-[clamp(8rem,20vw,16rem)] leading-none opacity-15" aria-hidden="true">0{i + 1}</span>
+              <ServiceEmblem emblem={s.emblem} class="relative h-48 w-48 md:h-64 md:w-64" />
+            </div>
+            <p class="serif-em mt-8 max-w-[22ch] text-title">{s.outcome}</p>
+          </div>
+          <div class:list={["md:col-span-7", i % 2 && "md:order-1"]}>
+            <p class={`eyebrow ${t.accent}`}>{s.short}</p>
+            <h2 id={`${s.slug}-title`} class="mt-3 text-huge">{s.name}</h2>
+            <p class="mt-6 max-w-[44ch] text-lead">{s.plain}</p>
+            <p class="mt-6"><strong class={t.accent}>{home.offer.forLabel}:</strong> {s.goodFor}</p>
+            <p class={`eyebrow mt-10 ${t.accent}`}>{home.offer.getsLabel}</p>
+            <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+              {s.gets.map((g) => (
+                <li class="flex gap-3 rounded-paper border-2 border-current/25 p-4">
+                  <svg viewBox="0 0 20 20" class="mt-1 h-4 w-4 shrink-0" aria-hidden="true"><path d="M3 10.5l4.2 4L17 5" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  <span>{g}</span>
+                </li>
+              ))}
+            </ul>
+            <a href={`/contact/?service=${s.slug}`} class="link-ink mt-10 inline-block text-lg font-bold">{sp.askLabel} {s.name}</a>
+          </div>
+        </div>
+      </section>
+    );
+  })}
+
+  <!-- How we work: the full step-by-step process -->
+  <SceneMethod />
+
+  <!-- What I need + FAQ -->
+  <section class="relative bg-paper px-gutter py-section">
+    <TornEdge color="paper" side="top" seed={120} class="absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
+    <div class="grid gap-14 md:grid-cols-12">
+      <aside class="md:col-span-4">
+        <div class="need-note rotate-[-2deg] bg-marigold p-7 shadow-lift md:sticky md:top-28">
+          <h2 class="text-title">{sp.needHeadline}</h2>
+          <ul class="mt-5 space-y-3">
+            {sp.needs.map((n) => (
+              <li class="flex gap-3"><span class="mt-2 h-2 w-2 shrink-0 rounded-full bg-ink"></span><span>{n}</span></li>
+            ))}
+          </ul>
+        </div>
+      </aside>
+      <div class="md:col-span-8">
+        <PopText as="h2" text={sp.faqHeadline} class="text-big" />
+        <div class="mt-10 space-y-4">
+          {sp.faq.map((f) => (
+            <details class="faq group rounded-paper bg-paper-deep shadow-paper">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-6 p-6 text-lg font-bold">
+                {f.q}
+                <span class="faq-icon grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink text-paper" aria-hidden="true">+</span>
+              </summary>
+              <p class="max-w-[60ch] px-6 pb-6">{f.a}</p>
+            </details>
+          ))}
+        </div>
+        <div class="mt-16">
+          <CtaButton href={cta.href} label={cta.label} />
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* each service is its own sheet, so its shade never darkens the next one */
+  .service-sheet { isolation: isolate; }
+  :global(.service-shade) { opacity: 0; pointer-events: none; z-index: 5; }
+  .service-shade-body {
+    position: absolute;
+    inset: calc(clamp(18px, 3vw, 40px) - clamp(17px, 2.9vw, 39px)) 0 0 0;
+    background: var(--color-ink);
+  }
+  .contents-row { transition: padding 0.4s var(--ease-paper), background-color 0.3s; }
+  .contents-row:hover { padding-left: 1rem; background: var(--color-paper-deep); }
+  .contents-arrow { transition: transform 0.4s var(--ease-paper); }
+  .contents-row:hover .contents-arrow { transform: translateX(6px); }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq-icon { transition: transform 0.3s var(--ease-paper); }
+  .faq[open] .faq-icon { transform: rotate(45deg); }
+</style>

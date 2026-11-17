@@ -1,0 +1,45 @@
+---
+import TornEdge from "./ui/TornEdge.astro";
+import { business, nav, contact, footer, cta } from "@/content/site";
+---
+<footer class="site-footer relative z-[5] bg-ink text-paper" data-site-footer>
+  <TornEdge color="ink" side="top" seed={47} class="footer-edge absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
+  <div class="grid gap-12 px-gutter pt-20 pb-10 md:grid-cols-12">
+    <div class="md:col-span-6">
+      <p class="text-big font-extrabold tracking-tight">
+        {business.shortName} <span class="serif-em text-marigold">studio</span>
+      </p>
+      <p class="mt-4 max-w-[42ch] text-paper-deep">{footer.line}</p>
+      <a href={cta.href} class="btn-cta mt-8">{cta.label}</a>
+    </div>
+    <nav class="md:col-span-2" aria-label="Footer">
+      <p class="eyebrow text-marigold">{footer.pagesLabel}</p>
+      <ul class="mt-4 space-y-2">
+        {nav.map((n) => <li><a class="hover:text-marigold" href={n.href}>{n.label}</a></li>)}
+      </ul>
+    </nav>
+    <div class="md:col-span-4">
+      <p class="eyebrow text-marigold">{footer.contactLabel}</p>
+      <ul class="mt-4 space-y-2">
+        <li><a class="hover:text-marigold" href={`mailto:${contact.email}`}>{contact.email}</a></li>
+        <li><a class="hover:text-marigold" href={contact.phoneHref}>{contact.phone}</a></li>
+        <li><a class="hover:text-marigold" href={contact.whatsappHref} target="_blank" rel="noopener">WhatsApp {contact.whatsapp}</a></li>
+        <li class="text-paper-deep">{business.location}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="flex flex-wrap justify-between gap-3 border-t border-ink-soft px-gutter py-6 text-sm text-paper-shade">
+    <p>© {business.year} {business.name}</p>
+    <p>{footer.conceptNote}</p>
+  </div>
+</footer>
+
+<style>
+  /* the footer is a sheet laid on top: a soft shadow along its torn edge */
+  :global(.footer-edge) {
+    filter: drop-shadow(0 -14px 18px rgb(30 26 21 / 0.3));
+    /* keep the shadow above the edge only: without this its blur spills a
+       few pixels below the edge and draws a pale line across the sheet */
+    clip-path: inset(-80px -40px 0 -40px);
+  }
+</style>

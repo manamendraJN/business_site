@@ -1,0 +1,45 @@
+---
+/**
+ * The delivery van, seen from behind as it drives up the road, carrying the
+ * client's new website (a browser-window parcel tied to the roof).
+ * Drawn with the bottom centre at (0, 0) so it can sit on any point of the road.
+ */
+---
+<g class="van">
+  <ellipse cx="0" cy="0" rx="68" ry="9" fill="var(--color-ink)" opacity="0.3" />
+  <rect x="-56" y="-20" width="24" height="22" rx="6" fill="var(--color-ink)" />
+  <rect x="32" y="-20" width="24" height="22" rx="6" fill="var(--color-ink)" />
+  <g data-van-body>
+    <!-- the parcel: a new website, tied to the roof -->
+    <g data-parcel>
+      <rect x="-42" y="-152" width="84" height="54" rx="5" fill="var(--color-paper)" />
+      <rect x="-42" y="-152" width="84" height="11" rx="5" fill="var(--color-clay)" />
+      <circle cx="-34" cy="-146.5" r="2.2" fill="var(--color-paper)" />
+      <circle cx="-27" cy="-146.5" r="2.2" fill="var(--color-paper)" />
+      <circle cx="-20" cy="-146.5" r="2.2" fill="var(--color-paper)" />
+      <rect x="-32" y="-133" width="34" height="6" rx="3" fill="var(--color-ink)" />
+      <rect x="-32" y="-122" width="50" height="4" rx="2" fill="var(--color-ink-soft)" opacity="0.5" />
+      <rect x="-32" y="-114" width="40" height="4" rx="2" fill="var(--color-ink-soft)" opacity="0.5" />
+      <circle cx="26" cy="-118" r="10" fill="var(--color-marigold)" />
+      <path d="M-12 -152 V-98 M12 -152 V-98" stroke="var(--color-clay-deep)" stroke-width="3" />
+    </g>
+    <!-- roof rack -->
+    <rect x="-50" y="-100" width="100" height="5" rx="2.5" fill="var(--color-ink)" />
+    <!-- body -->
+    <rect x="-60" y="-96" width="120" height="82" rx="14" fill="var(--color-sea)" />
+    <path d="M48 -88 Q58 -80 58 -60 V-26" fill="none" stroke="var(--color-dawn)" stroke-width="3" opacity="0.35" />
+    <rect x="-46" y="-86" width="40" height="26" rx="5" fill="var(--color-sea-deep)" />
+    <rect x="6" y="-86" width="40" height="26" rx="5" fill="var(--color-sea-deep)" />
+    <path d="M-40 -82 l12 0 l-16 18 l0 -12 z" fill="var(--color-dawn)" opacity="0.35" />
+    <path d="M0 -92 V-18" stroke="var(--color-sea-deep)" stroke-width="2.5" />
+    <!-- studio mark on the back doors -->
+    <g transform="translate(-9 -54) scale(0.55)">
+      <path d="M4 26V8l12-4v18z" fill="var(--color-paper-shade)" />
+      <path d="M16 22V4l12 4v18z" fill="var(--color-clay)" />
+      <path d="M4 26l12-4 12 4-12 4z" fill="var(--color-ink)" />
+    </g>
+    <rect x="-56" y="-46" width="9" height="16" rx="3" fill="var(--color-clay)" />
+    <rect x="47" y="-46" width="9" height="16" rx="3" fill="var(--color-clay)" />
+    <rect x="-62" y="-24" width="124" height="10" rx="5" fill="var(--color-ink-soft)" />
+  </g>
+</g>

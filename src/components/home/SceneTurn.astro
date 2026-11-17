@@ -1,0 +1,41 @@
+---
+/**
+ * SCENE 2 — THE TURN
+ * Message: "What if your website told your story instead?"
+ * Behind the torn grey page waits a layered paper landscape with a lit
+ * path to a glowing door. As the headline appears line by line on the
+ * left, a small figure — the customer — walks the path on the right, and
+ * reaches the door exactly as the last line appears.
+ */
+import StoryPath from "../art/StoryPath.astro";
+import PopText from "../ui/PopText.astro";
+import { home } from "@/content/site";
+
+const t = home.turn;
+---
+<div class="scene-turn" data-turn>
+  <div class="turn-world" data-turn-world>
+    <StoryPath />
+  </div>
+
+  <div class="turn-copy">
+    <p class="eyebrow text-clay-deep" data-turn-eyebrow>{t.eyebrow}</p>
+    <PopText as="h2" pop="none" text={t.headline} class="turn-title mt-3 text-huge" emClass="text-clay-deep" />
+    <p class="turn-sub mt-5 max-w-[34ch] text-lead font-medium" data-turn-sub>{t.sub}</p>
+  </div>
+</div>
+
+<style>
+  .scene-turn { position: relative; min-height: 100svh; overflow: hidden; }
+  .turn-world { position: absolute; inset: 0; transform-origin: 50% 60%; }
+  .turn-copy {
+    position: relative;
+    z-index: 2;
+    padding: calc(var(--spacing-header) + 2.5rem) var(--spacing-gutter) 0;
+    max-width: 62rem;
+  }
+  .turn-title { max-width: 13ch; perspective: 900px; }
+  @media (min-width: 768px) {
+    .turn-copy { padding-top: calc(var(--spacing-header) + 9vh); padding-left: calc(var(--spacing-gutter) + 2vw); }
+  }
+</style>

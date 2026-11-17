@@ -1,0 +1,116 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import World from "@/components/art/worlds/World.astro";
+import TemplateMini from "@/components/art/TemplateMini.astro";
+import PopText from "@/components/ui/PopText.astro";
+import Emphasis from "@/components/ui/Emphasis.astro";
+import CtaButton from "@/components/ui/CtaButton.astro";
+import TornEdge from "@/components/ui/TornEdge.astro";
+import { meta, workPage as w, projects, projectsNote, cta, home } from "@/content/site";
+
+const bands = {
+  kopi: { token: "clay-deep", bg: "bg-clay-deep", fg: "text-paper", accent: "text-marigold-soft" },
+  brightsmile: { token: "mint", bg: "bg-mint", fg: "text-sea-deep", accent: "text-sea" },
+  tide: { token: "sea-deep", bg: "bg-sea-deep", fg: "text-paper", accent: "text-marigold" },
+  petal: { token: "blush", bg: "bg-blush", fg: "text-ink", accent: "text-ink-soft" },
+} as const;
+const fan = [
+  "rotate-[-7deg] translate-x-[0%] translate-y-[0%]",
+  "rotate-[5deg] translate-x-[92%] translate-y-[6%]",
+  "rotate-[-2deg] translate-x-[10%] translate-y-[104%]",
+  "rotate-[7deg] translate-x-[100%] translate-y-[98%]",
+];
+---
+<BaseLayout title={meta.work.title} description={meta.work.description}>
+  <!-- Hero: four paper prints fanned out on the table -->
+  <section class="relative grid gap-12 overflow-hidden px-gutter pt-[calc(var(--spacing-header)+4rem)] pb-section md:grid-cols-12">
+    <div class="relative z-10 md:col-span-6">
+      <p class="eyebrow text-clay-deep">{w.eyebrow}</p>
+      <PopText as="h1" pop="load" text={w.headline} class="mt-3 text-huge" emClass="text-clay-deep" />
+      <p class="mt-8 max-w-[40ch] text-lead">{w.intro}</p>
+    </div>
+    <div class="relative min-h-[23rem] md:col-span-6 md:min-h-[36rem]" data-parallax-root>
+      {projects.map((p, i) => (
+        <a href={`#${p.slug}`} class={`print absolute left-0 top-0 w-[50%] ${fan[i]}`} aria-label={`Jump to ${p.name}`}>
+          <span class="block" data-depth={String(0.2 + i * 0.18)}>
+            <span class="print-frame relative block aspect-[4/3] overflow-hidden border-[8px] border-paper shadow-lift">
+              <World world={p.world} />
+            </span>
+            <span class="mt-2 block font-bold text-sm">{p.name} <span class="font-normal text-ink-soft">· {p.kind}</span></span>
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  {projects.map((p, i) => {
+    const b = bands[p.world];
+    return (
+      <section id={p.slug} class={`relative ${b.bg} ${b.fg} scroll-mt-16`} aria-labelledby={`${p.slug}-title`}>
+        <TornEdge color={b.token} side="top" seed={70 + i} class="absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
+        <div class="px-gutter py-section">
+          <div class="grid items-end gap-10 md:grid-cols-12">
+            <div class:list={["md:col-span-5", i % 2 && "md:order-2"]}>
+              <span class="concept-badge">Concept project</span>
+              <p class="eyebrow mt-6 opacity-80">0{i + 1} · {p.kind}</p>
+              <h2 id={`${p.slug}-title`} class="mt-2 text-huge">{p.name}</h2>
+              <p class="mt-5 text-title font-bold"><Emphasis text={p.after.headline} /></p>
+            </div>
+            <div class:list={["relative pl-6 pt-6 md:col-span-7 md:pl-12 md:pt-10", i % 2 && "md:order-1"]}>
+              <div class="relative aspect-[4/3] overflow-hidden rounded-paper border-[10px] border-paper shadow-lift" data-parallax-root>
+                <World world={p.world} />
+              </div>
+              <TemplateMini class="absolute left-0 top-0 w-[42%] max-w-[15rem] -rotate-6" title={p.before.title} text={p.before.text} label={home.proof.beforeLabel} />
+            </div>
+          </div>
+
+          <div class="mt-16 grid gap-10 md:grid-cols-3" data-reveal>
+            <div>
+              <p class={`eyebrow ${b.accent}`}>{w.problemLabel}</p>
+              <p class="mt-3">{p.plainProblem}</p>
+            </div>
+            <div>
+              <p class={`eyebrow ${b.accent}`}>{w.storyLabel}</p>
+              <p class="mt-3">{p.story}</p>
+            </div>
+            <div>
+              <p class={`eyebrow ${b.accent}`}>{w.momentsLabel}</p>
+              <ol class="mt-3 space-y-2">
+                {p.moments.map((m, j) => (
+                  <li class="flex gap-3"><span class="serif-em text-xl leading-6">{j + 1}</span><span>{m}</span></li>
+                ))}
+              </ol>
+            </div>
+          </div>
+
+          <figure class="mt-16" data-reveal>
+            <Image src={p.screenshot} alt={p.screenshotAlt} width={1600} height={1000} class="h-auto w-full rounded-paper shadow-paper" />
+            <figcaption class="mt-3 text-sm opacity-80">{w.screenshotLabel} (1600 × 1000). {projectsNote}</figcaption>
+          </figure>
+        </div>
+      </section>
+    );
+  })}
+
+  <!-- The empty slot: your business could be next -->
+  <section class="relative bg-paper px-gutter py-section">
+    <TornEdge color="paper" side="top" seed={88} class="absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
+    <div class="grid items-center gap-12 md:grid-cols-12">
+      <div class="placeholder-box aspect-[4/3] rotate-2 rounded-paper p-8 md:col-span-5">
+        <p class="text-title font-extrabold">Your business here</p>
+      </div>
+      <div class="md:col-span-7">
+        <PopText as="h2" text={w.nextHeadline} class="text-huge" emClass="text-clay-deep" />
+        <p class="mt-6 max-w-[36ch] text-lead">{w.nextText}</p>
+        <CtaButton href={cta.href} label={cta.label} class="mt-9" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .print:hover { z-index: 5; }
+  .print-frame { transition: transform 0.5s var(--ease-paper); }
+  .print:hover .print-frame { transform: translateY(-10px) rotate(-1deg); }
+</style>

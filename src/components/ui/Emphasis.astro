@@ -1,0 +1,8 @@
+---
+/** Renders text with *emphasis* markers as the italic accent font. */
+import { parseEmphasis } from "@/lib/text";
+interface Props { text: string; emClass?: string }
+const { text, emClass = "" } = Astro.props;
+const parts = parseEmphasis(text);
+---
+{parts.map((p) => (p.em ? <span class:list={["serif-em", emClass]}>{p.text}</span> : p.text))}

@@ -1,0 +1,17 @@
+---
+/** Picks the right paper world for a project. */
+import KopiWorld from "./KopiWorld.astro";
+import BrightSmileWorld from "./BrightSmileWorld.astro";
+import TideWorld from "./TideWorld.astro";
+import PetalWorld from "./PetalWorld.astro";
+import type { Project } from "@/content/site";
+
+interface Props {
+  world: Project["world"];
+}
+const { world } = Astro.props;
+---
+{world === "kopi" && <KopiWorld />}
+{world === "brightsmile" && <BrightSmileWorld />}
+{world === "tide" && <TideWorld />}
+{world === "petal" && <PetalWorld />}

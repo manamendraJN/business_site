@@ -1,0 +1,18 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import HeroStage from "@/components/home/HeroStage.astro";
+import SceneProof from "@/components/home/SceneProof.astro";
+import SceneOffer from "@/components/home/SceneOffer.astro";
+import MethodBrief from "@/components/home/MethodBrief.astro";
+import { meta } from "@/content/site";
+---
+<BaseLayout title={meta.home.title} description={meta.home.description}>
+  <!-- Scenes 1 + 2: the hook and the turn (one pinned stage) -->
+  <HeroStage />
+  <!-- Scene 3: the proof (short; full concepts on /work/), ending with the first call to action -->
+  <SceneProof />
+  <!-- Scene 4: the offer (short; full details on /services/) -->
+  <SceneOffer />
+  <!-- Scene 5: the method (short; full steps on /services/#how-we-work) -->
+  <MethodBrief />
+</BaseLayout>

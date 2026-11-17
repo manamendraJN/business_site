@@ -1,0 +1,26 @@
+---
+/**
+ * Custom shape divider: a torn paper edge (never a straight line).
+ * `color` is a token name, e.g. "paper", "ink", "sea-deep".
+ */
+import { tornEdge } from "@/lib/paper";
+
+interface Props {
+  color: string;
+  /** "top" = the paper below the tear is `color`; "bottom" flips it. */
+  side?: "top" | "bottom";
+  seed?: number;
+  class?: string;
+}
+const { color, side = "top", seed = 7, class: className = "" } = Astro.props;
+const d = tornEdge(seed);
+---
+<svg
+  class:list={["pointer-events-none block h-[clamp(18px,3vw,40px)] w-full", className]}
+  viewBox="0 0 1000 100"
+  preserveAspectRatio="none"
+  aria-hidden="true"
+  style={side === "bottom" ? "transform: scaleY(-1)" : undefined}
+>
+  <path d={d} fill={`var(--color-${color})`} />
+</svg>

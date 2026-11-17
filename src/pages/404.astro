@@ -1,0 +1,24 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PopText from "@/components/ui/PopText.astro";
+import CtaButton from "@/components/ui/CtaButton.astro";
+import { meta, notFoundPage as n } from "@/content/site";
+---
+<BaseLayout title={meta.notFound.title} description={meta.notFound.description}>
+  <section class="grid min-h-svh items-center px-gutter pt-[var(--spacing-header)]">
+    <div class="grid items-center gap-10 md:grid-cols-12">
+      <div class="md:col-span-7">
+        <p class="serif-em text-[clamp(6rem,22vw,16rem)] leading-none text-clay">404</p>
+        <PopText as="h1" pop="load" text={n.headline} class="mt-2 text-huge" emClass="text-clay-deep" />
+        <p class="mt-6 max-w-[34ch] text-lead">{n.text}</p>
+        <CtaButton href="/" label={n.button} class="mt-9" />
+      </div>
+      <svg viewBox="0 0 300 260" class="mx-auto w-full max-w-sm md:col-span-5" aria-hidden="true">
+        <path d="M40 220l110 30 110-30-110-30z" fill="var(--color-paper-shade)" />
+        <path d="M60 200l90-120 90 120-90 24z" fill="var(--color-paper)" />
+        <path d="M150 80l90 120-90 24z" fill="var(--color-paper-deep)" />
+        <circle cx="210" cy="70" r="26" fill="var(--color-marigold)" />
+      </svg>
+    </div>
+  </section>
+</BaseLayout>

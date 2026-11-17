@@ -1,0 +1,61 @@
+---
+/** Small cut-paper emblem for each service, in the shared paper style. */
+import type { Service } from "@/content/site";
+interface Props {
+  emblem: Service["emblem"];
+  class?: string;
+}
+const { emblem, class: className = "" } = Astro.props;
+---
+<svg viewBox="0 0 240 240" class={className} aria-hidden="true">
+  <circle cx="120" cy="120" r="110" fill="var(--color-paper)" opacity="0.18" />
+  {emblem === "launch" && (
+    <g>
+      <!-- one sheet, with the sun rising behind it: a new beginning -->
+      <circle cx="120" cy="104" r="54" fill="var(--color-marigold)" />
+      <path d="M48 196V96l72-26 72 26v100z" fill="var(--color-paper)" />
+      <path d="M48 96l72-26v126H48z" fill="var(--color-paper-deep)" />
+      <rect x="70" y="124" width="70" height="8" rx="4" fill="var(--color-clay)" />
+      <rect x="70" y="142" width="96" height="6" rx="3" fill="var(--color-ink-soft)" opacity="0.4" />
+      <rect x="70" y="156" width="80" height="6" rx="3" fill="var(--color-ink-soft)" opacity="0.4" />
+    </g>
+  )}
+  {emblem === "site" && (
+    <g>
+      <!-- stacked pages with an open door: the full house -->
+      <rect x="70" y="40" width="120" height="150" rx="6" fill="var(--color-paper-deep)" transform="rotate(8 130 115)" />
+      <rect x="58" y="48" width="120" height="150" rx="6" fill="var(--color-paper-shade)" transform="rotate(-5 118 123)" />
+      <rect x="56" y="56" width="124" height="150" rx="6" fill="var(--color-paper)" />
+      <path d="M96 206v-66a22 22 0 0 1 44 0v66z" fill="var(--color-sea)" />
+      <path d="M96 206v-66a22 22 0 0 1 22-22v88z" fill="var(--color-sea-deep)" />
+      <rect x="74" y="76" width="88" height="10" rx="5" fill="var(--color-clay)" />
+    </g>
+  )}
+  {emblem === "motion" && (
+    <g>
+      <!-- a flat sheet with layers popping up off it -->
+      <path d="M30 180l90 34 90-34-90-34z" fill="var(--color-paper-shade)" />
+      <path d="M66 166V100l54-18v66z" fill="var(--color-paper)" />
+      <path d="M120 148V82l54 18v66z" fill="var(--color-paper-deep)" />
+      <circle cx="120" cy="64" r="22" fill="var(--color-marigold)" />
+      <path d="M84 136c12-10 24-10 36 0" stroke="var(--color-clay)" stroke-width="7" fill="none" stroke-linecap="round" />
+      <path d="M132 120c10 8 20 8 30 0" stroke="var(--color-sea)" stroke-width="7" fill="none" stroke-linecap="round" />
+    </g>
+  )}
+  {emblem === "care" && (
+    <g>
+      <!-- a watering can keeping a plant growing: ongoing care -->
+      <path d="M150 196h-40l-6-40h52z" fill="var(--color-clay)" />
+      <path d="M130 156c0-30-24-44-44-40 4 24 20 38 44 40z" fill="var(--color-moss)" />
+      <path d="M130 156c0-36 20-56 46-56-2 30-20 50-46 56z" fill="var(--color-moss-deep)" />
+      <g transform="rotate(-18 80 80)">
+        <rect x="40" y="60" width="70" height="52" rx="10" fill="var(--color-sea)" />
+        <path d="M108 74l40-18 6 12-40 20z" fill="var(--color-sea)" />
+        <path d="M52 60a24 24 0 0 1 46 0" stroke="var(--color-sea-deep)" stroke-width="7" fill="none" />
+      </g>
+      <circle cx="160" cy="88" r="4" fill="var(--color-mint)" />
+      <circle cx="168" cy="102" r="4" fill="var(--color-mint)" />
+      <circle cx="154" cy="108" r="4" fill="var(--color-mint)" />
+    </g>
+  )}
+</svg>

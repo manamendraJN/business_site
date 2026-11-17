@@ -1,0 +1,135 @@
+---
+/**
+ * SCENE 3 — THE PROOF (short version for Home)
+ * Message: "Same change. Four different worlds."
+ * Four small concept tiles. As each scrolls into view, its grey "before"
+ * card peels away and the paper world rises behind it. Each tile links to
+ * the full concept on the Work page. Ends with the repeated call to action.
+ * With motion, this whole section rises over the hero like a new sheet of
+ * paper laid on top (scroll-driven; the hero sinks back beneath it).
+ */
+import World from "../art/worlds/World.astro";
+import TemplateMini from "../art/TemplateMini.astro";
+import PopText from "../ui/PopText.astro";
+import Emphasis from "../ui/Emphasis.astro";
+import CtaButton from "../ui/CtaButton.astro";
+import TornEdge from "../ui/TornEdge.astro";
+import { home, projects, cta } from "@/content/site";
+
+const p = home.proof;
+const c = home.proofCta;
+const arrow = "M5 12h13M13 6l6 6-6 6";
+---
+<section data-scene="proof" class="proof relative bg-paper-deep py-section text-ink" aria-labelledby="proof-title">
+  <TornEdge color="paper-deep" side="top" seed={13} class="proof-edge absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
+  <div class="grid items-end gap-8 px-gutter md:grid-cols-12">
+    <div class="md:col-span-7">
+      <p class="eyebrow text-clay-deep">{p.eyebrow}</p>
+      <h2 id="proof-title" class="mt-4 text-huge"><PopText as="span" text={p.headline} emClass="text-clay-deep" /></h2>
+    </div>
+    <div class="md:col-span-5">
+      <p class="max-w-[38ch] text-lead">{p.intro}</p>
+      <a href="/work/" class="link-ink mt-5 inline-flex items-center gap-2 font-bold text-clay-deep">
+        {p.more}
+        <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path d={arrow} stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="mt-16 grid grid-cols-2 gap-x-4 gap-y-10 px-gutter sm:gap-x-6 sm:gap-y-14 lg:grid-cols-4">
+    {projects.map((proj, i) => (
+      <article class:list={["proof-tile", i % 2 && "mt-10 lg:mt-16"]} data-proof-panel>
+        <a href={`/work/#${proj.slug}`} class="group block" aria-label={`${proj.name}, concept project — ${p.tileLink}`}>
+          <div class="relative pl-2 pt-3 sm:pl-4 sm:pt-4">
+            <div class="world-frame" data-world-frame data-parallax-root>
+              <World world={proj.world} />
+              <span class="after-tag">{p.afterLabel}</span>
+            </div>
+            <TemplateMini class="panel-before" title={proj.before.title} text={proj.before.text} label={p.beforeLabel} />
+          </div>
+          <span class="concept-badge mt-5 text-ink-soft sm:mt-6">Concept</span>
+          <h3 class="mt-3 text-lg leading-tight sm:text-title">{proj.name}</h3>
+          <p class="text-xs text-ink-soft sm:text-sm">{proj.kind}</p>
+          <p class="mt-2 text-sm font-bold sm:mt-3 sm:text-base"><Emphasis text={proj.after.headline} emClass="text-clay-deep" /></p>
+          <span class="tile-link mt-3 inline-flex items-center gap-2 text-sm font-bold text-clay-deep sm:mt-4">
+            {p.tileLink}
+            <svg viewBox="0 0 24 24" class="h-4 w-4" aria-hidden="true"><path d={arrow} stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </span>
+        </a>
+      </article>
+    ))}
+  </div>
+
+  <!-- repeated call to action -->
+  <div class="proof-cta mx-gutter mt-section grid items-center gap-8 rounded-paper bg-marigold p-8 text-ink shadow-lift md:grid-cols-12 md:p-12">
+    <div class="md:col-span-8">
+      <PopText as="h2" text={c.headline} class="text-big" emClass="text-clay-deep" />
+      <p class="mt-4 max-w-[44ch] text-lead">{c.text}</p>
+    </div>
+    <div class="md:col-span-4 md:justify-self-end">
+      <CtaButton href={cta.href} label={c.button} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .proof { isolation: isolate; }
+  /* With motion: overlap the last screen of the hero and sit above it, so
+     scrolling slides this sheet up over the hero. */
+  :global(html.motion) .proof { margin-top: -100svh; z-index: 2; }
+  :global(.proof-edge) {
+    filter: drop-shadow(0 -14px 18px rgb(30 26 21 / 0.35));
+    /* keep the shadow above the edge only: without this its blur spills a
+       few pixels below the edge and draws a pale line across the sheet */
+    clip-path: inset(-80px -40px 0 -40px);
+  }
+  .world-frame {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border: 8px solid var(--color-paper);
+    border-radius: var(--radius-paper);
+    box-shadow: var(--shadow-lift);
+    overflow: hidden;
+    background: var(--color-paper);
+    transition: transform 0.5s var(--ease-paper);
+  }
+  .group:hover .world-frame { transform: translateY(-8px) rotate(-1deg); }
+  .tile-link svg { transition: transform 0.3s var(--ease-paper); }
+  .group:hover .tile-link svg { transform: translateX(4px); }
+  .after-tag {
+    position: absolute;
+    right: 0.6rem;
+    bottom: 0.6rem;
+    z-index: 5;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  :global(.panel-before) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 4;
+    width: min(52%, 13rem);
+    transform: rotate(-5deg);
+    transform-origin: 0% 0%;
+  }
+  .proof-cta { transform: rotate(-0.6deg); }
+
+  /* Phones: two tiles per row, so the "before" card and frame get smaller */
+  @media (max-width: 639px) {
+    .world-frame { border-width: 5px; }
+    .after-tag { right: 0.35rem; bottom: 0.35rem; padding: 0.15rem 0.45rem; font-size: 0.55rem; }
+    .proof-tile :global(.panel-before) { width: 66%; }
+    .proof-tile :global(.tpl-mini > div:last-child) { padding: 0.35rem 0.4rem 0.45rem; }
+    .proof-tile :global(.tpl-mini p) { font-size: 0.6rem; line-height: 1.2; }
+    .proof-tile :global(.tpl-mini p + p),
+    .proof-tile :global(.tpl-mini span.inline-block) { display: none; }
+    .proof-tile :global(.tpl-mini [class*="aspect-"]) { margin-bottom: 0.3rem; }
+  }
+</style>

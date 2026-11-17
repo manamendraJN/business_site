@@ -1,0 +1,156 @@
+---
+/**
+ * Header: paper index tabs hanging from the top edge, like the tabs of a
+ * notebook. Every page and the call to action stay one tap away.
+ */
+import { business, nav, cta, contact } from "@/content/site";
+
+interface Props {
+  current: string;
+}
+const { current } = Astro.props;
+const isActive = (href: string) => (href === "/" ? current === "/" : current.startsWith(href));
+---
+<header class="site-header" data-header>
+  <a href="/" class="tab tab-logo" aria-label={`${business.name} — home`}>
+    <svg viewBox="0 0 32 32" class="h-6 w-6" aria-hidden="true">
+      <path d="M4 26V8l12-4v18z" fill="var(--color-paper-shade)" />
+      <path d="M16 22V4l12 4v18z" fill="var(--color-clay)" />
+      <path d="M4 26l12-4 12 4-12 4z" fill="var(--color-ink)" />
+    </svg>
+    <span class="font-extrabold tracking-tight">{business.shortName}</span>
+    <span class="serif-em hidden text-lg sm:inline">studio</span>
+  </a>
+
+  <nav class="tab-nav" aria-label="Main">
+    {nav.slice(1).map((item) => (
+      <a href={item.href} class:list={["tab tab-page", isActive(item.href) && "is-active"]} aria-current={isActive(item.href) ? "page" : undefined}>
+        {item.label}
+      </a>
+    ))}
+  </nav>
+
+  <div class="flex items-start gap-2">
+    <a href={cta.href} class="tab tab-cta">{cta.label}</a>
+    <button class="tab tab-menu" type="button" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
+      <span data-menu-label>Menu</span>
+    </button>
+  </div>
+</header>
+
+<!-- Mobile menu: a full sheet of paper with the pages written large -->
+<div id="site-menu" class="site-menu" data-menu hidden>
+  <nav aria-label="Mobile">
+    <ul class="space-y-1">
+      {nav.map((item, i) => (
+        <li>
+          <a href={item.href} class:list={["menu-link", isActive(item.href) && "is-active"]} aria-current={isActive(item.href) ? "page" : undefined}>
+            <span class="serif-em text-lg text-clay-deep">0{i + 1}</span> {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+  <div class="mt-10 space-y-1 text-lg">
+    <a class="link-ink block w-fit" href={`mailto:${contact.email}`}>{contact.email}</a>
+    <a class="link-ink block w-fit" href={contact.whatsappHref} target="_blank" rel="noopener">WhatsApp {contact.whatsapp}</a>
+  </div>
+</div>
+
+<script>
+  let controller: AbortController | null = null;
+  function bindMenu() {
+    controller?.abort();
+    controller = new AbortController();
+    const { signal } = controller;
+    document.documentElement.classList.remove("menu-open");
+    const toggle = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+    const menu = document.querySelector<HTMLElement>("[data-menu]");
+    const label = document.querySelector<HTMLElement>("[data-menu-label]");
+    if (!toggle || !menu) return;
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute("aria-expanded", String(open));
+      menu.hidden = !open;
+      if (label) label.textContent = open ? "Close" : "Menu";
+      document.documentElement.classList.toggle("menu-open", open);
+    };
+    toggle.addEventListener("click", () => setOpen(toggle.getAttribute("aria-expanded") !== "true"), { signal });
+    menu.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("a")) setOpen(false);
+    }, { signal });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") setOpen(false);
+    }, { signal });
+  }
+  document.addEventListener("astro:page-load", bindMenu);
+</script>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 60;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0 var(--spacing-gutter);
+    pointer-events: none;
+  }
+  .site-header > * { pointer-events: auto; }
+
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.15rem 1rem 0.75rem;
+    border-radius: 0 0 0.6rem 0.6rem;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1;
+    box-shadow: var(--shadow-paper);
+    transition: transform 0.35s var(--ease-paper), background-color 0.25s;
+  }
+  /* Pull a tab down a little on hover, like lifting a page */
+  .tab:hover { transform: translateY(5px); }
+  .tab-logo { padding-left: 0.9rem; padding-right: 1.1rem; font-size: 1.1rem; }
+
+  .tab-nav { display: none; gap: 0.4rem; }
+  .tab-page { background: var(--color-paper-deep); padding-top: 1rem; }
+  .tab-page.is-active { background: var(--color-ink); color: var(--color-paper); padding-top: 1.4rem; }
+
+  .tab-cta { background: var(--color-clay); color: var(--color-paper); padding-top: 1.35rem; padding-bottom: 0.9rem; }
+  .tab-cta:hover { background: var(--color-clay-deep); }
+  .tab-menu { background: var(--color-ink); color: var(--color-paper); cursor: pointer; }
+
+  @media (min-width: 900px) {
+    .tab-nav { display: flex; }
+    .tab-menu { display: none; }
+  }
+  @media (max-width: 420px) {
+    .tab { padding-left: 0.75rem; padding-right: 0.75rem; font-size: 0.875rem; }
+  }
+
+  .site-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    padding: calc(var(--spacing-header) + 2rem) var(--spacing-gutter) 2rem;
+    background: var(--color-paper);
+    overflow-y: auto;
+  }
+  .site-menu[hidden] { display: none; }
+  .menu-link {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-size: var(--text-big);
+    line-height: 1.15;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  .menu-link.is-active { color: var(--color-clay-deep); }
+  :global(html.menu-open) { overflow: hidden; }
+</style>

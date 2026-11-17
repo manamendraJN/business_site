@@ -1,0 +1,102 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PopText from "@/components/ui/PopText.astro";
+import CtaButton from "@/components/ui/CtaButton.astro";
+import TornEdge from "@/components/ui/TornEdge.astro";
+import { meta, aboutPage as a, business, cta } from "@/content/site";
+
+const noteTones = ["bg-marigold", "bg-mint", "bg-blush", "bg-paper"];
+const tilts = ["-rotate-3", "rotate-2", "rotate-[-1deg]", "rotate-3"];
+---
+<BaseLayout title={meta.about.title} description={meta.about.description}>
+  <!-- Hero: the portrait print, overlapped by the greeting -->
+  <section class="relative overflow-hidden px-gutter pt-[calc(var(--spacing-header)+3rem)] pb-section">
+    <div class="grid items-end gap-10 md:grid-cols-12">
+      <figure class="portrait relative md:col-span-5 md:col-start-8 md:row-start-1">
+        <span class="tape" aria-hidden="true"></span>
+        <Image src={a.portrait} alt={a.portraitAlt} width={800} height={1000} fit="cover" position="top" class="aspect-[4/5] h-auto w-full rotate-2 object-cover object-top border-[10px] border-paper shadow-lift" loading="eager" />
+        <figcaption class="mt-4 text-sm text-ink-soft">{a.portraitLabel}</figcaption>
+      </figure>
+      <div class="relative z-10 md:col-span-8 md:col-start-1 md:row-start-1 md:pb-24">
+        <p class="eyebrow text-clay-deep">{a.eyebrow}</p>
+        <PopText as="h1" pop="load" text={a.headline} class="mt-3 text-mega" emClass="text-clay-deep" />
+        <p class="mt-8 max-w-[24ch] text-big font-extrabold leading-[1.05]">{a.lead}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story -->
+  <section class="relative bg-paper-deep px-gutter py-section">
+    <TornEdge color="paper-deep" side="top" seed={131} class="absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
+    <div class="grid gap-12 md:grid-cols-12">
+      <div class="space-y-6 text-lead md:col-span-6 md:col-start-2">
+        {a.story.map((para) => <p data-reveal>{para}</p>)}
+      </div>
+      <p class="md:col-span-4 md:col-start-9 text-ink-soft" data-reveal>
+        <span class="eyebrow block text-clay-deep">{a.basedLabel}</span>
+        <span class="mt-2 block text-title font-extrabold text-ink">{business.location}</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- Beliefs: four notes pinned to the board -->
+  <section class="relative bg-sea-deep px-gutter py-section text-paper">
+    <TornEdge color="sea-deep" side="top" seed={137} class="absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
+    <PopText as="h2" text={a.beliefsHeadline} class="text-huge" />
+    <ul class="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {a.beliefs.map((b, i) => (
+        <li class={`belief relative p-7 pt-9 text-ink shadow-lift ${noteTones[i % 4]} ${tilts[i % 4]} ${i % 2 ? "lg:mt-16" : ""}`} data-reveal>
+          <span class="pin" aria-hidden="true"></span>
+          <h3 class="text-title">{b.title}</h3>
+          <p class="mt-3">{b.text}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- Testimonials: clearly labelled placeholders -->
+  <section class="relative bg-paper px-gutter py-section">
+    <TornEdge color="paper" side="top" seed={141} class="absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
+    <h2 class="text-big">{a.testimonialsHeadline}</h2>
+    <div class="mt-10 grid gap-8 md:grid-cols-2">
+      {a.testimonials.map((t) => (
+        <figure class="placeholder-box rounded-paper p-8 text-left" style="place-items: start;">
+          <p class="concept-badge">{t.label}</p>
+          <blockquote class="serif-em mt-5 text-title">“{t.text}”</blockquote>
+          <figcaption class="mt-4 font-bold">— {t.who}</figcaption>
+        </figure>
+      ))}
+    </div>
+    <div class="mt-16 flex flex-wrap items-center gap-6">
+      <CtaButton href={cta.href} label={cta.label} />
+      <a href="/work/" class="link-ink font-bold">See the concept projects</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .tape {
+    position: absolute;
+    top: -0.9rem;
+    left: 50%;
+    z-index: 2;
+    width: 7rem;
+    height: 1.8rem;
+    background: rgb(244 178 60 / 0.8);
+    transform: translateX(-50%) rotate(-4deg);
+  }
+  .pin {
+    position: absolute;
+    top: 0.9rem;
+    left: 50%;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    background: var(--color-clay);
+    box-shadow: 0 2px 3px rgb(30 26 21 / 0.35);
+  }
+  @media (min-width: 768px) {
+    .portrait { margin-bottom: -2rem; }
+  }
+</style>

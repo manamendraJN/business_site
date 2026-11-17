@@ -1,0 +1,97 @@
+---
+/**
+ * The plain, forgettable template site the owner has today.
+ * Deliberately generic: Arial, grey boxes, a crossed-out image, three cards.
+ * Purely illustrative, so it is hidden from screen readers.
+ */
+import { home } from "@/content/site";
+const t = home.hook.template;
+---
+<div class="tpl relative flex h-full w-full flex-col bg-dull-50 font-dull text-dull-700" aria-hidden="true">
+  <!-- red rubber stamp: this is an example, not the studio's own site -->
+  <div class="tpl-stamp">
+    <span class="tpl-stamp-small">{t.stampSmall}</span>
+    <span class="tpl-stamp-big">{t.stampBig}</span>
+  </div>
+  <!-- browser chrome -->
+  <div class="flex items-center gap-3 border-b border-dull-300 bg-dull-100 px-3 py-2">
+    <span class="flex gap-1.5"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span>
+    <span class="tpl-tab flex items-center gap-2 rounded-t bg-dull-50 px-3 py-1 text-xs">
+      {t.logo}
+      <span class="tpl-close grid h-4 w-4 place-items-center rounded-sm text-dull-500" data-tpl-close>×</span>
+    </span>
+    <span class="ml-2 hidden flex-1 truncate rounded-full bg-dull-50 px-3 py-1 text-xs text-dull-500 sm:block">{t.url}</span>
+  </div>
+  <!-- site nav -->
+  <div class="flex items-center justify-between border-b border-dull-100 px-[5%] py-3">
+    <span class="text-sm font-bold tracking-wider">{t.logo}</span>
+    <span class="hidden gap-5 text-xs text-dull-500 sm:flex">{t.links.map((l) => <span>{l}</span>)}</span>
+    <span class="flex flex-col gap-1 sm:hidden"><i class="bar"></i><i class="bar"></i><i class="bar"></i></span>
+  </div>
+  <!-- hero -->
+  <div class="grid flex-1 items-center gap-[4%] px-[5%] py-[3%] sm:grid-cols-2">
+    <div>
+      <p class="text-[clamp(1.4rem,3.2vw,2.6rem)] font-bold leading-tight">{t.title}</p>
+      <p class="mt-3 max-w-[40ch] text-[clamp(0.8rem,1.1vw,1rem)] leading-relaxed text-dull-500">{t.text}</p>
+      <span class="mt-5 inline-block rounded-sm bg-dull-300 px-5 py-2 text-sm text-dull-50" data-tpl-button>{t.button}</span>
+    </div>
+    <div class="tpl-img relative hidden aspect-[4/3] w-full border border-dull-300 bg-dull-100 sm:block">
+      <svg class="absolute inset-0 h-full w-full" viewBox="0 0 100 75" preserveAspectRatio="none">
+        <path d="M0 0L100 75M100 0L0 75" stroke="var(--color-dull-300)" stroke-width="0.5" vector-effect="non-scaling-stroke" />
+      </svg>
+    </div>
+  </div>
+  <!-- three identical cards -->
+  <div class="tpl-cards grid grid-cols-3 gap-[2.5%] px-[5%] pb-[4%]">
+    {t.cards.map((c) => (
+      <div class="border border-dull-100 bg-dull-50 p-3 shadow-dull">
+        <div class="mb-2 h-6 w-6 bg-dull-100"></div>
+        <p class="text-xs font-bold sm:text-sm">{c}</p>
+        <p class="mt-1 hidden text-xs text-dull-500 md:block">{t.cardText}</p>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--color-dull-300); }
+  .bar { display: block; width: 1.1rem; height: 2px; background: var(--color-dull-500); }
+  @media (max-height: 560px) { .tpl-cards { display: none; } }
+
+  .tpl-stamp {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    top: 78%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.55rem 1.1rem 0.7rem;
+    border: 4px double var(--color-clay);
+    border-radius: 0.4rem;
+    color: var(--color-clay);
+    background: color-mix(in srgb, var(--color-dull-50) 82%, transparent);
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    text-align: center;
+    transform: translate(-50%, -50%) rotate(-7deg);
+    pointer-events: none;
+  }
+  .tpl-stamp-small {
+    font-size: clamp(0.7rem, 1vw, 0.85rem);
+    font-weight: 800;
+    letter-spacing: 0.35em;
+    border-bottom: 2px solid currentColor;
+    padding-bottom: 0.15rem;
+  }
+  .tpl-stamp-big {
+    font-size: clamp(1rem, 2.1vw, 1.7rem);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.05;
+  }
+  @media (min-width: 640px) {
+    .tpl-stamp { left: 62%; top: 44%; }
+  }
+</style>

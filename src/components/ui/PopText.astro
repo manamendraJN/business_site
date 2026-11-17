@@ -1,0 +1,26 @@
+---
+/**
+ * Headline whose words "pop up" like the tabs in a pop-up book.
+ * The full text is always in the HTML and readable without JavaScript;
+ * motion only adds the fold-up when a scene asks for it (data-pop).
+ */
+import { splitWords } from "@/lib/text";
+
+interface Props {
+  text: string;
+  as?: "h1" | "h2" | "h3" | "p" | "span";
+  class?: string;
+  /** "load" pops on page load, "scroll" when scrolled into view, "none" stays still */
+  pop?: "load" | "scroll" | "none";
+  emClass?: string;
+}
+const { text, as: Tag = "h2", class: className = "", pop = "scroll", emClass = "" } = Astro.props;
+const words = splitWords(text);
+---
+<Tag class:list={[className, Tag === "span" && "inline-block"]} data-pop={pop === "none" ? undefined : pop}>
+  {words.map((w, i) => (
+    <Fragment>
+      <span class:list={["pop-word", w.em && ["serif-em", emClass]]}>{w.text}</span>{i < words.length - 1 ? " " : ""}
+    </Fragment>
+  ))}
+</Tag>

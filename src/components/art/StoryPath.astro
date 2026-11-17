@@ -1,0 +1,195 @@
+---
+/**
+ * The studio's world: "your new website, delivered to your door".
+ * A calm paper landscape at golden hour. One road winds from the viewer to
+ * the client's house on the horizon. On scroll, the studio's van drives the
+ * road carrying the new website on its roof; when it arrives, the website
+ * goes into the house and its window lights up.
+ *
+ * Depth layers (one shared 1600 × 1000 box, anchored bottom-right, so the
+ * road lines up across layers on any screen shape):
+ *   bg      → sky and sun glow                 (farthest)
+ *   far     → soft distant hills, the house
+ *   mid     → the ground (one smooth surface) and the road
+ *   vehicle → the van, moved along the road by scroll
+ *   fg      → grass silhouettes                (nearest)
+ */
+import Van from "./Van.astro";
+import { home } from "@/content/site";
+import { seeded } from "@/lib/paper";
+
+const ASPECT = "xMaxYMax slice";
+
+/* ---- The road: one centre line, sampled into a perspective ribbon ---- */
+type P = [number, number];
+const curves: [P, P, P, P][] = [
+  [[1405, 1000], [1380, 900], [1240, 820], [1270, 740]],
+  [[1270, 740], [1285, 700], [1318, 628], [1330, 592]],
+];
+// the line the van drives (same curve as the road)
+const driveLine = "M1405 1000 C1380 900 1240 820 1270 740 C1285 700 1318 628 1330 592";
+
+const bez = ([a, b, c, d]: [P, P, P, P], t: number): P => {
+  const u = 1 - t;
+  return [
+    u * u * u * a[0] + 3 * u * u * t * b[0] + 3 * u * t * t * c[0] + t * t * t * d[0],
+    u * u * u * a[1] + 3 * u * u * t * b[1] + 3 * u * t * t * c[1] + t * t * t * d[1],
+  ];
+};
+const STEPS = 28;
+const centre: P[] = curves.flatMap((curve, ci) =>
+  Array.from({ length: STEPS + 1 }, (_, i) => bez(curve, i / STEPS)).slice(ci ? 1 : 0),
+);
+// wide near the viewer, narrow at the horizon
+const width = (y: number) => 12 + 300 * Math.pow(Math.max(0, (y - 592) / 408), 1.5);
+const fmt = (p: P) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+const left = centre.map(([x, y]): P => [x - width(y) / 2, y]);
+const right = centre.map(([x, y]): P => [x + width(y) / 2, y]);
+const road = `M${left.map(fmt).join(" L")} L${right.reverse().map(fmt).join(" L")} Z`;
+// centre dashes that shrink with distance
+const dashes = centre
+  .slice(0, -2)
+  .map((p, i) => ({ p, q: centre[i + 1], i }))
+  .filter(({ i }) => i % 2 === 0)
+  .map(({ p, q }) => {
+    const hw = Math.max(0.6, width(p[1]) * 0.025);
+    const hq = Math.max(0.6, width(q[1]) * 0.025);
+    return `M${p[0] - hw} ${p[1]} L${p[0] + hw} ${p[1]} L${q[0] + hq} ${q[1]} L${q[0] - hq} ${q[1]} Z`;
+  });
+
+/* ---- Foreground grass ---- */
+const rand = seeded(33);
+const blades = [
+  ...Array.from({ length: 16 }, () => ({ x: rand() * 300, h: 60 + rand() * 120, b: (rand() - 0.5) * 70 })),
+  ...Array.from({ length: 8 }, () => ({ x: 1540 + rand() * 60, h: 50 + rand() * 90, b: (rand() - 0.6) * 60 })),
+].map(({ x, h, b }) => `M${x - 5} 1000 Q${x + b * 0.4} ${1000 - h * 0.6} ${x + b} ${1000 - h} Q${x + b * 0.4 + 3} ${1000 - h * 0.6} ${x + 5} 1000 Z`);
+
+const delivered = home.turn.delivered;
+const labelW = 30 + delivered.length * 8.6;
+---
+<div class="story-path absolute inset-0 overflow-hidden" aria-hidden="true">
+  <!-- BG: sky and sun -->
+  <div class="layer" data-layer="bg">
+    <div data-depth="0.06" class="sky h-full w-full">
+      <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
+        <!-- the sun, up in the sky (kept clear of the house) -->
+        <circle cx="1490" cy="380" r="50" fill="var(--color-marigold)" opacity="0.25" />
+        <circle cx="1490" cy="380" r="32" fill="var(--color-marigold)" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- FAR: soft distant hills and the client's house -->
+  <div class="layer layer-haze" data-layer="far">
+    <div data-depth="0.18">
+      <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
+        <path d="M0 575 C 260 540, 540 572, 800 552 S 1250 560, 1600 540 V720 H0 Z" fill="var(--color-blush)" opacity="0.45" />
+        <!-- the house -->
+        <g>
+          <rect x="1300" y="508" width="10" height="26" fill="var(--color-clay-deep)" />
+          <path d="M1268 552 L1330 500 L1392 552 Z" fill="var(--color-clay-deep)" />
+          <rect x="1278" y="550" width="104" height="44" fill="var(--color-dawn)" />
+          <rect x="1278" y="550" width="104" height="6" fill="rgb(30 26 21 / 0.12)" />
+          <path d="M1320 594 V574 A10 10 0 0 1 1340 574 V594 Z" fill="var(--color-clay-deep)" />
+          <!-- windows: dark until the website arrives -->
+          <rect x="1288" y="563" width="22" height="17" rx="2" fill="var(--color-ink-soft)" />
+          <rect x="1350" y="563" width="22" height="17" rx="2" fill="var(--color-ink-soft)" />
+          <g data-house-glow>
+            <rect x="1288" y="563" width="22" height="17" rx="2" fill="var(--color-marigold)" />
+            <rect x="1350" y="563" width="22" height="17" rx="2" fill="var(--color-marigold)" />
+            <rect x="1352" y="565" width="18" height="3" fill="var(--color-clay)" />
+            <rect x="1352" y="570" width="11" height="2" fill="var(--color-ink)" />
+            <rect x="1352" y="574" width="14" height="2" fill="var(--color-ink-soft)" />
+          </g>
+        </g>
+        <!-- a tree to the right of the house, with a gap between them -->
+        <g>
+          <ellipse cx="1452" cy="594" rx="24" ry="3.5" fill="var(--color-ink)" opacity="0.18" />
+          <!-- trunk tapering up, with two branches -->
+          <path d="M1446 595 C1448 575 1449 556 1448 536 L1456 536 C1455 556 1456 575 1459 595 Z" fill="var(--color-ink-soft)" />
+          <path d="M1450 556 C1444 548 1438 543 1431 540" fill="none" stroke="var(--color-ink-soft)" stroke-width="3.5" stroke-linecap="round" />
+          <path d="M1454 548 C1460 541 1466 537 1473 535" fill="none" stroke="var(--color-ink-soft)" stroke-width="3" stroke-linecap="round" />
+          <!-- leafy crown: dark clumps behind, lighter clumps in front, highlight top-left -->
+          <circle cx="1430" cy="530" r="17" fill="var(--color-moss-deep)" />
+          <circle cx="1474" cy="527" r="18" fill="var(--color-moss-deep)" />
+          <circle cx="1452" cy="512" r="22" fill="var(--color-moss-deep)" />
+          <circle cx="1440" cy="518" r="18" fill="var(--color-moss)" />
+          <circle cx="1464" cy="514" r="19" fill="var(--color-moss)" />
+          <circle cx="1452" cy="497" r="17" fill="var(--color-moss)" />
+          <circle cx="1446" cy="534" r="14" fill="var(--color-moss)" />
+          <circle cx="1463" cy="533" r="13" fill="var(--color-moss-deep)" />
+          <circle cx="1444" cy="500" r="8" fill="var(--color-mint)" opacity="0.45" />
+          <circle cx="1434" cy="514" r="6" fill="var(--color-mint)" opacity="0.35" />
+        </g>
+        <g data-delivered transform="translate(1330 486)">
+          <rect x={-labelW / 2} y="-30" width={labelW} height="30" rx="15" fill="var(--color-ink)" />
+          <path d="M-7 0 L0 9 L7 0 Z" fill="var(--color-ink)" />
+          <text x="0" y="-10" text-anchor="middle" class="label-text">{delivered}</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- MID: the ground as one smooth surface, and the road -->
+  <div class="layer layer-mid" data-layer="mid">
+    <div data-depth="0.4">
+      <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
+        <defs>
+          <linearGradient id="story-ground" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--color-blush)" />
+            <stop offset="0.45" stop-color="var(--color-clay-soft)" />
+            <stop offset="1" stop-color="var(--color-clay-deep)" />
+          </linearGradient>
+        </defs>
+        <path d="M0 610 C 300 592, 700 606, 1000 596 S 1400 588, 1600 594 V1000 H0 Z" fill="url(#story-ground)" />
+        <path d={road} fill="var(--color-dawn)" />
+        {dashes.map((d) => <path d={d} fill="var(--color-clay-soft)" />)}
+      </svg>
+    </div>
+  </div>
+
+  <!-- VEHICLE: the van. Without motion it is already parked at the house. -->
+  <div class="layer" data-layer="vehicle">
+    <div>
+      <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
+        <path id="story-drive-line" d={driveLine} fill="none" stroke="none" />
+        <g data-van-home transform="translate(1372 596) scale(0.2)">
+          <g data-van>
+            <Van />
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- FG: grass silhouettes, nearest to the viewer -->
+  <div class="layer" data-layer="fg">
+    <div data-depth="1.1">
+      <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
+        <path d="M0 950 C 160 905, 360 935, 520 965 S 740 1000, 790 1000 H0 Z" fill="var(--color-ink)" />
+        {blades.map((d) => <path d={d} fill="var(--color-ink)" />)}
+      </svg>
+    </div>
+  </div>
+</div>
+
+<style>
+  .sky {
+    background: linear-gradient(180deg, var(--color-dawn) 0%, var(--color-marigold-soft) 55%, var(--color-blush) 100%);
+  }
+  /* In the still version the website is already delivered: the roof is empty. */
+  :global(html:not(.motion)) .story-path :global([data-parcel]) { display: none; }
+  .layer-haze { filter: drop-shadow(0 6px 8px rgb(30 26 21 / 0.12)); }
+  .label-text {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    fill: var(--color-paper);
+  }
+  /* Phones: draw the landscape a little shorter so more of its width fits,
+     keeping the road, the van and the house on screen. */
+  .story-path :global(.layer) svg { position: absolute; left: 0; bottom: 0; }
+  @media (max-width: 767px) {
+    .story-path :global(.layer) svg { height: 78%; }
+  }
+</style>

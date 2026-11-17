@@ -1,0 +1,192 @@
+---
+/**
+ * SCENE 1 — THE HOOK
+ * Message: "This is what your customers see today. They leave in seconds."
+ * The owner sees a dull grey template site. A ghost visitor drifts in,
+ * hesitates and leaves. The page is torn in two halves (same content,
+ * clipped along one jagged edge) so Scene 2 can rip it open.
+ */
+import TemplateSite from "../art/TemplateSite.astro";
+import { home } from "@/content/site";
+import { tearPolygon, tearPoints } from "@/lib/paper";
+
+const h = home.hook;
+const SEED = 5;
+const left = tearPolygon("left", SEED);
+const right = tearPolygon("right", SEED);
+const crack = tearPoints(SEED)
+  .map(([x, y]) => `${x},${y}`)
+  .join(" ");
+---
+<div class="scene-hook" data-hook>
+  <div class="hook-backdrop absolute inset-0 bg-dull-100" data-hook-backdrop></div>
+
+  <div class="hook-window" data-hook-window>
+    <p class="sr-only">Illustration: a plain, grey template website — the kind many businesses have today.</p>
+    <div class="hook-half" data-half="left" style={`clip-path: ${left}`}>
+      <TemplateSite />
+    </div>
+    <div class="hook-half" data-half="right" style={`clip-path: ${right}`}>
+      <TemplateSite />
+    </div>
+    <svg class="hook-crack" data-hook-crack viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <polyline points={crack} fill="none" stroke="var(--color-ink)" stroke-width="3" vector-effect="non-scaling-stroke" stroke-linejoin="bevel" />
+    </svg>
+
+    <!-- the visitor who leaves -->
+    <svg class="ghost-cursor" data-ghost viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 2l15 11-6.5 1.2L16 21l-3 1.4-3.6-6.8L4 20z" fill="var(--color-ink)" stroke="var(--color-paper)" stroke-width="1.5" stroke-linejoin="round" />
+    </svg>
+    <span class="ghost-bubble font-dull" data-ghost-bubble aria-hidden="true">← Back to search results</span>
+  </div>
+
+  <div class="hook-note" data-hook-note>
+    <p class="eyebrow text-clay-deep">{h.eyebrow}</p>
+    <h1 class="mt-2 text-[clamp(1.7rem,3.4vw,2.9rem)] leading-[1.02]">{h.headline}</h1>
+    <p class="serif-em mt-2 text-[clamp(1.6rem,3vw,2.6rem)] leading-none text-clay-deep">{h.punch}</p>
+  </div>
+
+  <!-- hand-written pointer: the grey site is the visitor's site, not ours -->
+  <p class="hook-pointer" data-hook-pointer aria-hidden="true">
+    <span class="serif-em">{h.pointer}</span>
+    <svg viewBox="0 0 120 60" class="hook-pointer-arrow">
+      <path d="M6 8 C 40 6, 78 18, 108 46" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+      <path d="M94 44 L110 48 L106 32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </p>
+
+  <p class="hook-hint" data-hook-hint>
+    <span>{h.scrollHint}</span>
+    <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path d="M12 4v15M6 13l6 6 6-6" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+  </p>
+</div>
+
+<style>
+  .scene-hook { position: relative; min-height: 100svh; overflow: hidden; }
+
+  .hook-pointer { display: none; }
+  @media (min-width: 768px) {
+    .hook-pointer {
+      display: block;
+      position: absolute;
+      z-index: 4;
+      left: var(--spacing-gutter);
+      top: calc(var(--spacing-header) + 3.5rem);
+      width: calc(16vw - var(--spacing-gutter) + 2.5rem);
+      color: var(--color-clay-deep);
+      font-size: clamp(1.15rem, 1.7vw, 1.6rem);
+      line-height: 1.05;
+      transform: rotate(-4deg);
+    }
+    .hook-pointer-arrow { width: 5.5rem; height: auto; margin-top: 0.35rem; margin-left: 2.5rem; }
+  }
+
+  .hook-window {
+    position: absolute;
+    top: calc(var(--spacing-header) + 0.75rem);
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 44%;
+    perspective: 1400px;
+  }
+  .hook-half {
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-dull);
+    backface-visibility: hidden;
+  }
+  .hook-half[data-half="left"] { transform-origin: 0% 50%; }
+  .hook-half[data-half="right"] { transform-origin: 100% 50%; }
+  .hook-crack {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: 50% 0%;
+    transform: scaleY(0);
+    pointer-events: none;
+  }
+
+  .ghost-cursor, .ghost-bubble { display: none; }
+  :global(html.motion) .ghost-cursor {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 26px;
+    height: 26px;
+    z-index: 3;
+    opacity: 0;
+    filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.25));
+  }
+  :global(html.motion) .ghost-bubble {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    opacity: 0;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.25rem;
+    background: var(--color-dull-700);
+    color: var(--color-dull-50);
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .hook-note {
+    position: absolute;
+    left: var(--spacing-gutter);
+    right: var(--spacing-gutter);
+    bottom: 4.5rem;
+    z-index: 4;
+    padding: 1.25rem 1.4rem 1.4rem;
+    background: var(--color-marigold);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-lift);
+    transform: rotate(-1.5deg);
+    border-radius: 2px;
+  }
+  .hook-note::before {
+    /* a strip of tape holding the note */
+    content: "";
+    position: absolute;
+    top: -0.8rem;
+    left: 42%;
+    width: 5.5rem;
+    height: 1.6rem;
+    background: rgb(245 238 226 / 0.75);
+    transform: rotate(4deg);
+  }
+
+  .hook-hint {
+    position: absolute;
+    right: var(--spacing-gutter);
+    bottom: 1.1rem;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-dull-700);
+  }
+
+  @media (min-width: 768px) {
+    .hook-window {
+      top: calc(var(--spacing-header) + 1.25rem);
+      left: 16vw;
+      right: var(--spacing-gutter);
+      bottom: 4.25rem;
+    }
+    .hook-note {
+      right: auto;
+      bottom: 8vh;
+      max-width: min(30rem, 42vw);
+      padding: 1.6rem 1.9rem 1.9rem;
+      transform: rotate(-3deg);
+    }
+  }
+</style>

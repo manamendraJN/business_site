@@ -1,0 +1,260 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   DESIGN TOKENS — the one place for colours, fonts, sizes and spacing.
+   Tailwind's default palette is switched off below, so only these exist.
+   Every SVG illustration also reads these variables (fill="var(--color-…)").
+   ========================================================================== */
+@theme {
+  /* Reset Tailwind's default colours so only brand tokens can be used. */
+  --color-*: initial;
+
+  /* Paper & ink — the base of the cut-paper world */
+  --color-ink: #1e1a15;
+  --color-ink-soft: #4a4239;
+  --color-paper: #f5eee2;
+  --color-paper-deep: #eadfcc;
+  --color-paper-shade: #d6c7ad;
+
+  /* Warm accents */
+  --color-clay-soft: #eb8d6b;
+  --color-clay: #e0522c;
+  --color-clay-deep: #a93a1b;
+  --color-marigold: #f4b23c;
+  --color-marigold-soft: #f9d68f;
+  --color-dawn: #fbe3c4;
+  --color-blush: #f2b2a0;
+  --color-rose: #c8475e;
+
+  /* Cool accents */
+  --color-sea: #12605c;
+  --color-sea-deep: #0b3533;
+  --color-mint: #a9d8c6;
+  --color-moss: #6f8a3a;
+  --color-moss-deep: #46592a;
+
+  /* The "dull template" greys — used only for the before-state */
+  --color-dull-50: #f3f3f3;
+  --color-dull-100: #e3e3e3;
+  --color-dull-300: #bdbdbd;
+  --color-dull-500: #8e8e8e;
+  --color-dull-700: #5a5a5a;
+
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Fonts (files are optimised and self-hosted by Astro's font API) */
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), Georgia, serif;
+  /* Deliberately generic — this is the "everyone else's website" font */
+  --font-dull: Arial, Helvetica, sans-serif;
+
+  /* Fluid type scale */
+  --text-mega: clamp(3.1rem, 10.5vw, 10.5rem);
+  --text-mega--line-height: 0.88;
+  --text-huge: clamp(2.5rem, 7vw, 6.25rem);
+  --text-huge--line-height: 0.92;
+  --text-big: clamp(2rem, 4.6vw, 4rem);
+  --text-big--line-height: 0.98;
+  --text-title: clamp(1.5rem, 2.6vw, 2.25rem);
+  --text-title--line-height: 1.08;
+  --text-lead: clamp(1.1rem, 1.5vw, 1.35rem);
+  --text-lead--line-height: 1.5;
+
+  /* Spacing (Tailwind's base step stays 0.25rem; these are named extras) */
+  --spacing: 0.25rem;
+  --spacing-gutter: clamp(1rem, 4vw, 3.5rem);
+  --spacing-section: clamp(5rem, 12vw, 10rem);
+  --spacing-header: 4.5rem;
+
+  /* Paper shadows — the shared lighting (light from top-left) */
+  --shadow-paper: 0 1px 0 rgb(30 26 21 / 0.06), 0 12px 24px -10px rgb(30 26 21 / 0.35);
+  --shadow-lift: 0 2px 0 rgb(30 26 21 / 0.06), 0 30px 60px -20px rgb(30 26 21 / 0.45);
+  --shadow-dull: 0 1px 3px rgb(0 0 0 / 0.12);
+
+  --radius-paper: 0.375rem;
+
+  --ease-paper: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-paper);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--color-marigold);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-clay);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  img, svg { display: block; }
+}
+
+/* Lenis smooth scrolling (recommended base styles) */
+html.lenis, html.lenis body { height: auto; }
+.lenis:not(.lenis-autoToggle).lenis-stopped { overflow: clip; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
+/* ==========================================================================
+   SHARED COMPONENT CLASSES
+   ========================================================================== */
+@layer components {
+  /* Paper grain over the whole site — one static texture, never animated */
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    pointer-events: none;
+    opacity: 0.09;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* The pop-up words: each word is its own little paper tab */
+  .pop-word {
+    display: inline-block;
+    transform-origin: 50% 100%;
+    backface-visibility: hidden;
+  }
+
+  .eyebrow {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .serif-em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  /* A depth layer inside a diorama */
+  .layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .layer > * { width: 100%; height: 100%; }
+  .layer svg { width: 100%; height: 100%; }
+  /* Atmospheric distance: far layers are softer and lighter */
+  .layer-far { filter: blur(1.5px) saturate(0.8); opacity: 0.85; }
+  .layer-mid { filter: drop-shadow(0 14px 14px rgb(30 26 21 / 0.22)); }
+  .layer-near { filter: drop-shadow(0 22px 22px rgb(30 26 21 / 0.3)); }
+
+  /* Primary call to action */
+  .btn-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.05rem 1.6rem 1.05rem 1.75rem;
+    border-radius: 999px;
+    background: var(--color-clay);
+    color: var(--color-paper);
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1;
+    box-shadow: var(--shadow-paper);
+    transition: background-color 0.25s var(--ease-paper), box-shadow 0.25s var(--ease-paper);
+    will-change: transform;
+  }
+  .btn-cta:hover { background: var(--color-clay-deep); box-shadow: var(--shadow-lift); }
+  .btn-cta .btn-arrow { transition: transform 0.3s var(--ease-paper); }
+  .btn-cta:hover .btn-arrow { transform: translateX(4px) rotate(-8deg); }
+
+  .link-ink {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 100% 2px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    padding-bottom: 2px;
+  }
+  .link-ink:hover { color: var(--color-clay); }
+
+  .concept-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.65rem;
+    border: 1.5px dashed currentColor;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .placeholder-box {
+    position: relative;
+    display: grid;
+    place-items: center;
+    background: repeating-linear-gradient(-45deg, var(--color-paper-deep) 0 14px, var(--color-paper) 14px 28px);
+    border: 2px dashed var(--color-ink-soft);
+    color: var(--color-ink-soft);
+    text-align: center;
+  }
+}
+
+/* ==========================================================================
+   PROGRESSIVE ENHANCEMENT
+   `html.motion` is set before first paint only when motion is allowed and
+   JavaScript runs. Without it every scene is a still, readable section.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Gentle ambient loops (steam, waves, drifting petals). Only with motion. */
+@keyframes rise {
+  0% { transform: translateY(12%) scaleY(0.9); opacity: 0; }
+  30% { opacity: 0.9; }
+  100% { transform: translateY(-22%) scaleY(1.1); opacity: 0; }
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3.5%); }
+}
+@keyframes sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+html.motion .anim-rise { animation: rise 4.5s ease-out infinite; transform-box: fill-box; }
+html.motion .anim-rise-2 { animation: rise 4.5s ease-out 1.5s infinite; transform-box: fill-box; }
+html.motion .anim-rise-3 { animation: rise 4.5s ease-out 3s infinite; transform-box: fill-box; }
+html.motion .anim-bob { animation: bob 6s ease-in-out infinite; }
+html.motion .anim-bob-slow { animation: bob 9s ease-in-out -2s infinite; }
+html.motion .anim-sway { animation: sway 7s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
