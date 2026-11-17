@@ -35,6 +35,17 @@ Words wrapped in `*asterisks*` are shown in the italic accent font.
 
 To use your own backend instead, put its URL there. The form posts standard form data and expects a 2xx response (JSON accepted). Without JavaScript the form still posts normally.
 
+## The chat helper
+
+The "Ask a question" bubble in the corner of every page is a scripted helper. It uses no AI and no server, so it costs nothing to run. Its words live in `chatbot` in `src/content/site.ts`:
+
+- `topics`: each one has a button label (`ask`), a reply (`answer`), an optional `list` and `links`, and the follow-up buttons (`next`). Most replies reuse your services, FAQ, steps and contact details, so editing those updates the chat too.
+- `keywords`: when a visitor types a question, the helper picks the topic whose keywords match best. Add words your customers use.
+- `start` and `menu`: the first buttons, and the ones behind "Show all topics".
+- Anything it can't match gets a friendly reply with your WhatsApp link and the enquiry form.
+
+The component is `src/components/ChatHelper.astro`. It keeps the conversation while visitors move between pages.
+
 ## Replace the image placeholders
 
 Placeholders live in `src/assets/placeholders/`:

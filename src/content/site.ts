@@ -529,6 +529,155 @@ export const contactPage = {
 };
 
 /* --------------------------------------------------------------------------
+   CHAT HELPER — the "Ask a question" bubble in the corner of every page.
+   It is a scripted helper (no AI, no server, no cost): visitors tap a topic
+   or type a question, and the helper picks the closest topic by its
+   keywords. Anything it can't answer goes to WhatsApp or email.
+
+   • Each topic: `ask` is the button label, `answer` the reply, `list` and
+     `links` are optional, `next` are the follow-up buttons (topic ids).
+   • `keywords` are matched against what the visitor types (lowercase).
+   -------------------------------------------------------------------------- */
+export type ChatLink = { label: string; href: string; external?: boolean };
+export type ChatTopic = {
+  id: string;
+  ask: string;
+  keywords: string[];
+  answer: string;
+  list?: { label: string; note?: string; href?: string }[];
+  links?: ChatLink[];
+  next?: string[];
+};
+
+const faqAnswer = (start: string) =>
+  servicesPage.faq.find((f) => f.q.startsWith(start))?.a ?? "";
+const whatsappWith = (text: string) => `${contact.whatsappHref}?text=${encodeURIComponent(text)}`;
+const talkLinks: ChatLink[] = [
+  { label: "Message on WhatsApp", href: whatsappWith("Hi Navodya, I found Deepframe Studio's website and have a question."), external: true },
+  { label: "Send an enquiry", href: "/contact/" },
+];
+
+export const chatbot = {
+  launcher: "Ask a question",
+  title: "Ask Deepframe",
+  status: "Quick answers, any time",
+  close: "Close chat",
+  greeting: `Hi! I'm the ${business.name} helper. Pick a topic below or type your question — I'll answer straight away.`,
+  inputLabel: "Type your question",
+  inputPlaceholder: "Type your question…",
+  send: "Send",
+  menuLabel: "Show all topics",
+  notSure: `I'm not sure about that one — but ${business.ownerName.split(" ")[0]} can help. Send a quick message and you'll get a real answer.`,
+  // the first buttons a visitor sees
+  start: ["services", "price", "time", "process", "work", "human"],
+  // the buttons behind "Show all topics"
+  menu: ["services", "price", "time", "process", "nontech", "existing", "edit", "speed", "work", "about", "human"],
+  topics: [
+    {
+      id: "services",
+      ask: "What do you offer?",
+      keywords: ["offer", "service", "services", "package", "packages", "do you do", "build", "make", "website", "site", "help"],
+      answer: "There are four ways to work together. Tap one to learn more:",
+      list: services.map((s) => ({ label: s.name, note: s.short, href: `/services/#${s.slug}` })),
+      next: services.map((s) => s.slug),
+    },
+    ...services.map((s) => ({
+      id: s.slug,
+      ask: s.name,
+      keywords: [s.name.toLowerCase(), ...s.name.toLowerCase().split(" ")],
+      answer: `${s.plain} Good for: ${s.goodFor}`,
+      links: [{ label: `Read more about ${s.name}`, href: `/services/#${s.slug}` }],
+      next: ["price", "time", "services"],
+    })),
+    {
+      id: "price",
+      ask: "How much does it cost?",
+      keywords: ["cost", "price", "pricing", "how much", "budget", "quote", "rate", "fee", "charge", "expensive", "cheap", "lkr", "rs", "$"],
+      answer: faqAnswer("How much"),
+      links: talkLinks,
+      next: ["time", "process"],
+    },
+    {
+      id: "time",
+      ask: "How long does it take?",
+      keywords: ["how long", "time", "timeline", "weeks", "days", "deadline", "fast", "quick", "when", "ready"],
+      answer: faqAnswer("How long"),
+      next: ["process", "price"],
+    },
+    {
+      id: "process",
+      ask: "How do you work?",
+      keywords: ["process", "how do you work", "steps", "step", "start", "begin", "work together", "method"],
+      answer: "Five simple steps, and you always know what comes next:",
+      list: steps.map((s, i) => ({ label: `${i + 1}. ${s.title}`, note: s.yourPart })),
+      links: [{ label: "See every step", href: "/services/#how-we-work" }],
+      next: ["nontech", "price", "human"],
+    },
+    {
+      id: "nontech",
+      ask: "I'm not technical — is that OK?",
+      keywords: ["technical", "tech", "know anything", "beginner", "computer", "jargon", "understand"],
+      answer: faqAnswer("Do I need"),
+      next: ["edit", "process"],
+    },
+    {
+      id: "existing",
+      ask: "I already have a website",
+      keywords: ["already have", "existing", "current site", "current website", "redesign", "rebuild", "old site", "upgrade"],
+      answer: faqAnswer("I already have"),
+      links: [{ label: "About the Motion Upgrade", href: "/services/#motion-upgrade" }],
+      next: ["price", "time"],
+    },
+    {
+      id: "edit",
+      ask: "Can I change things later?",
+      keywords: ["change", "edit", "update", "myself", "later", "maintain", "maintenance", "hosting", "support", "care"],
+      answer: faqAnswer("Can I change"),
+      links: [{ label: "About the Care Plan", href: "/services/#care-plan" }],
+      next: ["price", "services"],
+    },
+    {
+      id: "speed",
+      ask: "Will animation slow my site?",
+      keywords: ["slow", "speed", "animation", "motion", "phone", "mobile", "load", "performance"],
+      answer: faqAnswer("Will all this"),
+      next: ["services", "work"],
+    },
+    {
+      id: "work",
+      ask: "Can I see examples?",
+      keywords: ["example", "examples", "portfolio", "work", "projects", "samples", "previous", "clients", "show me"],
+      answer: `${projectsNote} They show the kind of story each business could tell.`,
+      list: projects.map((p) => ({ label: p.name, note: p.kind })),
+      links: [{ label: "See the concept projects", href: "/work/" }],
+      next: ["services", "about"],
+    },
+    {
+      id: "about",
+      ask: "Who is behind Deepframe?",
+      keywords: ["who", "about", "owner", "founder", "navodya", "team", "where", "location", "based", "sri lanka", "malabe"],
+      answer: `${business.name} is run by ${business.ownerName}, based in ${business.location}. ${aboutPage.lead}`,
+      links: [{ label: "Read the story", href: "/about/" }],
+      next: ["process", "human"],
+    },
+    {
+      id: "human",
+      ask: "Talk to a person",
+      keywords: ["contact", "talk", "call", "phone", "email", "whatsapp", "message", "person", "human", "reach", "hello", "hi", "number", "hours"],
+      answer: `You can reach ${business.ownerName.split(" ")[0]} directly. Hours: ${contact.hours}.`,
+      list: [
+        { label: "WhatsApp", note: contact.whatsapp, href: whatsappWith("Hi Navodya, I found Deepframe Studio's website and have a question.") },
+        { label: "Phone", note: contact.phone, href: contact.phoneHref },
+        { label: "Email", note: contact.email, href: `mailto:${contact.email}` },
+      ],
+      links: [{ label: "Send an enquiry", href: "/contact/" }],
+      next: ["price", "process"],
+    },
+  ] satisfies ChatTopic[],
+  fallbackLinks: talkLinks,
+};
+
+/* --------------------------------------------------------------------------
    FOOTER & misc
    -------------------------------------------------------------------------- */
 export const footer = {

@@ -1,0 +1,501 @@
+---
+/**
+ * CHAT HELPER — a scripted "Ask a question" bubble on every page.
+ * No AI and no server: answers come from `chatbot` in src/content/site.ts.
+ * The element persists across page changes (transition:persist), so an open
+ * conversation stays open while the visitor follows a link.
+ */
+import { chatbot as c, business } from "@/content/site";
+
+const data = JSON.stringify({
+  greeting: c.greeting,
+  notSure: c.notSure,
+  menuLabel: c.menuLabel,
+  start: c.start,
+  menu: c.menu,
+  topics: c.topics,
+  fallbackLinks: c.fallbackLinks,
+});
+---
+<div class="chat" data-chat transition:persist="chat-helper">
+  <button type="button" class="chat-launcher" data-chat-toggle aria-expanded="false" aria-controls="chat-panel">
+    <svg class="chat-icon chat-icon-open" viewBox="0 0 32 32" aria-hidden="true">
+      <path d="M6 7.5C6 6.1 7.1 5 8.5 5h15C24.9 5 26 6.1 26 7.5v11c0 1.4-1.1 2.5-2.5 2.5H14l-5.5 5v-5h0C7.1 21 6 19.9 6 18.5z" fill="currentColor" />
+      <circle cx="11.5" cy="13" r="1.6" fill="var(--color-clay)" />
+      <circle cx="16" cy="13" r="1.6" fill="var(--color-clay)" />
+      <circle cx="20.5" cy="13" r="1.6" fill="var(--color-clay)" />
+    </svg>
+    <svg class="chat-icon chat-icon-close" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none" />
+    </svg>
+    <span class="chat-launcher-label">{c.launcher}</span>
+  </button>
+
+  <section id="chat-panel" class="chat-panel" role="dialog" aria-labelledby="chat-title" data-chat-panel hidden>
+    <header class="chat-head">
+      <span class="chat-avatar" aria-hidden="true">{business.shortName.charAt(0)}</span>
+      <div class="min-w-0">
+        <h2 id="chat-title" class="chat-title">{c.title}</h2>
+        <p class="chat-status">{c.status}</p>
+      </div>
+      <button type="button" class="chat-close" data-chat-close aria-label={c.close}>
+        <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none" /></svg>
+      </button>
+    </header>
+
+    <div class="chat-log" role="log" aria-live="polite" data-chat-log data-lenis-prevent tabindex="-1"></div>
+
+    <form class="chat-form" data-chat-form>
+      <label for="chat-input" class="sr-only">{c.inputLabel}</label>
+      <input id="chat-input" name="q" type="text" autocomplete="off" maxlength="200" placeholder={c.inputPlaceholder} data-chat-input />
+      <button type="submit" class="chat-send" aria-label={c.send}>
+        <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
+      </button>
+    </form>
+  </section>
+
+  <script is:inline type="application/json" data-chat-data set:html={data} />
+</div>
+
+<style>
+  .chat {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    z-index: 50; /* under the header (60), the mobile menu (55) and the page curtain (80) */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.75rem;
+    pointer-events: none;
+  }
+  .chat > * { pointer-events: auto; }
+
+  /* ---- Launcher: a clay paper tab ---- */
+  .chat-launcher {
+    order: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    height: 3.5rem;
+    min-width: 3.5rem;
+    justify-content: center;
+    padding: 0 1rem;
+    border-radius: 999px;
+    background: var(--color-clay);
+    color: var(--color-paper);
+    font-weight: 700;
+    box-shadow: var(--shadow-lift);
+    cursor: pointer;
+    transition: background-color 0.25s var(--ease-paper), transform 0.35s var(--ease-paper);
+  }
+  .chat-launcher:hover { background: var(--color-clay-deep); }
+  :global(html.motion) .chat-launcher:hover { transform: translateY(-3px) rotate(-2deg); }
+  .chat-icon { width: 1.6rem; height: 1.6rem; flex-shrink: 0; }
+  .chat-icon-close { display: none; width: 1.35rem; height: 1.35rem; }
+  .chat-launcher[aria-expanded="true"] .chat-icon-open { display: none; }
+  .chat-launcher[aria-expanded="true"] .chat-icon-close { display: block; }
+  .chat-launcher-label { display: none; }
+  @media (min-width: 640px) {
+    .chat-launcher { padding: 0 1.35rem 0 1.1rem; }
+    .chat-launcher-label { display: inline; }
+    .chat-launcher[aria-expanded="true"] { padding: 0 1rem; }
+    .chat-launcher[aria-expanded="true"] .chat-launcher-label { display: none; }
+  }
+
+  /* ---- Panel: a sheet of paper ---- */
+  .chat-panel {
+    order: 1;
+    display: flex;
+    flex-direction: column;
+    width: min(24rem, calc(100vw - 2rem));
+    height: min(36rem, calc(100svh - var(--spacing-header) - 6.5rem));
+    overflow: hidden;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    border-radius: 0.9rem;
+    box-shadow: var(--shadow-lift), 0 0 0 1px rgb(30 26 21 / 0.08);
+    transform-origin: 100% 100%;
+  }
+  .chat-panel[hidden] { display: none; }
+  :global(html.motion) .chat-panel { animation: chat-open 0.4s var(--ease-paper); }
+  @keyframes chat-open {
+    from { opacity: 0; transform: translateY(16px) scale(0.96) rotate(1deg); }
+  }
+
+  .chat-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 0.9rem 0.9rem 1rem;
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .chat-avatar {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    background: var(--color-marigold);
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  .chat-title { font-size: 1.05rem; font-weight: 800; line-height: 1.2; }
+  .chat-status { font-size: 0.78rem; opacity: 0.72; }
+  .chat-close {
+    margin-left: auto;
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .chat-close:hover { background: rgb(245 238 226 / 0.14); }
+
+  .chat-log {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    background: var(--color-paper-deep);
+  }
+  .chat-log:focus { outline: none; }
+
+  .chat-form {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.7rem;
+    border-top: 1px solid rgb(30 26 21 / 0.1);
+    background: var(--color-paper);
+  }
+  .chat-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.65rem 0.9rem;
+    border-radius: 999px;
+    border: 2px solid var(--color-paper-shade);
+    background: #fffaf2;
+    font-size: 1rem; /* 16px stops phones from zooming in */
+  }
+  .chat-form input:focus { border-color: var(--color-clay); outline: none; }
+  .chat-send {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--color-clay);
+    color: var(--color-paper);
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .chat-send:hover { background: var(--color-clay-deep); }
+
+  /* ---- Messages (built by the script, so styled globally inside .chat) ---- */
+  .chat :global(.msg) {
+    max-width: 88%;
+    padding: 0.7rem 0.9rem;
+    border-radius: 0.9rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .chat :global(.msg-bot) {
+    align-self: flex-start;
+    background: var(--color-paper);
+    border-bottom-left-radius: 0.25rem;
+    box-shadow: var(--shadow-dull);
+  }
+  .chat :global(.msg-user) {
+    align-self: flex-end;
+    background: var(--color-sea);
+    color: var(--color-paper);
+    border-bottom-right-radius: 0.25rem;
+  }
+  :global(html.motion) .chat :global(.msg) { animation: chat-msg 0.35s var(--ease-paper); }
+  @keyframes chat-msg {
+    from { opacity: 0; transform: translateY(8px); }
+  }
+
+  .chat :global(.msg-list) { margin-top: 0.5rem; display: grid; gap: 0.35rem; }
+  .chat :global(.msg-list li) { line-height: 1.35; }
+  .chat :global(.msg-list b) { font-weight: 700; }
+  .chat :global(.msg-list span) { display: block; font-size: 0.85rem; color: var(--color-ink-soft); }
+  .chat :global(.msg a) {
+    color: var(--color-clay-deep);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .chat :global(.msg a:hover) { color: var(--color-clay); }
+  .chat :global(.msg-links) { margin-top: 0.6rem; display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; }
+
+  .chat :global(.chips) { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .chat :global(.chip) {
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    border: 2px solid var(--color-clay);
+    background: var(--color-paper);
+    color: var(--color-clay-deep);
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .chat :global(.chip:hover) { background: var(--color-clay); color: var(--color-paper); }
+  .chat :global(.chip-quiet) { border-color: var(--color-paper-shade); color: var(--color-ink-soft); }
+
+  .chat :global(.typing) { display: inline-flex; gap: 0.3rem; padding: 0.85rem 1rem; }
+  .chat :global(.typing i) {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--color-ink-soft);
+    animation: chat-dot 0.9s ease-in-out infinite;
+  }
+  .chat :global(.typing i:nth-child(2)) { animation-delay: 0.15s; }
+  .chat :global(.typing i:nth-child(3)) { animation-delay: 0.3s; }
+  @keyframes chat-dot {
+    0%, 100% { transform: translateY(0); opacity: 0.4; }
+    50% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  /* Phones: the panel becomes a full-width sheet */
+  @media (max-width: 639px) {
+    .chat { left: 0.75rem; right: 0.75rem; bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+    .chat-panel { width: 100%; height: min(34rem, calc(100svh - var(--spacing-header) - 5.5rem)); }
+  }
+</style>
+
+<script>
+  import type { ChatTopic, ChatLink } from "@/content/site";
+
+  type ChatData = {
+    greeting: string;
+    notSure: string;
+    menuLabel: string;
+    start: string[];
+    menu: string[];
+    topics: ChatTopic[];
+    fallbackLinks: ChatLink[];
+  };
+
+  function setup() {
+    const root = document.querySelector<HTMLElement>("[data-chat]");
+    if (!root || root.dataset.ready) return;
+    root.dataset.ready = "1";
+
+    const data = JSON.parse(root.querySelector("[data-chat-data]")!.textContent || "{}") as ChatData;
+    const toggle = root.querySelector<HTMLButtonElement>("[data-chat-toggle]")!;
+    const panel = root.querySelector<HTMLElement>("[data-chat-panel]")!;
+    const log = root.querySelector<HTMLElement>("[data-chat-log]")!;
+    const form = root.querySelector<HTMLFormElement>("[data-chat-form]")!;
+    const input = root.querySelector<HTMLInputElement>("[data-chat-input]")!;
+    const byId = new Map(data.topics.map((t) => [t.id, t]));
+    let started = false;
+    let busy = false;
+
+    const motion = () => document.documentElement.classList.contains("motion");
+    const scrollDown = () => log.scrollTo({ top: log.scrollHeight, behavior: motion() ? "smooth" : "auto" });
+
+    function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string) {
+      const node = document.createElement(tag);
+      if (cls) node.className = cls;
+      if (text) node.textContent = text;
+      return node;
+    }
+
+    function linkEl(l: { label: string; href: string; external?: boolean }) {
+      const a = el("a", "", l.label);
+      a.href = l.href;
+      if (l.external || /^https?:/.test(l.href)) {
+        a.target = "_blank";
+        a.rel = "noopener";
+      }
+      return a;
+    }
+
+    function botMessage(text: string, extra?: Pick<ChatTopic, "list" | "links">) {
+      const msg = el("div", "msg msg-bot");
+      msg.append(el("p", "", text));
+      if (extra?.list?.length) {
+        const ul = el("ul", "msg-list");
+        for (const item of extra.list) {
+          const li = el("li");
+          const label = item.href ? linkEl({ label: item.label, href: item.href }) : el("b", "", item.label);
+          li.append(label);
+          if (item.note) li.append(el("span", "", item.note));
+          ul.append(li);
+        }
+        msg.append(ul);
+      }
+      if (extra?.links?.length) {
+        const row = el("p", "msg-links");
+        extra.links.forEach((l) => row.append(linkEl(l)));
+        msg.append(row);
+      }
+      log.append(msg);
+    }
+
+    function chips(ids: string[], withMenu = true) {
+      const row = el("div", "chips");
+      for (const id of ids) {
+        const t = byId.get(id);
+        if (!t) continue;
+        const b = el("button", "chip", t.ask);
+        b.type = "button";
+        b.dataset.topic = t.id;
+        row.append(b);
+      }
+      if (withMenu) {
+        const m = el("button", "chip chip-quiet", data.menuLabel);
+        m.type = "button";
+        m.dataset.menu = "";
+        row.append(m);
+      }
+      log.append(row);
+    }
+
+    function clearChips() {
+      log.querySelectorAll(".chips").forEach((c) => c.remove());
+    }
+
+    /** Show the dots for a moment, then the reply (instant without motion). */
+    function reply(render: () => void) {
+      busy = true;
+      clearChips();
+      const finish = () => {
+        typing?.remove();
+        render();
+        busy = false;
+        scrollDown();
+      };
+      let typing: HTMLElement | null = null;
+      if (!motion()) return finish();
+      typing = el("div", "msg msg-bot typing");
+      typing.setAttribute("aria-hidden", "true");
+      typing.append(el("i"), el("i"), el("i"));
+      log.append(typing);
+      scrollDown();
+      setTimeout(finish, 550);
+    }
+
+    function answer(topic: ChatTopic) {
+      reply(() => {
+        botMessage(topic.answer, topic);
+        chips(topic.next ?? data.start);
+      });
+    }
+
+    function userMessage(text: string) {
+      log.append(el("div", "msg msg-user", text));
+      scrollDown();
+    }
+
+    /** Pick the topic whose keywords best match the visitor's words. */
+    function match(text: string): ChatTopic | null {
+      const norm = ` ${text.toLowerCase().replace(/[^a-z0-9$]+/g, " ").trim()} `;
+      let best: ChatTopic | null = null;
+      let bestScore = 0;
+      for (const t of data.topics) {
+        let score = 0;
+        for (const kw of t.keywords) {
+          const k = kw.toLowerCase().replace(/[^a-z0-9$]+/g, " ").trim();
+          if (k && norm.includes(` ${k} `)) score += k.includes(" ") ? 2 : 1;
+        }
+        if (score > bestScore) {
+          best = t;
+          bestScore = score;
+        }
+      }
+      return best;
+    }
+
+    function start() {
+      if (started) return;
+      started = true;
+      botMessage(data.greeting);
+      chips(data.start, false);
+    }
+
+    function open() {
+      panel.hidden = false;
+      toggle.setAttribute("aria-expanded", "true");
+      start();
+      // a hidden panel loses its scroll position: jump straight to the latest message
+      log.scrollTop = log.scrollHeight;
+      // don't pop the phone keyboard up over the answers
+      if (window.matchMedia("(pointer: fine)").matches) input.focus({ preventScroll: true });
+      else log.focus({ preventScroll: true });
+    }
+
+    function close(returnFocus = true) {
+      panel.hidden = true;
+      toggle.setAttribute("aria-expanded", "false");
+      if (returnFocus) toggle.focus();
+    }
+
+    // moving the persisted chat into the new page resets its scroll position
+    document.addEventListener("astro:after-swap", () => (log.scrollTop = log.scrollHeight));
+
+    toggle.addEventListener("click", () => (panel.hidden ? open() : close()));
+    root.querySelector("[data-chat-close]")!.addEventListener("click", () => close());
+    // listen on the document: after following a link, focus is outside the chat
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !panel.hidden) close(root.contains(document.activeElement));
+    });
+
+    log.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      const chip = target.closest<HTMLButtonElement>(".chip");
+      if (chip && !busy) {
+        if (chip.dataset.menu !== undefined) {
+          userMessage(chip.textContent || "");
+          reply(() => chips(data.menu, false));
+          return;
+        }
+        const topic = byId.get(chip.dataset.topic || "");
+        if (topic) {
+          userMessage(topic.ask);
+          answer(topic);
+        }
+        return;
+      }
+      // Following a link on this site: close the panel so the page is visible.
+      // The conversation is kept for when the visitor opens it again.
+      const link = target.closest("a");
+      if (link && link.target !== "_blank" && !/^(mailto|tel):/.test(link.getAttribute("href") || "")) close(false);
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text || busy) return;
+      input.value = "";
+      userMessage(text);
+      const topic = match(text);
+      if (topic) answer(topic);
+      else
+        reply(() => {
+          botMessage(data.notSure, { links: data.fallbackLinks });
+          chips(data.start);
+        });
+    });
+  }
+
+  setup();
+  document.addEventListener("astro:page-load", setup);
+</script>
