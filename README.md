@@ -1,4 +1,4 @@
-# Deepframe Studio — website
+# Depthwyn — website
 
 A story-driven studio site built with Astro, Tailwind CSS, GSAP (ScrollTrigger) and Lenis.
 

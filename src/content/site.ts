@@ -17,8 +17,8 @@ import shotPetal from "../assets/placeholders/screenshot-petal-and-stem.svg";
    Business basics
    -------------------------------------------------------------------------- */
 export const business = {
-  name: "Deepframe Studio",
-  shortName: "Deepframe",
+  name: "Depthwyn",
+  shortName: "Depthwyn",
   tagline: "Websites that tell your story.",
   location: "Malabe, Sri Lanka",
   ownerName: "Navodya Manamendra",
@@ -66,32 +66,32 @@ export const cta = {
    -------------------------------------------------------------------------- */
 export const meta = {
   home: {
-    title: "Deepframe Studio — Websites that tell your story",
+    title: "Depthwyn — Websites that tell your story",
     description:
       "Web design for cafes, clinics, salons, hotels and shops. I turn plain, forgettable websites into story-driven sites that make visitors want to visit you.",
   },
   work: {
-    title: "Work — Four concept projects | Deepframe Studio",
+    title: "Work — Four concept projects | Depthwyn",
     description:
       "See how a plain website becomes a story: concept projects for a cafe, a dental clinic, a surf hotel and a florist, each shown before and after.",
   },
   services: {
-    title: "Services — Launch Page, Business Site, Motion Upgrade, Care Plan | Deepframe Studio",
+    title: "Services — Launch Page, Business Site, Motion Upgrade, Care Plan | Depthwyn",
     description:
       "Four simple ways to get a website that tells your story, explained in plain words: what you get, who it suits, and what happens next.",
   },
   about: {
-    title: "About — The person behind Deepframe Studio",
+    title: "About — The person behind Depthwyn",
     description:
       "Why I build story-driven websites for local businesses, and how I keep the whole process simple for busy owners.",
   },
   contact: {
-    title: "Contact — Start your project | Deepframe Studio",
+    title: "Contact — Start your project | Depthwyn",
     description:
       "Tell me about your business and I'll reply with simple next steps. Email, phone, WhatsApp or the short form — whatever is easiest for you.",
   },
   notFound: {
-    title: "Page not found | Deepframe Studio",
+    title: "Page not found | Depthwyn",
     description: "This page has folded away. Let's get you back to the story.",
   },
 };
@@ -466,10 +466,10 @@ export const aboutPage = {
   headline: "Hi, I'm *Navodya.*",
   lead: "I build websites that feel like walking into your business.",
   portrait,
-  portraitAlt: "Portrait of Navodya Manamendra, founder of Deepframe Studio",
+  portraitAlt: "Portrait of Navodya Manamendra, founder of Depthwyn",
   portraitLabel: "Navodya Manamendra · Malabe, Sri Lanka",
   story: [
-    "I started Deepframe because I kept seeing wonderful local businesses hidden behind plain websites. The coffee was great, the clinic was kind, the hotel had the best view on the coast — but the website said none of it.",
+    "I started Depthwyn because I kept seeing wonderful local businesses hidden behind plain websites. The coffee was great, the clinic was kind, the hotel had the best view on the coast — but the website said none of it.",
     "Most websites are built like forms: a logo, a photo, a button. I build them like stories. Each scroll answers a question your customer is already asking, until they feel ready to visit, call or book.",
     "I keep the process simple, because you have a business to run. You'll always know what's happening, what I need from you, and what comes next.",
   ],
@@ -553,13 +553,13 @@ const faqAnswer = (start: string) =>
   servicesPage.faq.find((f) => f.q.startsWith(start))?.a ?? "";
 const whatsappWith = (text: string) => `${contact.whatsappHref}?text=${encodeURIComponent(text)}`;
 const talkLinks: ChatLink[] = [
-  { label: "Message on WhatsApp", href: whatsappWith("Hi Navodya, I found Deepframe Studio's website and have a question."), external: true },
+  { label: "Message on WhatsApp", href: whatsappWith("Hi Navodya, I found Depthwyn's website and have a question."), external: true },
   { label: "Send an enquiry", href: "/contact/" },
 ];
 
 export const chatbot = {
   launcher: "Ask a question",
-  title: "Ask Deepframe",
+  title: "Ask Depthwyn",
   status: "Quick answers, any time",
   close: "Close chat",
   greeting: `Hi! I'm the ${business.name} helper. Pick a topic below or type your question — I'll answer straight away.`,
@@ -654,7 +654,7 @@ export const chatbot = {
     },
     {
       id: "about",
-      ask: "Who is behind Deepframe?",
+      ask: "Who is behind Depthwyn?",
       keywords: ["who", "about", "owner", "founder", "navodya", "team", "where", "location", "based", "sri lanka", "malabe"],
       answer: `${business.name} is run by ${business.ownerName}, based in ${business.location}. ${aboutPage.lead}`,
       links: [{ label: "Read the story", href: "/about/" }],
@@ -666,7 +666,7 @@ export const chatbot = {
       keywords: ["contact", "talk", "call", "phone", "email", "whatsapp", "message", "person", "human", "reach", "hello", "hi", "number", "hours"],
       answer: `You can reach ${business.ownerName.split(" ")[0]} directly. Hours: ${contact.hours}.`,
       list: [
-        { label: "WhatsApp", note: contact.whatsapp, href: whatsappWith("Hi Navodya, I found Deepframe Studio's website and have a question.") },
+        { label: "WhatsApp", note: contact.whatsapp, href: whatsappWith("Hi Navodya, I found Depthwyn's website and have a question.") },
         { label: "Phone", note: contact.phone, href: contact.phoneHref },
         { label: "Email", note: contact.email, href: `mailto:${contact.email}` },
       ],
