@@ -46,6 +46,18 @@ The "Ask a question" bubble in the corner of every page is a scripted helper. It
 
 The component is `src/components/ChatHelper.astro`. It keeps the conversation while visitors move between pages.
 
+## The logo
+
+The Depthwyn mark is a dark rounded tile holding a split "D": a cream bar and a marigold-to-clay curve.
+
+- On the site it's `src/components/ui/Logo.astro`. Use `tone="paper"` on dark backgrounds.
+- Ready-made files are in `public/`:
+  - `logo.svg`: for light backgrounds
+  - `logo-light.svg`: for dark backgrounds
+  - `logo-square.svg` and `logo-512.png`: square versions for social media profile pictures and link previews
+  - `apple-touch-icon.png`: the icon when someone adds the site to their phone's home screen
+  - `favicon.svg`: the browser-tab icon
+
 ## Replace the image placeholders
 
 Placeholders live in `src/assets/placeholders/`:

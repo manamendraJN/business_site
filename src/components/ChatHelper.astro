@@ -5,7 +5,8 @@
  * The element persists across page changes (transition:persist), so an open
  * conversation stays open while the visitor follows a link.
  */
-import { chatbot as c, business } from "@/content/site";
+import Logo from "./ui/Logo.astro";
+import { chatbot as c } from "@/content/site";
 
 const data = JSON.stringify({
   greeting: c.greeting,
@@ -33,7 +34,7 @@ const data = JSON.stringify({
 
   <section id="chat-panel" class="chat-panel" role="dialog" aria-labelledby="chat-title" data-chat-panel hidden>
     <header class="chat-head">
-      <span class="chat-avatar" aria-hidden="true">{business.shortName.charAt(0)}</span>
+      <Logo tone="paper" class="chat-avatar" />
       <div class="min-w-0">
         <h2 id="chat-title" class="chat-title">{c.title}</h2>
         <p class="chat-status">{c.status}</p>
@@ -131,19 +132,13 @@ const data = JSON.stringify({
     background: var(--color-ink);
     color: var(--color-paper);
   }
-  .chat-avatar {
+  .chat :global(.chat-avatar) {
     display: grid;
     place-items: center;
     flex-shrink: 0;
     width: 2.4rem;
     height: 2.4rem;
-    border-radius: 50%;
-    background: var(--color-marigold);
-    color: var(--color-ink);
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-size: 1.5rem;
-    line-height: 1;
+
   }
   .chat-title { font-size: 1.05rem; font-weight: 800; line-height: 1.2; }
   .chat-status { font-size: 0.78rem; opacity: 0.72; }

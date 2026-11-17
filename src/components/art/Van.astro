@@ -1,4 +1,5 @@
 ---
+import Logo from "../ui/Logo.astro";
 /**
  * The delivery van, seen from behind as it drives up the road, carrying the
  * client's new website (a browser-window parcel tied to the roof).
@@ -32,12 +33,8 @@
     <rect x="6" y="-86" width="40" height="26" rx="5" fill="var(--color-sea-deep)" />
     <path d="M-40 -82 l12 0 l-16 18 l0 -12 z" fill="var(--color-dawn)" opacity="0.35" />
     <path d="M0 -92 V-18" stroke="var(--color-sea-deep)" stroke-width="2.5" />
-    <!-- studio mark on the back doors -->
-    <g transform="translate(-9 -54) scale(0.55)">
-      <path d="M4 26V8l12-4v18z" fill="var(--color-paper-shade)" />
-      <path d="M16 22V4l12 4v18z" fill="var(--color-clay)" />
-      <path d="M4 26l12-4 12 4-12 4z" fill="var(--color-ink)" />
-    </g>
+    <!-- Depthwyn mark on the back doors -->
+    <Logo tone="paper" x="-10" y="-56" width="20" height="20" />
     <rect x="-56" y="-46" width="9" height="16" rx="3" fill="var(--color-clay)" />
     <rect x="47" y="-46" width="9" height="16" rx="3" fill="var(--color-clay)" />
     <rect x="-62" y="-24" width="124" height="10" rx="5" fill="var(--color-ink-soft)" />

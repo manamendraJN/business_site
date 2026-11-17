@@ -1,4 +1,5 @@
 ---
+import Logo from "@/components/ui/Logo.astro";
 import TornEdge from "./ui/TornEdge.astro";
 import { business, nav, contact, footer, cta } from "@/content/site";
 ---
@@ -7,7 +8,7 @@ import { business, nav, contact, footer, cta } from "@/content/site";
   <div class="grid gap-12 px-gutter pt-20 pb-10 md:grid-cols-12">
     <div class="md:col-span-6">
       <p class="text-big font-extrabold tracking-tight">
-        {business.shortName}<span class="text-marigold">.</span>
+        <Logo tone="paper" class="mr-[0.2em] inline-block h-[0.85em] w-[0.85em] align-[-0.08em]" />{business.shortName}<span class="text-marigold">.</span>
       </p>
       <p class="mt-4 max-w-[42ch] text-paper-deep">{footer.line}</p>
       <a href={cta.href} class="btn-cta mt-8">{cta.label}</a>

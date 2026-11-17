@@ -3,6 +3,7 @@
  * Header: paper index tabs hanging from the top edge, like the tabs of a
  * notebook. Every page and the call to action stay one tap away.
  */
+import Logo from "@/components/ui/Logo.astro";
 import { business, nav, cta, contact } from "@/content/site";
 
 interface Props {
@@ -13,11 +14,7 @@ const isActive = (href: string) => (href === "/" ? current === "/" : current.sta
 ---
 <header class="site-header" data-header>
   <a href="/" class="tab tab-logo" aria-label={`${business.name} — home`}>
-    <svg viewBox="0 0 32 32" class="h-6 w-6" aria-hidden="true">
-      <path d="M4 26V8l12-4v18z" fill="var(--color-paper-shade)" />
-      <path d="M16 22V4l12 4v18z" fill="var(--color-clay)" />
-      <path d="M4 26l12-4 12 4-12 4z" fill="var(--color-ink)" />
-    </svg>
+    <Logo class="h-7 w-7" />
     <span class="font-extrabold tracking-tight">{business.shortName}</span>
   </a>
 

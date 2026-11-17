@@ -1,0 +1,44 @@
+---
+/**
+ * The Depthwyn mark: a dark rounded tile holding a split "D" — a cream bar
+ * and a marigold-to-clay curve, with a precise gap between them.
+ *
+ * tone="ink"   → for light backgrounds (default)
+ * tone="paper" → for dark backgrounds: the tile is a shade lighter with a
+ *                faint edge, so it doesn't disappear into the page
+ * Pass `title` when the logo stands alone and needs a name for screen readers;
+ * otherwise it is hidden from them (the text next to it says the name).
+ */
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"svg"> {
+  tone?: "ink" | "paper";
+  title?: string;
+}
+const { tone = "ink", title, ...rest } = Astro.props;
+// unique per instance: several logos can sit on the same page
+const grad = `logo-grad-${Math.random().toString(36).slice(2, 8)}`;
+const onDark = tone === "paper";
+---
+<svg
+  viewBox="0 0 64 64"
+  role={title ? "img" : undefined}
+  aria-label={title}
+  aria-hidden={title ? undefined : "true"}
+  {...rest}
+>
+  <defs>
+    <linearGradient id={grad} x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="var(--color-marigold)" />
+      <stop offset="1" stop-color="var(--color-clay)" />
+    </linearGradient>
+  </defs>
+  <rect
+    x="4" y="4" width="56" height="56" rx="15"
+    fill={onDark ? "#2c2620" : "var(--color-ink)"}
+    stroke={onDark ? "rgb(245 238 226 / 0.14)" : "none"}
+    stroke-width="1.5"
+  />
+  <rect x="17" y="17" width="8" height="30" rx="2" fill="var(--color-paper)" />
+  <path d="M30 21H33A11 11 0 0 1 33 43H30" fill="none" stroke={`url(#${grad})`} stroke-width="8" stroke-linecap="square" />
+</svg>

@@ -1,0 +1,256 @@
+Build a complete website for this business as an Astro project.
+
+BUSINESS
+- Name: Tide House
+- Type of business: small surf hotel by the beach
+- Location: [Weligama], Sri Lanka
+- What they sell / offer:
+  1. Sea-view rooms with a balcony
+  2. Surf lessons and board hire for every level
+  3. The beach cafe: slow breakfasts and lunches
+  4. A sunset yoga deck
+  5. Airport pick-up
+- Target customers: young travellers and surfers, couples, and remote
+  workers who want a slower week by the sea
+- Mood: relaxed, sun-warmed, free and easy
+- Brand colours: you choose, from one day at the coast: deep sea teal,
+  sand, sunrise coral, sunset marigold and night blue
+- Logo: design one
+- Contact details: use clearly marked placeholders (phone, WhatsApp, email,
+  address, check-in times)
+- Product photos: use placeholders (the rooms, the balcony view, the
+  cafe, surf lessons)
+- Pages: Home, Rooms, Surf, The Day (things to do), Book
+- Real client or concept: concept project for my portfolio
+
+STORYLINE (this comes before design and before animation)
+The visitor is someone tired of city life, scrolling hotels on their phone
+and dreaming of the sea. The site must tell them one story as they scroll,
+and the story must make them want to book a stay.
+
+- What the customer wants or worries about: to really switch off. They
+  worry the hotel will look nothing like the photos, or feel like every
+  other hotel on the coast.
+- What makes this business special: it is small and right on the beach.
+  The day is shaped by the tide, and the surf teachers are locals who know
+  every wave.
+- The feeling the customer should have at the end: "I can already feel
+  that day. I want to wake up there."
+- The big idea: one perfect day at Tide House, from first light to the
+  stars.
+
+Build the story in these beats, one scroll scene each:
+1. The hook: just before dawn. A dark sea and a quiet horizon, with the
+   city far behind. The headline: "Wake up to the waves."
+2. The turn: first light. The sun lifts over the water, and the waves roll
+   in as you scroll.
+3. The proof: the day itself, as a horizontal scroll from sunrise to
+   sunset: a morning surf, a slow lunch, a sunset from the balcony. Each
+   part has a photo placeholder, plus sample guest notes labelled
+   "Sample".
+4. The offer: the rooms and surf packages, each framed by the balcony view,
+   with prices as [placeholders].
+5. The ease: book in three steps: choose your dates, we confirm on
+   WhatsApp, we pick you up at the airport.
+6. The invitation: night falls and the stars come out. "Book your
+   sunrise", with a dates enquiry form and a WhatsApp button.
+
+VISUAL CONCEPT
+The sun's path across one day: scrolling moves the sun across the sky, and
+the whole site's light and colour shift from dawn blue to midday sand to
+sunset gold to night.
+
+SIGNATURE MOMENT
+Scrolling drives the sun across the sky in the horizontal day section,
+while three layers of waves roll in at different speeds and the light on
+everything changes with the hour.
+
+DEPTH LAYERS FOR THE HERO
+- Background: the sky, which changes with the time of day, and the sun
+- Far: the horizon and a distant headland
+- Middle: three layers of rolling waves moving at different speeds
+- Near: warm sand and palm silhouettes
+- Foreground: the balcony railing and a surfboard leaning on it, passing
+  the viewer as the scene moves forward
+
+Before building, write back to me:
+- the storyline as a short scene list: for each scene give the message,
+  what the visitor sees, and what motion carries it;
+- the visual concept in one sentence;
+- the signature moment in one sentence.
+Then build it.
+
+CONCEPT PROJECT FOR MY PORTFOLIO
+- This is a concept project for my web studio, Depthwyn. The business is
+  fictional, and the site exists to show what I can build.
+- Add a small, tasteful note in the footer: "Concept project designed by
+  Depthwyn. Not a real business." Link "Depthwyn" to [my Depthwyn website
+  address].
+- Every phone number, email, address, price and review must be an obvious
+  [placeholder] or labelled "Sample". Never use real-looking phone numbers
+  or addresses.
+- When you finish, also save a 1600 x 1000 screenshot of the Home hero at
+  its most beautiful scroll position as /screenshot.png. It goes on my
+  portfolio's Work page.
+
+KEEP THE HOME PAGE SHORT
+- The Home page tells the whole story briefly. Each scene gets one short
+  headline, one or two lines, and a link such as "See the full menu" or
+  "All treatments" to an inner page that holds the details.
+- A busy visitor should get the whole story in under a minute of scrolling.
+- The pinned hero scene should take no more than about three screens of
+  scrolling.
+
+RULES FOR STORY AND MOTION
+- Every animation must express a story beat. If an effect does not help the
+  visitor understand or feel the message, remove it.
+- One main idea per scene, with one short headline a busy person can read
+  in three seconds.
+- The visitor must always know what to do next. Repeat the call to action
+  after the proof and at the end.
+- The story must still make sense with animation turned off.
+- Text must appear in the right reading order at every scroll position,
+  and scrolling back up must reverse every animation cleanly, with no
+  missing, doubled or jumbled words.
+- If a scene shows a "before" picture (a plain, dull or bad version), label
+  it clearly as an example so nobody thinks it is this business's own page.
+
+CREATIVE DIRECTION
+1. Use the visual concept given above. If none is given, take ONE visual
+   concept from the storyline and from this business's own world (its
+   materials, products, place or story), and tell me the concept in one
+   sentence before you build. Do not reuse a concept you would give to a
+   different business.
+2. Choose a colour palette and a font pairing that fit the concept and mood.
+   Avoid default looks: no purple-blue gradients, no plain white cards
+   everywhere, no everything-centred layout.
+3. The Home hero is the first story scenes, built as one immersive scroll
+   scene with real depth.
+4. Illustration style: refined and believable, never cartoon. Use natural
+   shapes, real proportions, soft light, texture and believable shadows.
+   No clip art, no faces on objects, no thick outlines, and no decorative
+   rings or halos behind objects unless they are part of the story (a sun
+   in the sky is fine; circles behind a building are not).
+5. If the business has no logo, design a simple, modern, geometric mark
+   with a wordmark. It must read clearly at 16px (browser tab), on light and
+   on dark backgrounds. No illustrations or scenes inside the logo.
+
+IMPRESSIVE, NOT COMMON
+- This must not look like a normal website. A visitor should feel within
+  the first three seconds that they have not seen a site like this before.
+- Do not use the common layout: navigation bar, hero photo with a button,
+  three feature cards, testimonial slider, footer. If a section could be
+  moved to any other business's site without changes, redesign it.
+- Give the site one signature moment that people would describe to a
+  friend, built from this business's own world and story.
+- Design each section with its own composition: vary the scale, use bold
+  typography, overlap elements, break the grid on purpose.
+- Before you finish, check every section against this question: "Would
+  this appear on a template site?" If yes, redo that section.
+- Impressive must never mean confusing. The message, prices and the way to
+  contact the business must stay easy to find, and the site must stay fast
+  on a phone.
+
+IMAGES AND 3D DEPTH
+- Create original images that belong to this business's world: its
+  materials, setting, tools, ingredients, atmosphere and landscape. Draw
+  them with SVG, canvas or CSS, or generate them if you have an image tool.
+- Build every key image as separate depth layers, not one flat picture:
+  background, far, middle, near and foreground, each as its own element.
+- Use those layers to create real 3D depth: place them at different
+  distances, move them at different speeds on scroll and on mouse movement,
+  let near layers pass the viewer, and add shadow, blur or dimming to far
+  layers so the distance feels real.
+- Elements should emerge from the background and travel toward the viewer
+  as the story moves forward, and each such movement must carry a story beat.
+- All images share one art style, palette and lighting so the site feels
+  like one world.
+- No seams: when layers move, no straight edges, bands, boxes or gaps may
+  show. Objects in a scene must not touch or overlap awkwardly (for
+  example, a tree must not touch a house).
+- Shadows on shaped or torn edges must not spill into the next section, and
+  two shaped edges must never stack on top of each other.
+- Do NOT create or invent images of the business's actual products, real
+  people, the shop or the team. For those, add a clearly labelled
+  placeholder at the correct size and shape so I can drop the real photo
+  in later.
+
+MOTION TECHNIQUES AVAILABLE (use only the ones the story needs)
+- Scroll-driven animation with scroll scrubbing and scroll pinning
+- Parallax layers with 3D perspective / Z-axis zoom
+- Smooth scrolling
+- Mouse parallax
+- Kinetic typography and scroll-triggered text reveal
+- Seamless transitions between scenes: the next section rises over the
+  previous one while it sinks back and darkens
+- A horizontal scroll section
+- Stacking cards with depth shading (the covered card darkens and shrinks
+  as the next one rises over it). Full-width sections must sink back and
+  darken instead of shrinking, because shrinking shows their side edges.
+- Custom SVG shape dividers that match the concept (not a straight line)
+- Micro-interactions: custom cursor, magnetic button, hover states
+- A subtle grain or texture overlay
+- Animated page transitions in the same style
+
+PHONES
+- Design the phone layout on purpose; don't just stack the desktop layout.
+  Small cards go two per row where they fit, and stacking cards rise one
+  at a time.
+- Frame every hero scene for a tall, narrow screen so the key subject stays
+  in view.
+- Buttons and links must be at least 44px tall, and form fields must use
+  16px text so phones don't zoom in.
+
+CONTACT AND QUICK HELP
+- A Contact page with a short form plus direct options: phone, WhatsApp
+  (a wa.me link with a friendly message already filled in) and email.
+- A small scripted chat helper in the corner of every page: no AI and no
+  server. It answers common questions with quick-answer buttons and simple
+  keyword matching, using text from the /content file, and hands anything
+  else to WhatsApp or the form. It keeps the conversation across page
+  changes, and its scroll area must not fight the smooth scrolling.
+
+CONTENT
+- Write real copy for this business in simple, friendly language, not
+  lorem ipsum.
+- Never invent prices, client names, reviews, awards, years or numbers.
+  Use [square-bracket placeholders] for anything I must fill in, and mark
+  testimonials and sample projects clearly as samples.
+
+TECHNICAL RULES
+- Use the latest stable Astro with TypeScript.
+- Styling: Tailwind CSS. Put all colours, fonts and spacing in one place as
+  design tokens, and use only those tokens.
+- Motion: GSAP with ScrollTrigger for scroll scenes, Lenis for smooth
+  scrolling. Run animation code on the client only, and clean it up and
+  re-initialise it on page navigation (Astro ClientRouter: start on
+  astro:page-load, clean up on astro:before-swap).
+- In scrubbed timelines, use fromTo() with explicit start and end values so
+  reversing is always correct.
+- In-page links (#section) must land just below the fixed header, both on
+  the same page and when arriving from another page. Make sure the page
+  router and the smooth scroller don't fight over the scroll.
+- Structure: one component per scene in /components, shared Header and
+  Footer in the main layout, all business text and product data in one
+  /content file so I can edit it without touching the design.
+- Use the framework's built-in font and image optimisation. Keep source
+  photos under about 2000px wide and 500 KB so the repository stays small.
+- Give every page its own title and meta description, plus a favicon, an
+  apple-touch-icon and a social preview image.
+- The contact form must be ready to connect to Formspree.
+- Hosting: Cloudflare Pages. Use static output unless
+  a feature really needs a server.
+- Fully responsive, and it must work well on phones.
+- Animate only transform and opacity.
+- Include a still version for visitors who use prefers-reduced-motion.
+- All text must be readable before any scrolling happens.
+- Keyboard and screen-reader friendly: visible focus, alt text, labelled
+  form fields, Escape closes any open panel.
+
+WHEN YOU FINISH
+- Run the build and the type check, and fix every error.
+- Look at the site at phone size (390 x 844) and desktop size
+  (1366 x 820), and with reduced motion on. Scroll every scene forward and
+  back and fix anything that looks broken.
+- Tell me how to start it, and list every [placeholder] I still need to
+  replace.
