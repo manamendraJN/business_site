@@ -4,6 +4,7 @@ import KopiWorld from "./KopiWorld.astro";
 import BrightSmileWorld from "./BrightSmileWorld.astro";
 import TideWorld from "./TideWorld.astro";
 import PetalWorld from "./PetalWorld.astro";
+import LoomWorld from "./LoomWorld.astro";
 import type { Project } from "@/content/site";
 
 interface Props {
@@ -15,3 +16,4 @@ const { world } = Astro.props;
 {world === "brightsmile" && <BrightSmileWorld />}
 {world === "tide" && <TideWorld />}
 {world === "petal" && <PetalWorld />}
+{world === "loom" && <LoomWorld />}

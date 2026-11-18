@@ -14,16 +14,20 @@ const bands = {
   brightsmile: { token: "mint", bg: "bg-mint", fg: "text-sea-deep", accent: "text-sea" },
   tide: { token: "sea-deep", bg: "bg-sea-deep", fg: "text-paper", accent: "text-marigold" },
   petal: { token: "blush", bg: "bg-blush", fg: "text-ink", accent: "text-ink-soft" },
+  loom: { token: "paper-shade", bg: "bg-paper-shade", fg: "text-ink", accent: "text-clay-deep" },
 } as const;
+// five prints in two loose rows: three on top, two below (offsets are in
+// print widths and heights, so the pile scales with the screen)
 const fan = [
-  "rotate-[-7deg] translate-x-[0%] translate-y-[0%]",
-  "rotate-[5deg] translate-x-[92%] translate-y-[6%]",
-  "rotate-[-2deg] translate-x-[10%] translate-y-[104%]",
-  "rotate-[7deg] translate-x-[100%] translate-y-[98%]",
+  "rotate-[-6deg] translate-x-[0%] translate-y-[0%]",
+  "rotate-[4deg] translate-x-[82%] translate-y-[8%]",
+  "rotate-[-3deg] translate-x-[164%] translate-y-[0%]",
+  "rotate-[5deg] translate-x-[41%] translate-y-[112%]",
+  "rotate-[-4deg] translate-x-[123%] translate-y-[104%]",
 ];
 ---
 <BaseLayout title={meta.work.title} description={meta.work.description}>
-  <!-- Hero: four paper prints fanned out on the table -->
+  <!-- Hero: the concept prints fanned out on the table -->
   <section class="relative grid gap-12 overflow-hidden px-gutter pt-[calc(var(--spacing-header)+4rem)] pb-section md:grid-cols-12">
     <div class="relative z-10 md:col-span-6">
       <p class="eyebrow text-clay-deep">{w.eyebrow}</p>
@@ -32,12 +36,12 @@ const fan = [
     </div>
     <div class="relative min-h-[23rem] md:col-span-6 md:min-h-[36rem]" data-parallax-root>
       {projects.map((p, i) => (
-        <a href={`#${p.slug}`} class={`print absolute left-0 top-0 w-[50%] ${fan[i]}`} aria-label={`Jump to ${p.name}`}>
+        <a href={`#${p.slug}`} class={`print absolute left-0 top-0 w-[38%] ${fan[i]}`} aria-label={`Jump to ${p.name}`}>
           <span class="block" data-depth={String(0.2 + i * 0.18)}>
             <span class="print-frame relative block aspect-[4/3] overflow-hidden border-[8px] border-paper shadow-lift">
               <World world={p.world} />
             </span>
-            <span class="mt-2 block font-bold text-sm">{p.name} <span class="font-normal text-ink-soft">· {p.kind}</span></span>
+            <span class="mt-2 block truncate font-bold text-sm">{p.name}</span>
           </span>
         </a>
       ))}

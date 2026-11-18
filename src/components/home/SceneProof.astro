@@ -1,7 +1,7 @@
 ---
 /**
  * SCENE 3 — THE PROOF (short version for Home)
- * Message: "Same change. Four different worlds."
+ * Message: "Same change. Five different worlds."
  * Four small concept tiles. As each scrolls into view, its grey "before"
  * card peels away and the paper world rises behind it. Each tile links to
  * the full concept on the Work page. Ends with the repeated call to action.
@@ -36,9 +36,10 @@ const arrow = "M5 12h13M13 6l6 6-6 6";
     </div>
   </div>
 
-  <div class="mt-16 grid grid-cols-2 gap-x-4 gap-y-10 px-gutter sm:gap-x-6 sm:gap-y-14 lg:grid-cols-4">
+  <!-- two per row on phones and tablets, three on computers; a short last row is centred -->
+  <div class="proof-tiles mt-16 flex flex-wrap justify-center gap-x-4 gap-y-10 px-gutter sm:gap-x-6 sm:gap-y-14">
     {projects.map((proj, i) => (
-      <article class:list={["proof-tile", i % 2 && "mt-10 lg:mt-16"]} data-proof-panel>
+      <article class:list={["proof-tile", i % 2 && "mt-10 lg:mt-0", i % 3 === 1 && "lg:mt-16"]} data-proof-panel>
         <a href={`/work/#${proj.slug}`} class="group block" aria-label={`${proj.name}, concept project — ${p.tileLink}`}>
           <div class="relative pl-2 pt-3 sm:pl-4 sm:pt-4">
             <div class="world-frame" data-world-frame data-parallax-root>
@@ -120,6 +121,9 @@ const arrow = "M5 12h13M13 6l6 6-6 6";
     transform-origin: 0% 0%;
   }
   .proof-cta { transform: rotate(-0.6deg); }
+  .proof-tile { width: calc(50% - 0.5rem); }
+  @media (min-width: 640px) { .proof-tile { width: calc(50% - 0.75rem); } }
+  @media (min-width: 1024px) { .proof-tile { width: calc(33.333% - 1rem); } }
 
   /* Phones: two tiles per row, so the "before" card and frame get smaller */
   @media (max-width: 639px) {

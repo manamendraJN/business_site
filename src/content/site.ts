@@ -12,6 +12,7 @@ import shotKopi from "../assets/placeholders/screenshot-kopi-corner.svg";
 import shotBright from "../assets/placeholders/screenshot-brightsmile.svg";
 import shotTide from "../assets/placeholders/screenshot-tide-house.svg";
 import shotPetal from "../assets/placeholders/screenshot-petal-and-stem.svg";
+import shotLoom from "../assets/placeholders/screenshot-loom-and-linen.svg";
 
 /* --------------------------------------------------------------------------
    Business basics
@@ -71,9 +72,9 @@ export const meta = {
       "Web design for cafes, clinics, salons, hotels and shops. I turn plain, forgettable websites into story-driven sites that make visitors want to visit you.",
   },
   work: {
-    title: "Work — Four concept projects | Depthwyn",
+    title: "Work — Five concept projects | Depthwyn",
     description:
-      "See how a plain website becomes a story: concept projects for a cafe, a dental clinic, a surf hotel and a florist, each shown before and after.",
+      "See how a plain website becomes a story: concept projects for a cafe, a dental clinic, a surf hotel, a florist and a clothing brand, each shown before and after.",
   },
   services: {
     title: "Services — Launch Page, Business Site, Motion Upgrade, Care Plan | Depthwyn",
@@ -134,13 +135,13 @@ export const home = {
   // Scene 3 — the proof
   proof: {
     eyebrow: "The proof",
-    headline: "Same change. *Four* different worlds.",
+    headline: "Same change. *Five* different worlds.",
     intro:
-      "Four sample businesses, before and after. These are concept projects I made to show the idea — they are not real clients.",
+      "Five sample businesses, before and after. These are concept projects I made to show the idea — they are not real clients.",
     beforeLabel: "Before",
     afterLabel: "After",
     // short version on the Home page
-    more: "See all four concepts",
+    more: "See all five concepts",
     tileLink: "See the concept",
   },
   // CTA repeated after the proof
@@ -286,13 +287,13 @@ export const steps = [
 ];
 
 /* --------------------------------------------------------------------------
-   PROJECTS — four CONCEPT projects (samples, not real clients)
+   PROJECTS — five CONCEPT projects (samples, not real clients)
    -------------------------------------------------------------------------- */
 export type Project = {
   slug: string;
   name: string;
   kind: string;
-  world: "kopi" | "brightsmile" | "tide" | "petal";
+  world: "kopi" | "brightsmile" | "tide" | "petal" | "loom";
   before: { title: string; text: string };
   after: { headline: string; line: string };
   plainProblem: string;
@@ -394,6 +395,28 @@ export const projects: Project[] = [
     screenshot: shotPetal,
     screenshotAlt: "Placeholder for a real Petal & Stem website screenshot",
   },
+  {
+    slug: "loom-and-linen",
+    name: "Loom & Linen",
+    kind: "Clothing brand",
+    world: "loom",
+    before: { title: "Loom & Linen Clothing", text: "New arrivals. Shop now." },
+    after: {
+      headline: "Woven slowly. *Worn every day.*",
+      line: "A single thread runs down the page and weaves itself into cloth, so every shirt already feels made by hand.",
+    },
+    plainProblem:
+      "Rows of small product photos on white. It looks like every online store and hides the hands and the loom behind every piece.",
+    story:
+      "The site follows one thread: from the loom, to woven cloth, to the shirt you'll wear — then lets you pick its colour and order it in your size.",
+    moments: [
+      "A thread weaves the cloth as you scroll",
+      "Tap a colour and the shirt changes in front of you",
+      "Size help and ordering on WhatsApp in two taps",
+    ],
+    screenshot: shotLoom,
+    screenshotAlt: "Placeholder for a real Loom & Linen website screenshot",
+  },
 ];
 
 /* --------------------------------------------------------------------------
@@ -401,7 +424,7 @@ export const projects: Project[] = [
    -------------------------------------------------------------------------- */
 export const workPage = {
   eyebrow: "Work",
-  headline: "Four businesses. *Four stories.*",
+  headline: "Five businesses. *Five stories.*",
   intro:
     "Every project on this page is a concept: a sample I designed to show how a plain website can become a story. Real client work will appear here soon.",
   problemLabel: "The plain version",
