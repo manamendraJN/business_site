@@ -7,6 +7,7 @@
  * clipped along one jagged edge) so Scene 2 can rip it open.
  */
 import TemplateSite from "../art/TemplateSite.astro";
+import TemplateStamp from "../art/TemplateStamp.astro";
 import { home } from "@/content/site";
 import { tearPolygon, tearPoints } from "@/lib/paper";
 
@@ -29,6 +30,10 @@ const crack = tearPoints(SEED)
     <div class="hook-half" data-half="right" style={`clip-path: ${right}`}>
       <TemplateSite />
     </div>
+    <!-- frosted veil: the grey site stays in the background so the note reads first -->
+    <div class="hook-veil" data-hook-veil aria-hidden="true"></div>
+    <!-- a sharp copy of the "Example" stamp, exactly over the blurred one -->
+    <TemplateStamp data-hook-stamp />
     <svg class="hook-crack" data-hook-crack viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
       <polyline points={crack} fill="none" stroke="var(--color-ink)" stroke-width="3" vector-effect="non-scaling-stroke" stroke-linejoin="bevel" />
     </svg>
@@ -99,8 +104,21 @@ const crack = tearPoints(SEED)
   }
   .hook-half[data-half="left"] { transform-origin: 0% 50%; }
   .hook-half[data-half="right"] { transform-origin: 100% 50%; }
+  /* the sharp copy above the veil does the talking; the blurred stamps on the
+     two halves only appear when the veil clears and the page tears */
+  .hook-half :global(.tpl-stamp) { opacity: 0; }
+  .hook-veil {
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    background: rgb(30 26 21 / 0.06);
+    -webkit-backdrop-filter: blur(2.5px) saturate(0.9);
+    backdrop-filter: blur(2.5px) saturate(0.9);
+    pointer-events: none;
+  }
   .hook-crack {
     position: absolute;
+    z-index: 3;
     inset: 0;
     width: 100%;
     height: 100%;

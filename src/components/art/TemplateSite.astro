@@ -4,15 +4,13 @@
  * Deliberately generic: Arial, grey boxes, a crossed-out image, three cards.
  * Purely illustrative, so it is hidden from screen readers.
  */
+import TemplateStamp from "./TemplateStamp.astro";
 import { home } from "@/content/site";
 const t = home.hook.template;
 ---
 <div class="tpl relative flex h-full w-full flex-col bg-dull-50 font-dull text-dull-700" aria-hidden="true">
   <!-- red rubber stamp: this is an example, not the studio's own site -->
-  <div class="tpl-stamp">
-    <span class="tpl-stamp-small">{t.stampSmall}</span>
-    <span class="tpl-stamp-big">{t.stampBig}</span>
-  </div>
+  <TemplateStamp />
   <!-- browser chrome -->
   <div class="flex items-center gap-3 border-b border-dull-300 bg-dull-100 px-3 py-2">
     <span class="flex gap-1.5"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span>
@@ -58,40 +56,4 @@ const t = home.hook.template;
   .bar { display: block; width: 1.1rem; height: 2px; background: var(--color-dull-500); }
   @media (max-height: 560px) { .tpl-cards { display: none; } }
 
-  .tpl-stamp {
-    position: absolute;
-    z-index: 2;
-    left: 50%;
-    top: 78%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.15rem;
-    padding: 0.55rem 1.1rem 0.7rem;
-    border: 4px double var(--color-clay);
-    border-radius: 0.4rem;
-    color: var(--color-clay);
-    background: color-mix(in srgb, var(--color-dull-50) 82%, transparent);
-    font-family: var(--font-display);
-    text-transform: uppercase;
-    text-align: center;
-    transform: translate(-50%, -50%) rotate(-7deg);
-    pointer-events: none;
-  }
-  .tpl-stamp-small {
-    font-size: clamp(0.7rem, 1vw, 0.85rem);
-    font-weight: 800;
-    letter-spacing: 0.35em;
-    border-bottom: 2px solid currentColor;
-    padding-bottom: 0.15rem;
-  }
-  .tpl-stamp-big {
-    font-size: clamp(1rem, 2.1vw, 1.7rem);
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    line-height: 1.05;
-  }
-  @media (min-width: 640px) {
-    .tpl-stamp { left: 62%; top: 44%; }
-  }
 </style>
