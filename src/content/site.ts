@@ -40,7 +40,7 @@ export const contact = {
    To use your own backend instead, put its URL here — the form sends
    standard form data and expects a JSON reply. */
 export const form = {
-  endpoint: "https://formspree.io/f/your-form-id",
+  endpoint: "https://formspree.io/f/xgakybjv",
 };
 
 /* --------------------------------------------------------------------------
