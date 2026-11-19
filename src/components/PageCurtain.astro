@@ -4,15 +4,12 @@
  * screen and away again — turning the page. Persisted across navigations.
  */
 import TornEdge from "./ui/TornEdge.astro";
+import Logo from "./ui/Logo.astro";
 ---
 <div class="page-curtain" data-curtain transition:persist="page-curtain" aria-hidden="true">
   <TornEdge color="clay" side="top" seed={59} class="curtain-edge curtain-edge-top" />
   <div class="curtain-body">
-    <svg viewBox="0 0 32 32" class="h-14 w-14" aria-hidden="true">
-      <path d="M4 26V8l12-4v18z" fill="var(--color-paper-shade)" />
-      <path d="M16 22V4l12 4v18z" fill="var(--color-marigold)" />
-      <path d="M4 26l12-4 12 4-12 4z" fill="var(--color-ink)" />
-    </svg>
+    <Logo class="curtain-logo h-16 w-16" />
   </div>
   <TornEdge color="clay" side="bottom" seed={61} class="curtain-edge curtain-edge-bottom" />
 </div>
@@ -39,4 +36,5 @@ import TornEdge from "./ui/TornEdge.astro";
     background: var(--color-clay);
     margin: -1px 0;
   }
+  .curtain-body :global(.curtain-logo) { filter: drop-shadow(0 10px 18px rgb(30 26 21 / 0.3)); }
 </style>

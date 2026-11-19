@@ -3,7 +3,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import PopText from "@/components/ui/PopText.astro";
 import TornEdge from "@/components/ui/TornEdge.astro";
 import ContactForm from "@/components/pages/ContactForm.astro";
-import { meta, contactPage as c, contact, business } from "@/content/site";
+import { meta, contactPage as c, contact } from "@/content/site";
 ---
 <BaseLayout title={meta.contact.title} description={meta.contact.description}>
   <section class="px-gutter pt-[calc(var(--spacing-header)+4rem)] pb-section">
@@ -40,10 +40,6 @@ import { meta, contactPage as c, contact, business } from "@/content/site";
             <li>
               <span class="eyebrow block text-marigold">WhatsApp</span>
               <a class="link-ink" href={contact.whatsappHref} target="_blank" rel="noopener">{contact.whatsapp}</a>
-            </li>
-            <li>
-              <span class="eyebrow block text-marigold">Where & when</span>
-              <span>{business.location} · {contact.hours}</span>
             </li>
           </ul>
         </div>

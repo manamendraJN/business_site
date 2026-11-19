@@ -33,7 +33,6 @@ export const contact = {
   whatsapp: "+94 76 439 0987",
   // international format, digits only
   whatsappHref: "https://wa.me/94764390987",
-  hours: "Monday to Friday, [9:00–18:00]",
 };
 
 /* The contact form posts here. Create a free form at https://formspree.io,
@@ -135,12 +134,13 @@ export const home = {
     eyebrow: "The proof",
     headline: "Same change. *Three* different worlds.",
     intro:
-      "Three sample businesses, before and after. These are concept projects I made to show the idea — they are not real clients.",
-    beforeLabel: "Before",
-    afterLabel: "After",
+      "Three sample businesses, each a live site you can open and scroll through. These are concept projects I made to show the idea — they are not real clients.",
+    beforeLabel: "Before", // used on the Work page
     // short version on the Home page
     more: "See all three concepts",
     tileLink: "See the concept",
+    // label on each screenshot: the picture opens the live concept site
+    visitLabel: "Visit site",
   },
   // CTA repeated after the proof
   proofCta: {
@@ -477,7 +477,7 @@ export const aboutPage = {
 export const contactPage = {
   eyebrow: "Contact",
   headline: "Start your *project.*",
-  intro: "Tell me a little about your business. I'll reply with simple next steps — usually within [one working day].",
+  intro: "Tell me a little about your business. I'll reply with simple next steps.",
   directHeadline: "Rather talk directly?",
   nextHeadline: "What happens next",
   next: [
@@ -647,7 +647,7 @@ export const chatbot = {
       id: "human",
       ask: "Talk to a person",
       keywords: ["contact", "talk", "call", "phone", "email", "whatsapp", "message", "person", "human", "reach", "hello", "hi", "number", "hours"],
-      answer: `You can reach ${business.ownerName.split(" ")[0]} directly. Hours: ${contact.hours}.`,
+      answer: `You can reach ${business.ownerName.split(" ")[0]} directly:`,
       list: [
         { label: "WhatsApp", note: contact.whatsapp, href: whatsappWith("Hi Navodya, I found Depthwyn's website and have a question.") },
         { label: "Phone", note: contact.phone, href: contact.phoneHref },

@@ -1,15 +1,16 @@
 ---
 /**
  * SCENE 3 — THE PROOF (short version for Home)
- * Message: "Same change. Five different worlds."
- * Four small concept tiles. As each scrolls into view, its grey "before"
- * card peels away and the paper world rises behind it. Each tile links to
- * the full concept on the Work page. Ends with the repeated call to action.
+ * Message: "Same change. Three different worlds."
+ * Three concept tiles, each showing a screenshot of the real, live concept
+ * site. As each scrolls into view, the site settles into its frame with a
+ * gentle zoom. The picture opens the live concept
+ * site in a new tab; "See the concept" leads to its story on the Work page.
+ * Ends with the repeated call to action.
  * With motion, this whole section rises over the hero like a new sheet of
  * paper laid on top (scroll-driven; the hero sinks back beneath it).
  */
-import World from "../art/worlds/World.astro";
-import TemplateMini from "../art/TemplateMini.astro";
+import { Image } from "astro:assets";
 import PopText from "../ui/PopText.astro";
 import Emphasis from "../ui/Emphasis.astro";
 import CtaButton from "../ui/CtaButton.astro";
@@ -40,22 +41,25 @@ const arrow = "M5 12h13M13 6l6 6-6 6";
   <div class="proof-tiles mt-16 flex flex-wrap justify-center gap-x-4 gap-y-10 px-gutter sm:gap-x-6 sm:gap-y-14">
     {projects.map((proj, i) => (
       <article class:list={["proof-tile", i % 2 && "mt-10 lg:mt-0", i % 3 === 1 && "lg:mt-16"]} data-proof-panel>
-        <a href={`/work/#${proj.slug}`} class="group block" aria-label={`${proj.name}, concept project — ${p.tileLink}`}>
-          <div class="relative pl-2 pt-3 sm:pl-4 sm:pt-4">
-            <div class="world-frame" data-world-frame data-parallax-root>
-              <World world={proj.world} />
-              <span class="after-tag">{p.afterLabel}</span>
-            </div>
-            <TemplateMini class="panel-before" title={proj.before.title} text={proj.before.text} label={p.beforeLabel} />
+        <!-- the picture opens the live concept site -->
+        <a href={proj.url} target="_blank" rel="noopener" class="shot-link group block" aria-label={`${p.visitLabel}: ${proj.name}, live concept site (opens in a new tab)`}>
+          <div class="world-frame" data-world-frame>
+            <!-- decorative here: the link already names the project -->
+            <Image src={proj.screenshot} alt="" widths={[480, 760, 1100]} sizes="(min-width: 1024px) 31vw, 46vw" class="tile-shot" data-shot />
+            <span class="visit-tag">
+              {p.visitLabel}
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16L17 7M9 7h8v8" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            </span>
           </div>
-          <span class="concept-badge mt-5 text-ink-soft sm:mt-6">Concept</span>
-          <h3 class="mt-3 text-lg leading-tight sm:text-title">{proj.name}</h3>
-          <p class="text-xs text-ink-soft sm:text-sm">{proj.kind}</p>
-          <p class="mt-2 text-sm font-bold sm:mt-3 sm:text-base"><Emphasis text={proj.after.headline} emClass="text-clay-deep" /></p>
-          <span class="tile-link mt-3 inline-flex items-center gap-2 text-sm font-bold text-clay-deep sm:mt-4">
-            {p.tileLink}
-            <svg viewBox="0 0 24 24" class="h-4 w-4" aria-hidden="true"><path d={arrow} stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
-          </span>
+        </a>
+        <span class="concept-badge mt-5 text-ink-soft sm:mt-6">Concept</span>
+        <h3 class="mt-3 text-lg leading-tight sm:text-title">{proj.name}</h3>
+        <p class="text-xs text-ink-soft sm:text-sm">{proj.kind}</p>
+        <p class="mt-2 text-sm font-bold sm:mt-3 sm:text-base"><Emphasis text={proj.after.headline} emClass="text-clay-deep" /></p>
+        <!-- the words lead to the full story on the Work page -->
+        <a href={`/work/#${proj.slug}`} class="tile-link mt-3 inline-flex items-center gap-2 text-sm font-bold text-clay-deep sm:mt-4" aria-label={`${p.tileLink}: ${proj.name}`}>
+          {p.tileLink}
+          <svg viewBox="0 0 24 24" class="h-4 w-4" aria-hidden="true"><path d={arrow} stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </a>
       </article>
     ))}
@@ -86,7 +90,7 @@ const arrow = "M5 12h13M13 6l6 6-6 6";
   }
   .world-frame {
     position: relative;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 2 / 1; /* the screenshots are about twice as wide as they are tall */
     border: 8px solid var(--color-paper);
     border-radius: var(--radius-paper);
     box-shadow: var(--shadow-lift);
@@ -95,45 +99,50 @@ const arrow = "M5 12h13M13 6l6 6-6 6";
     transition: transform 0.5s var(--ease-paper);
   }
   .group:hover .world-frame { transform: translateY(-8px) rotate(-1deg); }
+  .world-frame :global(.tile-shot) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    transform-origin: 50% 0%;
+  }
+  .shot-link { border-radius: var(--radius-paper); }
+  .shot-link:focus-visible { outline-offset: 6px; }
   .tile-link svg { transition: transform 0.3s var(--ease-paper); }
-  .group:hover .tile-link svg { transform: translateX(4px); }
-  .after-tag {
+  .tile-link:hover svg { transform: translateX(4px); }
+  .tile-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+  /* always visible (phones have no hover): this picture is a door to the live site */
+  .visit-tag {
     position: absolute;
     right: 0.6rem;
-    bottom: 0.6rem;
+    top: 0.6rem;
     z-index: 5;
-    padding: 0.25rem 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.7rem;
     border-radius: 999px;
-    background: var(--color-ink);
+    background: var(--color-clay);
     color: var(--color-paper);
-    font-size: 0.65rem;
+    font-size: 0.8rem;
     font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    box-shadow: var(--shadow-paper);
+    transition: background-color 0.25s var(--ease-paper);
   }
-  :global(.panel-before) {
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 4;
-    width: min(52%, 13rem);
-    transform: rotate(-5deg);
-    transform-origin: 0% 0%;
-  }
+  .visit-tag svg { width: 0.95rem; height: 0.95rem; transition: transform 0.3s var(--ease-paper); }
+  .group:hover .visit-tag { background: var(--color-clay-deep); }
+  .group:hover .visit-tag svg { transform: translate(2px, -2px); }
   .proof-cta { transform: rotate(-0.6deg); }
   .proof-tile { width: calc(50% - 0.5rem); }
   @media (min-width: 640px) { .proof-tile { width: calc(50% - 0.75rem); } }
   @media (min-width: 1024px) { .proof-tile { width: calc(33.333% - 1rem); } }
 
-  /* Phones: two tiles per row, so the "before" card and frame get smaller */
+  /* Phones: two tiles per row, so the frame and its label get smaller */
   @media (max-width: 639px) {
     .world-frame { border-width: 5px; }
-    .after-tag { right: 0.35rem; bottom: 0.35rem; padding: 0.15rem 0.45rem; font-size: 0.55rem; }
-    .proof-tile :global(.panel-before) { width: 66%; }
-    .proof-tile :global(.tpl-mini > div:last-child) { padding: 0.35rem 0.4rem 0.45rem; }
-    .proof-tile :global(.tpl-mini p) { font-size: 0.6rem; line-height: 1.2; }
-    .proof-tile :global(.tpl-mini p + p),
-    .proof-tile :global(.tpl-mini span.inline-block) { display: none; }
-    .proof-tile :global(.tpl-mini [class*="aspect-"]) { margin-bottom: 0.3rem; }
+    .visit-tag { right: 0.35rem; top: 0.35rem; padding: 0.2rem 0.5rem; gap: 0.2rem; font-size: 0.62rem; }
+    .visit-tag svg { width: 0.7rem; height: 0.7rem; }
   }
 </style>
