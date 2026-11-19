@@ -58,16 +58,12 @@ The Depthwyn mark is a dark rounded tile holding a split "D": a cream bar and a 
   - `apple-touch-icon.png`: the icon when someone adds the site to their phone's home screen
   - `favicon.svg`: the browser-tab icon
 
-## Replace the image placeholders
+## Images and concept projects
 
-Placeholders live in `src/assets/placeholders/`:
+- **Portrait (About page):** `src/assets/portrait.jpg`
+- **Concept project screenshots (Work page):** `src/assets/projects/`, one per project. Each project in `projects` in `src/content/site.ts` also has a `url`: the live concept site that "Visit the live site" opens.
 
-| File | Size | Used on |
-| --- | --- | --- |
-| `portrait.svg` | 800 × 1000 | About |
-| `screenshot-*.svg` | 1600 × 1000 | Work (one per project) |
-
-Drop your real image (JPG/PNG/WebP) into `src/assets/`, then change the matching `import` line at the top of `src/content/site.ts`. Astro resizes and optimises it automatically.
+To change an image, drop the new one (JPG/PNG/WebP) into `src/assets/`, then update the matching `import` line at the top of `src/content/site.ts`. Astro resizes and optimises it automatically. Keep source images under about 2000px wide.
 
 ## Change colours, fonts or spacing
 

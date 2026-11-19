@@ -8,11 +8,9 @@
    ========================================================================== */
 
 import portrait from "../assets/portrait.jpg";
-import shotKopi from "../assets/placeholders/screenshot-kopi-corner.svg";
-import shotBright from "../assets/placeholders/screenshot-brightsmile.svg";
-import shotTide from "../assets/placeholders/screenshot-tide-house.svg";
-import shotPetal from "../assets/placeholders/screenshot-petal-and-stem.svg";
-import shotLoom from "../assets/placeholders/screenshot-loom-and-linen.svg";
+import shotKopi from "../assets/projects/kopi-corner.webp";
+import shotPetal from "../assets/projects/petal-and-stem.webp";
+import shotLoom from "../assets/projects/loom-and-linen.webp";
 
 /* --------------------------------------------------------------------------
    Business basics
@@ -29,7 +27,7 @@ export const business = {
 /* Contact details. Phone numbers use the international format
    (country code +94, then the number without its leading 0). */
 export const contact = {
-  email: "navodyamanamendra19@gmail.com",
+  email: "depthwyn@gmail.com",
   phone: "+94 76 868 5811",
   phoneHref: "tel:+94768685811",
   whatsapp: "+94 76 439 0987",
@@ -72,9 +70,9 @@ export const meta = {
       "Web design for cafes, clinics, salons, hotels and shops. I turn plain, forgettable websites into story-driven sites that make visitors want to visit you.",
   },
   work: {
-    title: "Work — Five concept projects | Depthwyn",
+    title: "Work — Three concept projects | Depthwyn",
     description:
-      "See how a plain website becomes a story: concept projects for a cafe, a dental clinic, a surf hotel, a florist and a clothing brand, each shown before and after.",
+      "See how a plain website becomes a story: live concept sites for a cafe, a florist and a clothing brand, each shown before and after.",
   },
   services: {
     title: "Services — Launch Page, Business Site, Motion Upgrade, Care Plan | Depthwyn",
@@ -135,13 +133,13 @@ export const home = {
   // Scene 3 — the proof
   proof: {
     eyebrow: "The proof",
-    headline: "Same change. *Five* different worlds.",
+    headline: "Same change. *Three* different worlds.",
     intro:
-      "Five sample businesses, before and after. These are concept projects I made to show the idea — they are not real clients.",
+      "Three sample businesses, before and after. These are concept projects I made to show the idea — they are not real clients.",
     beforeLabel: "Before",
     afterLabel: "After",
     // short version on the Home page
-    more: "See all five concepts",
+    more: "See all three concepts",
     tileLink: "See the concept",
   },
   // CTA repeated after the proof
@@ -287,19 +285,21 @@ export const steps = [
 ];
 
 /* --------------------------------------------------------------------------
-   PROJECTS — five CONCEPT projects (samples, not real clients)
+   PROJECTS — three CONCEPT projects (samples, not real clients)
    -------------------------------------------------------------------------- */
 export type Project = {
   slug: string;
   name: string;
   kind: string;
-  world: "kopi" | "brightsmile" | "tide" | "petal" | "loom";
+  world: "kopi" | "petal" | "loom";
+  /** the live concept site */
+  url: string;
   before: { title: string; text: string };
   after: { headline: string; line: string };
   plainProblem: string;
   story: string;
   moments: string[];
-  screenshot: typeof shotKopi;
+  screenshot: ImageMetadata;
   screenshotAlt: string;
 };
 
@@ -312,9 +312,10 @@ export const projects: Project[] = [
     name: "Kopi Corner",
     kind: "Neighbourhood cafe",
     world: "kopi",
+    url: "https://kopi-corner.depthwyn.workers.dev/",
     before: { title: "Kopi Corner Cafe", text: "Coffee, tea and snacks. Open daily." },
     after: {
-      headline: "Your morning *starts here.*",
+      headline: "The cafe *wakes up.*",
       line: "Steam rises from the cup, the wooden counter slides in, and the menu feels like walking through the door.",
     },
     plainProblem:
@@ -327,57 +328,14 @@ export const projects: Project[] = [
       "A warm “see you tomorrow” with the map and hours",
     ],
     screenshot: shotKopi,
-    screenshotAlt: "Placeholder for a real Kopi Corner website screenshot",
-  },
-  {
-    slug: "brightsmile",
-    name: "BrightSmile",
-    kind: "Dental clinic",
-    world: "brightsmile",
-    before: { title: "BrightSmile Dental Clinic", text: "Professional dental services. Call to book." },
-    after: {
-      headline: "Calm visits. *Bright smiles.*",
-      line: "Soft mint colours and gentle movement help a nervous visitor feel looked after before they even book.",
-    },
-    plainProblem:
-      "A list of treatments in small print. For someone who is nervous about the dentist, it feels cold and clinical.",
-    story:
-      "The site speaks to the worry first. Each scroll answers one fear — will it hurt, what happens, what does it cost to ask — until booking feels easy.",
-    moments: [
-      "A slow, breathing motion that calms the page",
-      "Each worry answered in one short scene",
-      "Booking appears right when the visitor feels ready",
-    ],
-    screenshot: shotBright,
-    screenshotAlt: "Placeholder for a real BrightSmile website screenshot",
-  },
-  {
-    slug: "tide-house",
-    name: "Tide House",
-    kind: "Surf hotel",
-    world: "tide",
-    before: { title: "Tide House Hotel", text: "Rooms available. Book now." },
-    after: {
-      headline: "Wake up to *the waves.*",
-      line: "The sea rolls in, the sand warms up, and guests can almost feel the stay before they reserve it.",
-    },
-    plainProblem:
-      "A booking widget and a gallery of thumbnails. It looks like every other hotel on the coast.",
-    story:
-      "The site follows one perfect day: first light over the water, a morning surf, a slow lunch, and sunset from the balcony — then the room that makes it possible.",
-    moments: [
-      "Waves roll in as you scroll",
-      "A day at the hotel, from sunrise to sunset",
-      "The room and booking, framed by the view",
-    ],
-    screenshot: shotTide,
-    screenshotAlt: "Placeholder for a real Tide House website screenshot",
+    screenshotAlt: "The Kopi Corner concept site: a two-storey cafe on a sunrise street, a cup of kopi steaming on the wooden counter, and the headline \"The cafe wakes up.\"",
   },
   {
     slug: "petal-and-stem",
     name: "Petal & Stem",
     kind: "Florist",
     world: "petal",
+    url: "https://petal-stem.depthwyn.workers.dev/",
     before: { title: "Petal & Stem Florist", text: "Flowers for all occasions." },
     after: {
       headline: "Flowers that *say it for you.*",
@@ -393,13 +351,14 @@ export const projects: Project[] = [
       "A handwritten-style note to finish the order",
     ],
     screenshot: shotPetal,
-    screenshotAlt: "Placeholder for a real Petal & Stem website screenshot",
+    screenshotAlt: "The Petal & Stem concept site: a vase of white flowers on a florist's workbench, the headline \"Flowers that say it for you.\" and buttons to pick a feeling",
   },
   {
     slug: "loom-and-linen",
     name: "Loom & Linen",
     kind: "Clothing brand",
     world: "loom",
+    url: "https://loom-and-linen.depthwyn.workers.dev/",
     before: { title: "Loom & Linen Clothing", text: "New arrivals. Shop now." },
     after: {
       headline: "Woven slowly. *Worn every day.*",
@@ -415,7 +374,7 @@ export const projects: Project[] = [
       "Size help and ordering on WhatsApp in two taps",
     ],
     screenshot: shotLoom,
-    screenshotAlt: "Placeholder for a real Loom & Linen website screenshot",
+    screenshotAlt: "The Loom & Linen concept site: a wooden handloom beside a striped handwoven shirt on a hanger, and the headline \"Woven slowly. Worn every day.\"",
   },
 ];
 
@@ -424,13 +383,14 @@ export const projects: Project[] = [
    -------------------------------------------------------------------------- */
 export const workPage = {
   eyebrow: "Work",
-  headline: "Five businesses. *Five stories.*",
+  headline: "Three businesses. *Three stories.*",
   intro:
-    "Every project on this page is a concept: a sample I designed to show how a plain website can become a story. Real client work will appear here soon.",
+    "Every project on this page is a concept: a sample I designed and built to show how a plain website can become a story. Each one is live, so open it and scroll through. Real client work will appear here soon.",
   problemLabel: "The plain version",
   storyLabel: "The story",
   momentsLabel: "Key moments",
-  screenshotLabel: "Real project screenshot goes here",
+  screenshotLabel: "The live concept site",
+  visitLabel: "Visit the live site",
   nextHeadline: "Your business could be *next.*",
   nextText: "Every story here started with a short, friendly chat. Yours can too.",
 };
@@ -670,8 +630,8 @@ export const chatbot = {
       id: "work",
       ask: "Can I see examples?",
       keywords: ["example", "examples", "portfolio", "work", "projects", "samples", "previous", "clients", "show me"],
-      answer: `${projectsNote} They show the kind of story each business could tell.`,
-      list: projects.map((p) => ({ label: p.name, note: p.kind })),
+      answer: `${projectsNote} Each one is a live site you can open and scroll through:`,
+      list: projects.map((p) => ({ label: p.name, note: p.kind, href: p.url })),
       links: [{ label: "See the concept projects", href: "/work/" }],
       next: ["services", "about"],
     },

@@ -11,19 +11,15 @@ import { meta, workPage as w, projects, projectsNote, cta, home } from "@/conten
 
 const bands = {
   kopi: { token: "clay-deep", bg: "bg-clay-deep", fg: "text-paper", accent: "text-marigold-soft" },
-  brightsmile: { token: "mint", bg: "bg-mint", fg: "text-sea-deep", accent: "text-sea" },
-  tide: { token: "sea-deep", bg: "bg-sea-deep", fg: "text-paper", accent: "text-marigold" },
   petal: { token: "blush", bg: "bg-blush", fg: "text-ink", accent: "text-ink-soft" },
   loom: { token: "paper-shade", bg: "bg-paper-shade", fg: "text-ink", accent: "text-clay-deep" },
 } as const;
-// five prints in two loose rows: three on top, two below (offsets are in
-// print widths and heights, so the pile scales with the screen)
+// three prints: two on top, one below in the middle (offsets are in print
+// widths and heights, so the pile scales with the screen)
 const fan = [
   "rotate-[-6deg] translate-x-[0%] translate-y-[0%]",
-  "rotate-[4deg] translate-x-[82%] translate-y-[8%]",
-  "rotate-[-3deg] translate-x-[164%] translate-y-[0%]",
-  "rotate-[5deg] translate-x-[41%] translate-y-[112%]",
-  "rotate-[-4deg] translate-x-[123%] translate-y-[104%]",
+  "rotate-[5deg] translate-x-[92%] translate-y-[8%]",
+  "rotate-[-3deg] translate-x-[46%] translate-y-[112%]",
 ];
 ---
 <BaseLayout title={meta.work.title} description={meta.work.description}>
@@ -36,7 +32,7 @@ const fan = [
     </div>
     <div class="relative min-h-[23rem] md:col-span-6 md:min-h-[36rem]" data-parallax-root>
       {projects.map((p, i) => (
-        <a href={`#${p.slug}`} class={`print absolute left-0 top-0 w-[38%] ${fan[i]}`} aria-label={`Jump to ${p.name}`}>
+        <a href={`#${p.slug}`} class={`print absolute left-0 top-0 w-[48%] ${fan[i]}`} aria-label={`Jump to ${p.name}`}>
           <span class="block" data-depth={String(0.2 + i * 0.18)}>
             <span class="print-frame relative block aspect-[4/3] overflow-hidden border-[8px] border-paper shadow-lift">
               <World world={p.world} />
@@ -60,6 +56,11 @@ const fan = [
               <p class="eyebrow mt-6 opacity-80">0{i + 1} · {p.kind}</p>
               <h2 id={`${p.slug}-title`} class="mt-2 text-huge">{p.name}</h2>
               <p class="mt-5 text-title font-bold"><Emphasis text={p.after.headline} /></p>
+              <a href={p.url} target="_blank" rel="noopener" class="visit mt-8">
+                {w.visitLabel}
+                <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path d="M8 16L17 7M9 7h8v8" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                <span class="sr-only">(opens in a new tab)</span>
+              </a>
             </div>
             <div class:list={["relative pl-6 pt-6 md:col-span-7 md:pl-12 md:pt-10", i % 2 && "md:order-1"]}>
               <div class="relative aspect-[4/3] overflow-hidden rounded-paper border-[10px] border-paper shadow-lift" data-parallax-root>
@@ -89,8 +90,11 @@ const fan = [
           </div>
 
           <figure class="mt-16" data-reveal>
-            <Image src={p.screenshot} alt={p.screenshotAlt} width={1600} height={1000} class="h-auto w-full rounded-paper shadow-paper" />
-            <figcaption class="mt-3 text-sm opacity-80">{w.screenshotLabel} (1600 × 1000). {projectsNote}</figcaption>
+            <a href={p.url} target="_blank" rel="noopener" class="shot block overflow-hidden rounded-paper shadow-lift">
+              <Image src={p.screenshot} alt={p.screenshotAlt} widths={[720, 1100, p.screenshot.width]} sizes="(min-width: 1366px) 1256px, 92vw" class="h-auto w-full" />
+              <span class="sr-only">{w.visitLabel} (opens in a new tab)</span>
+            </a>
+            <figcaption class="mt-3 text-sm opacity-80">{w.screenshotLabel}: <a href={p.url} target="_blank" rel="noopener" class="underline underline-offset-2">{new URL(p.url).host}</a>. {projectsNote}</figcaption>
           </figure>
         </div>
       </section>
@@ -117,4 +121,22 @@ const fan = [
   .print:hover { z-index: 5; }
   .print-frame { transition: transform 0.5s var(--ease-paper); }
   .print:hover .print-frame { transform: translateY(-10px) rotate(-1deg); }
+  .visit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0 1.4rem;
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-weight: 700;
+    box-shadow: var(--shadow-paper);
+    transition: transform 0.3s var(--ease-paper), box-shadow 0.3s var(--ease-paper);
+  }
+  .visit:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); }
+  .visit svg { transition: transform 0.3s var(--ease-paper); }
+  .visit:hover svg { transform: translate(2px, -2px); }
+  .shot img { transition: transform 0.6s var(--ease-paper); }
+  .shot:hover img { transform: scale(1.015); }
 </style>
