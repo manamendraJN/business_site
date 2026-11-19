@@ -10,20 +10,15 @@ const noteTones = ["bg-marigold", "bg-mint", "bg-blush", "bg-paper"];
 const tilts = ["-rotate-3", "rotate-2", "rotate-[-1deg]", "rotate-3"];
 ---
 <BaseLayout title={meta.about.title} description={meta.about.description}>
-  <!-- Hero: the portrait print, overlapped by the greeting -->
+  <!-- Hero: the greeting, with a small byline photo -->
   <section class="relative overflow-hidden px-gutter pt-[calc(var(--spacing-header)+3rem)] pb-section">
-    <div class="grid items-end gap-10 md:grid-cols-12">
-      <figure class="portrait relative md:col-span-5 md:col-start-8 md:row-start-1">
-        <span class="tape" aria-hidden="true"></span>
-        <Image src={a.portrait} alt={a.portraitAlt} width={800} height={1000} fit="cover" position="top" class="aspect-[4/5] h-auto w-full rotate-2 object-cover object-top border-[10px] border-paper shadow-lift" loading="eager" />
-        <figcaption class="mt-4 text-sm text-ink-soft">{a.portraitLabel}</figcaption>
-      </figure>
-      <div class="relative z-10 md:col-span-8 md:col-start-1 md:row-start-1 md:pb-24">
-        <p class="eyebrow text-clay-deep">{a.eyebrow}</p>
-        <PopText as="h1" pop="load" text={a.headline} class="mt-3 text-mega" emClass="text-clay-deep" />
-        <p class="mt-8 max-w-[24ch] text-big font-extrabold leading-[1.05]">{a.lead}</p>
-      </div>
-    </div>
+    <p class="eyebrow text-clay-deep">{a.eyebrow}</p>
+    <figure class="mt-6 flex items-center gap-4">
+      <Image src={a.portrait} alt={a.portraitAlt} width={200} height={200} fit="cover" position="top" class="byline-photo" loading="eager" />
+      <figcaption class="text-sm font-bold text-ink-soft">{a.portraitLabel}</figcaption>
+    </figure>
+    <PopText as="h1" pop="load" text={a.headline} class="mt-3 text-mega" emClass="text-clay-deep" />
+    <p class="mt-8 max-w-[24ch] text-big font-extrabold leading-[1.05]">{a.lead}</p>
   </section>
 
   <!-- Story -->
@@ -62,15 +57,15 @@ const tilts = ["-rotate-3", "rotate-2", "rotate-[-1deg]", "rotate-3"];
 </BaseLayout>
 
 <style>
-  .tape {
-    position: absolute;
-    top: -0.9rem;
-    left: 50%;
-    z-index: 2;
-    width: 7rem;
-    height: 1.8rem;
-    background: rgb(244 178 60 / 0.8);
-    transform: translateX(-50%) rotate(-4deg);
+  .byline-photo {
+    width: 6rem;
+    height: 6rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+    border: 3px solid var(--color-paper);
+    box-shadow: var(--shadow-paper);
   }
   .pin {
     position: absolute;
@@ -81,8 +76,5 @@ const tilts = ["-rotate-3", "rotate-2", "rotate-[-1deg]", "rotate-3"];
     border-radius: 50%;
     background: var(--color-clay);
     box-shadow: 0 2px 3px rgb(30 26 21 / 0.35);
-  }
-  @media (min-width: 768px) {
-    .portrait { margin-bottom: -2rem; }
   }
 </style>
