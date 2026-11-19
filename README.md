@@ -60,7 +60,7 @@ The Depthwyn mark is a dark rounded tile holding a split "D": a cream bar and a 
 
 ## Images and concept projects
 
-- **Portrait (About page):** `src/assets/portrait.jpg`
+- **Portrait (About page):** `src/assets/portrait.jpg`, shown small and uncropped
 - **Concept project screenshots (Work page):** `src/assets/projects/`, one per project. Each project in `projects` in `src/content/site.ts` also has a `url`: the live concept site that "Visit the live site" opens.
 
 To change an image, drop the new one (JPG/PNG/WebP) into `src/assets/`, then update the matching `import` line at the top of `src/content/site.ts`. Astro resizes and optimises it automatically. Keep source images under about 2000px wide.
