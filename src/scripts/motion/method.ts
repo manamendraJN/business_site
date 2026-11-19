@@ -6,7 +6,6 @@
  * section passes, each number popping up as the thread reaches it.
  */
 import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MOTION } from "./common";
 
 export function initMethod(mm: gsap.MatchMedia) {
@@ -51,24 +50,6 @@ export function initMethod(mm: gsap.MatchMedia) {
           .fromTo(item.querySelector("h3"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.12 }, at + 0.03);
       });
 
-      // Handover: at the end of the page the section holds still and the
-      // footer rises over it (scroll-driven); it sinks back and darkens.
-      // (No scaling: shrinking would show the sheet's straight side edges.)
-      const pin = document.querySelector<HTMLElement>("[data-brief-pin]");
-      const sheet = document.querySelector<HTMLElement>("[data-brief-sheet]");
-      const shade = document.querySelectorAll<Element>("[data-brief-shade], .brief-edge-shade");
-      const footer = document.querySelector<HTMLElement>("[data-site-footer]");
-      if (pin && sheet && footer) {
-        const covering = {
-          trigger: pin,
-          start: "bottom bottom",
-          end: () => `+=${footer.offsetHeight}`,
-        };
-        ScrollTrigger.create({ ...covering, pin: true, pinSpacing: false });
-        gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { ...covering, scrub: true } })
-          .fromTo(sheet, { y: 0 }, { y: 60 }, 0)
-          .fromTo(shade, { opacity: 0 }, { opacity: 0.55 }, 0);
-      }
     }
   });
 }

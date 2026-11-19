@@ -4,6 +4,7 @@ import HeroStage from "@/components/home/HeroStage.astro";
 import SceneProof from "@/components/home/SceneProof.astro";
 import SceneOffer from "@/components/home/SceneOffer.astro";
 import MethodBrief from "@/components/home/MethodBrief.astro";
+import FaqBrief from "@/components/home/FaqBrief.astro";
 import { meta } from "@/content/site";
 ---
 <BaseLayout title={meta.home.title} description={meta.home.description}>
@@ -15,4 +16,6 @@ import { meta } from "@/content/site";
   <SceneOffer />
   <!-- Scene 5: the method (short; full steps on /services/#how-we-work) -->
   <MethodBrief />
+  <!-- Questions owners often ask (the footer rises over this last section) -->
+  <FaqBrief />
 </BaseLayout>

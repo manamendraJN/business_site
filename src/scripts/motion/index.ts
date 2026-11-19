@@ -16,6 +16,7 @@ import { initHero } from "./hero";
 import { initProof } from "./proof";
 import { initOffer } from "./offer";
 import { initMethod } from "./method";
+import { initFooterHandover } from "./footer";
 import { MOTION, initPopText, initParallax, initMagnetic, initReveal } from "./common";
 import { initPageTransitions } from "./transitions";
 
@@ -42,6 +43,7 @@ function start() {
   initProof(mm);
   initOffer(mm);
   initMethod(mm);
+  initFooterHandover(mm);
   initPopText(mm);
   initReveal(mm);
   initParallax(mm);

@@ -114,7 +114,10 @@ const isActive = (href: string) => (href === "/" ? current === "/" : current.sta
   .tab-logo { padding-left: 0.9rem; padding-right: 1.1rem; font-size: 1.1rem; }
 
   .tab-nav { display: none; gap: 0.4rem; }
-  .tab-page { background: var(--color-paper-deep); padding-top: 1rem; }
+  /* page tabs: the same crisp cream as the logo tab, warm marigold on hover,
+     and the current page in ink */
+  .tab-page { background: var(--color-paper); color: var(--color-ink-soft); padding-top: 1rem; }
+  .tab-page:hover { background: var(--color-marigold); color: var(--color-ink); }
   .tab-page.is-active { background: var(--color-ink); color: var(--color-paper); padding-top: 1.4rem; }
 
   .tab-cta { background: var(--color-clay); color: var(--color-paper); padding-top: 1.35rem; padding-bottom: 0.9rem; }

@@ -5,6 +5,7 @@ import CtaButton from "@/components/ui/CtaButton.astro";
 import TornEdge from "@/components/ui/TornEdge.astro";
 import ServiceEmblem from "@/components/art/ServiceEmblem.astro";
 import SceneMethod from "@/components/home/SceneMethod.astro";
+import FaqList from "@/components/FaqList.astro";
 import { meta, servicesPage as sp, services, cta, home } from "@/content/site";
 
 const tones = [
@@ -101,17 +102,7 @@ const tones = [
       </aside>
       <div class="md:col-span-8">
         <PopText as="h2" text={sp.faqHeadline} class="text-big" />
-        <div class="mt-10 space-y-4">
-          {sp.faq.map((f) => (
-            <details class="faq group rounded-paper bg-paper-deep shadow-paper">
-              <summary class="flex cursor-pointer list-none items-center justify-between gap-6 p-6 text-lg font-bold">
-                {f.q}
-                <span class="faq-icon grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink text-paper" aria-hidden="true">+</span>
-              </summary>
-              <p class="max-w-[60ch] px-6 pb-6">{f.a}</p>
-            </details>
-          ))}
-        </div>
+        <FaqList class="mt-10" />
         <div class="mt-16">
           <CtaButton href={cta.href} label={cta.label} />
         </div>
@@ -133,7 +124,4 @@ const tones = [
   .contents-row:hover { padding-left: 1rem; background: var(--color-paper-deep); }
   .contents-arrow { transition: transform 0.4s var(--ease-paper); }
   .contents-row:hover .contents-arrow { transform: translateX(6px); }
-  .faq summary::-webkit-details-marker { display: none; }
-  .faq-icon { transition: transform 0.3s var(--ease-paper); }
-  .faq[open] .faq-icon { transform: rotate(45deg); }
 </style>

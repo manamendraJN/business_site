@@ -1,0 +1,45 @@
+---
+/**
+ * QUESTIONS — the last section on Home, after "How we work".
+ * The questions owners often ask (the same list as on the Services page),
+ * so a visitor's last doubts are answered right before the footer.
+ * With motion, this section holds still at the end of the page while the
+ * footer rises over it (scroll-driven); it sinks back and darkens beneath it.
+ */
+import PopText from "../ui/PopText.astro";
+import FaqList from "../FaqList.astro";
+import { home, servicesPage } from "@/content/site";
+
+const f = home.faq;
+const arrow = "M5 12h13M13 6l6 6-6 6";
+---
+<div data-footer-pin class="relative z-[4]">
+  <section class="faq-brief relative bg-paper py-section" aria-labelledby="faq-title" data-footer-sheet>
+    <div class="footer-shade" data-footer-shade aria-hidden="true"></div>
+    <div class="grid gap-10 px-gutter md:grid-cols-12">
+      <div class="md:col-span-4">
+        <p class="eyebrow text-clay-deep">{f.eyebrow}</p>
+        <h2 id="faq-title" class="mt-3 text-big"><PopText as="span" text={servicesPage.faqHeadline} /></h2>
+        <p class="mt-6 max-w-[32ch] text-lead">{f.sub}</p>
+        <a href="/contact/" class="link-ink mt-5 inline-flex items-center gap-2 font-bold text-clay-deep">
+          {f.more}
+          <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path d={arrow} stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </a>
+      </div>
+      <FaqList class="md:col-span-8" />
+    </div>
+  </section>
+</div>
+
+<style>
+  .footer-shade { display: none; }
+  :global(html.motion) .footer-shade {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: var(--color-ink);
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>

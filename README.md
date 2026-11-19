@@ -22,7 +22,7 @@ Everything you'd want to change is in **`src/content/site.ts`**:
 - business name, location, phone, email, WhatsApp (placeholders are marked `[like this]` or `example.com`)
 - page titles and meta descriptions
 - all home-page story copy, services, process steps, concept projects
-- About page story, beliefs and testimonial placeholders
+- About page story and beliefs
 - contact form labels and the **form endpoint**
 
 Words wrapped in `*asterisks*` are shown in the italic accent font.

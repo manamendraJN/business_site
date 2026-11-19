@@ -5,8 +5,6 @@
  * The five steps on one line, joined by a thread that grows as the visitor
  * scrolls. The full version (what happens, and "your part" in each step)
  * lives on the Services page, in the "How we work" section.
- * With motion, this section holds still at the end of the page while the
- * footer rises over it (scroll-driven); it sinks back and darkens beneath it.
  */
 import PopText from "../ui/PopText.astro";
 import { home, steps } from "@/content/site";
@@ -14,9 +12,8 @@ import { home, steps } from "@/content/site";
 const m = home.method;
 const arrow = "M5 12h13M13 6l6 6-6 6";
 ---
-<div data-brief-pin class="relative z-[4]">
-<section data-scene="method" class="method-brief relative bg-paper-deep py-section" aria-labelledby="method-title" data-brief-sheet>
-  <div class="brief-shade" data-brief-shade aria-hidden="true"></div>
+<div class="relative z-[4]">
+<section data-scene="method" class="method-brief relative bg-paper-deep py-section" aria-labelledby="method-title">
 
   <div class="grid gap-6 px-gutter md:grid-cols-12">
     <div class="md:col-span-7">
@@ -48,16 +45,6 @@ const arrow = "M5 12h13M13 6l6 6-6 6";
 </div>
 
 <style>
-  .brief-shade { display: none; }
-  :global(html.motion) .brief-shade {
-    display: block;
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    background: var(--color-ink);
-    opacity: 0;
-    pointer-events: none;
-  }
   .brief-steps { display: grid; gap: 1.5rem; }
   .brief-step { position: relative; display: flex; align-items: center; gap: 1rem; }
   .brief-num {

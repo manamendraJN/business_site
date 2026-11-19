@@ -53,24 +53,10 @@ const tilts = ["-rotate-3", "rotate-2", "rotate-[-1deg]", "rotate-3"];
         </li>
       ))}
     </ul>
-  </section>
-
-  <!-- Testimonials: clearly labelled placeholders -->
-  <section class="relative bg-paper px-gutter py-section">
-    <TornEdge color="paper" side="top" seed={141} class="absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
-    <h2 class="text-big">{a.testimonialsHeadline}</h2>
-    <div class="mt-10 grid gap-8 md:grid-cols-2">
-      {a.testimonials.map((t) => (
-        <figure class="placeholder-box rounded-paper p-8 text-left" style="place-items: start;">
-          <p class="concept-badge">{t.label}</p>
-          <blockquote class="serif-em mt-5 text-title">“{t.text}”</blockquote>
-          <figcaption class="mt-4 font-bold">— {t.who}</figcaption>
-        </figure>
-      ))}
-    </div>
-    <div class="mt-16 flex flex-wrap items-center gap-6">
+    <!-- what to do next -->
+    <div class="mt-20 flex flex-wrap items-center gap-6">
       <CtaButton href={cta.href} label={cta.label} />
-      <a href="/work/" class="link-ink font-bold">See the concept projects</a>
+      <a href="/work/" class="link-ink font-bold text-paper">See the concept projects</a>
     </div>
   </section>
 </BaseLayout>

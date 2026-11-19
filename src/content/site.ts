@@ -168,6 +168,12 @@ export const home = {
     // short version on the Home page
     more: "See every step in detail",
   },
+  // Questions — after "How we work" (the questions themselves are servicesPage.faq)
+  faq: {
+    eyebrow: "Questions",
+    sub: "The things owners ask most, answered in plain words.",
+    more: "Ask your own question",
+  },
 };
 
 /* --------------------------------------------------------------------------
@@ -462,11 +468,6 @@ export const aboutPage = {
     { title: "Plain words", text: "No jargon. If I can't explain it simply, I haven't understood it yet." },
     { title: "Motion with meaning", text: "Every animation has a job. If it doesn't help your story, it goes." },
     { title: "Fast on phones", text: "Most of your visitors are on a phone. The site has to feel great there first." },
-  ],
-  testimonialsHeadline: "Kind words",
-  testimonials: [
-    { label: "Testimonial placeholder", text: "Add a real quote from a client here once you have one.", who: "[Client name], [Business]" },
-    { label: "Testimonial placeholder", text: "Add a real quote from a client here once you have one.", who: "[Client name], [Business]" },
   ],
   basedLabel: "Based in",
 };
