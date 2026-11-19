@@ -456,9 +456,9 @@ export const aboutPage = {
   lead: "I build websites that feel like walking into your business.",
   portrait,
   portraitAlt: "Portrait of Navodya Manamendra, founder of Depthwyn",
-  portraitLabel: "Navodya Manamendra · Malabe, Sri Lanka",
+  portraitLabel: "Navodya Manamendra",
   story: [
-    "I started Depthwyn because I kept seeing wonderful local businesses hidden behind plain websites. The coffee was great, the clinic was kind, the hotel had the best view on the coast — but the website said none of it.",
+    "I started Depthwyn because I kept seeing wonderful local businesses hidden behind plain websites.",
     "Most websites are built like forms: a logo, a photo, a button. I build them like stories. Each scroll answers a question your customer is already asking, until they feel ready to visit, call or book.",
     "I keep the process simple, because you have a business to run. You'll always know what's happening, what I need from you, and what comes next.",
   ],
