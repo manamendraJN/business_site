@@ -18,7 +18,7 @@ import shotLoom from "../assets/projects/loom-and-linen.webp";
 export const business = {
   name: "Depthwyn",
   shortName: "Depthwyn",
-  tagline: "Websites that tell your story.",
+  tagline: "Websites that make people want to visit.",
   location: "Malabe, Sri Lanka",
   ownerName: "Navodya Manamendra",
   year: new Date().getFullYear(),
@@ -64,9 +64,9 @@ export const cta = {
    -------------------------------------------------------------------------- */
 export const meta = {
   home: {
-    title: "Depthwyn — Websites that tell your story",
+    title: "Depthwyn — Websites that make people want to visit",
     description:
-      "Web design for cafes, clinics, salons, hotels and shops. I turn plain, forgettable websites into story-driven sites that make visitors want to visit you.",
+      "Story-driven web design for every kind of business. I turn plain, forgettable websites into ones that make visitors want to visit you.",
   },
   work: {
     title: "Work — Three concept projects | Depthwyn",
@@ -76,7 +76,7 @@ export const meta = {
   services: {
     title: "Services — Launch Page, Business Site, Motion Upgrade, Care Plan | Depthwyn",
     description:
-      "Four simple ways to get a website that tells your story, explained in plain words: what you get, who it suits, and what happens next.",
+      "Four simple ways to get a website your customers remember, explained in plain words: what you get, who it suits, and what happens next.",
   },
   about: {
     title: "About — The person behind Depthwyn",
@@ -199,7 +199,7 @@ export const services: Service[] = [
       "One beautiful scrolling page that introduces your business the way you would in person — and ends with a clear way to reach you.",
     goodFor: "A new business, a new product, an event, or a fresh start.",
     gets: [
-      "One page that tells your story from first look to “get in touch”",
+      "One page that walks visitors from first look to “get in touch”",
       "Original illustrations and motion made just for you",
       "A clear button to call, message or book",
       "Looks great and loads fast on phones",
@@ -214,7 +214,7 @@ export const services: Service[] = [
     short: "A full multi-page site with enquiry or booking.",
     plain:
       "A complete website with all the pages your customers look for, plus an enquiry form or booking so they can take the next step on the spot.",
-    goodFor: "Cafes, clinics, salons, hotels and shops that need the full picture.",
+    goodFor: "Businesses that need the full picture, not just one page.",
     gets: [
       "Home, services, about, contact and any other pages you need",
       "An enquiry form or booking that lands in your inbox",
@@ -408,7 +408,7 @@ export const servicesPage = {
   eyebrow: "Services",
   headline: "Plain words. *Clear outcomes.*",
   intro:
-    "Every service is built around one idea: your website should tell your story and make it easy for customers to choose you. Here is what each one includes.",
+    "Every service is built around one idea: your website should show what makes you different and make it easy for customers to choose you. Here is what each one includes.",
   askLabel: "Ask about",
   howLink: "How we work, step by step",
   needHeadline: "What I'll need from you",
@@ -490,7 +490,7 @@ export const contactPage = {
     name: "Your name",
     business: "Business name",
     businessType: "What kind of business?",
-    businessTypes: ["Cafe or restaurant", "Clinic", "Salon or spa", "Hotel or guesthouse", "Shop", "Something else"],
+    businessTypes: ["Food and drink", "Health and wellness", "Beauty", "Travel and stays", "Retail", "Services", "Something else"],
     service: "What are you interested in?",
     notSure: "Not sure yet",
     website: "Current website (if you have one)",
@@ -665,7 +665,7 @@ export const chatbot = {
    FOOTER & misc
    -------------------------------------------------------------------------- */
 export const footer = {
-  line: "Story-driven websites for cafes, clinics, salons, hotels, shops and every local business with a story worth telling.",
+  line: "Story-driven websites for every business with a story worth telling.",
   conceptNote: "Projects shown are concept samples, not real clients.",
   pagesLabel: "Pages",
   contactLabel: "Say hello",
