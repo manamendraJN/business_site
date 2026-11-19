@@ -180,6 +180,13 @@ const labelW = 30 + delivered.length * 8.6;
   /* In the still version the website is already delivered: the roof is empty. */
   :global(html:not(.motion)) .story-path :global([data-parcel]) { display: none; }
   .layer-haze { filter: drop-shadow(0 6px 8px rgb(30 26 21 / 0.12)); }
+  /* Phones and tablets: these soft shadows would be redrawn on every scroll
+     frame while the landscape rises and the van drives, which makes the hero
+     stutter. They are barely visible at phone size, so leave them out there. */
+  @media (pointer: coarse) {
+    .layer-haze,
+    .story-path :global(.layer-mid) { filter: none; }
+  }
   .label-text {
     font-family: var(--font-display);
     font-size: 15px;

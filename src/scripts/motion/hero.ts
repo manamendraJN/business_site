@@ -104,8 +104,9 @@ export function initHero(mm: gsap.MatchMedia) {
       // the note is pushed aside as the page starts to crack
       .to(note, { y: -14, rotate: mobile ? -3 : -5, duration: 0.1 }, 0.02)
       .fromTo(crack, { scaleY: 0 }, { scaleY: 1, duration: 0.12 }, 0.03)
-      // the frosted veil clears so the tear is sharp
-      .fromTo([veil, sharpStamp], { opacity: 1 }, { opacity: 0, duration: 0.08 }, 0.07)
+      // the frosted veil clears so the tear is sharp (autoAlpha also hides it
+      // once faded, so the browser stops computing the blur behind it)
+      .fromTo([veil, sharpStamp], { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.08 }, 0.07)
       .fromTo(halfStamps, { opacity: 0 }, { opacity: 1, duration: 0.08 }, 0.07)
       // the two halves swing open toward the viewer like doors
       .to(halfL, { rotateY: -96, xPercent: -14, duration: 0.26, ease: "power2.in" }, 0.15)
