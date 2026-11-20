@@ -7,7 +7,6 @@
      at the top of this file. Astro will resize and optimise it for you.
    ========================================================================== */
 
-import portrait from "../assets/portrait.jpg";
 import shotKopi from "../assets/projects/kopi-corner.webp";
 import shotPetal from "../assets/projects/petal-and-stem.webp";
 import shotLoom from "../assets/projects/loom-and-linen.webp";
@@ -79,9 +78,9 @@ export const meta = {
       "Four simple ways to get a website your customers remember, explained in plain words: what you get, who it suits, and what happens next.",
   },
   about: {
-    title: "About — The person behind Depthwyn",
+    title: "About — Depthwyn",
     description:
-      "Why I build story-driven websites for local businesses, and how I keep the whole process simple for busy owners.",
+      "Why we build story-driven websites for local businesses, and how we keep the whole process simple for busy owners.",
   },
   contact: {
     title: "Contact — Start your project | Depthwyn",
@@ -452,20 +451,17 @@ export const servicesPage = {
    -------------------------------------------------------------------------- */
 export const aboutPage = {
   eyebrow: "About",
-  headline: "Hi, I'm *Navodya.*",
-  lead: "I build websites that feel like walking into your business.",
-  portrait,
-  portraitAlt: "Portrait of Navodya Manamendra, founder of Depthwyn",
-  portraitLabel: "Navodya Manamendra",
+  headline: "We're *Depthwyn.*",
+  lead: "We build websites that feel like walking into your business.",
   story: [
-    "I started Depthwyn because I kept seeing wonderful local businesses hidden behind plain websites.",
-    "Most websites are built like forms: a logo, a photo, a button. I build them like stories. Each scroll answers a question your customer is already asking, until they feel ready to visit, call or book.",
-    "I keep the process simple, because you have a business to run. You'll always know what's happening, what I need from you, and what comes next.",
+    "Depthwyn started because we kept seeing wonderful local businesses hidden behind plain websites.",
+    "Most websites are built like forms: a logo, a photo, a button. We build them like stories. Each scroll answers a question your customer is already asking, until they feel ready to visit, call or book.",
+    "We keep the process simple, because you have a business to run. You'll always know what's happening, what we need from you, and what comes next.",
   ],
-  beliefsHeadline: "What I believe",
+  beliefsHeadline: "What we believe",
   beliefs: [
     { title: "Story first", text: "Before colours or code, we decide what your customer should feel." },
-    { title: "Plain words", text: "No jargon. If I can't explain it simply, I haven't understood it yet." },
+    { title: "Plain words", text: "No jargon. If we can't explain it simply, we haven't understood it yet." },
     { title: "Motion with meaning", text: "Every animation has a job. If it doesn't help your story, it goes." },
     { title: "Fast on phones", text: "Most of your visitors are on a phone. The site has to feel great there first." },
   ],
@@ -497,9 +493,8 @@ export const contactPage = {
     message: "Tell me about your business and your customers",
     messagePlaceholder: "What do you do, who are your customers, and what would you like your website to do for you?",
     email: "Email",
-    phone: "Phone or WhatsApp (optional)",
-    contactBy: "Best way to reach you",
-    contactOptions: ["Email", "Phone", "WhatsApp"],
+    phone: "Phone or WhatsApp",
+    phoneHint: "Please enter a phone number we can call or message, e.g. +94 77 123 4567",
     submit: "Send my enquiry",
     sending: "Sending…",
   },

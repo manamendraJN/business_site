@@ -30,8 +30,8 @@ const f = c.fields;
       <input name="email" type="email" autocomplete="email" required />
     </label>
     <label class="field">
-      <span>{f.phone}</span>
-      <input name="phone" type="tel" autocomplete="tel" />
+      <span>{f.phone} *</span>
+      <input name="phone" type="tel" inputmode="tel" autocomplete="tel" required pattern="[+]?[0-9 \(\)\-]{7,20}" title={f.phoneHint} />
     </label>
     <label class="field">
       <span>{f.businessType}</span>
@@ -66,18 +66,6 @@ const f = c.fields;
     <span>{f.message} *</span>
     <textarea name="message" rows="5" required placeholder={f.messagePlaceholder}></textarea>
   </label>
-
-  <fieldset class="mt-9">
-    <legend class="field-label">{f.contactBy}</legend>
-    <div class="mt-3 flex flex-wrap gap-2">
-      {f.contactOptions.map((o, i) => (
-        <label class="chip">
-          <input type="radio" name="contact_by" value={o} class="sr-only" checked={i === 0} />
-          <span>{o}</span>
-        </label>
-      ))}
-    </div>
-  </fieldset>
 
   <div class="mt-10 flex flex-wrap items-center gap-6">
     <button type="submit" class="btn-cta cursor-pointer" data-magnetic data-submit>
