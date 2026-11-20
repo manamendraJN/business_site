@@ -4,8 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
-  // Change this to your real domain before going live (used for canonical URLs).
-  site: "https://www.example.com",
+  // The live address (used for canonical URLs and link previews).
+  site: "https://business-site.depthwyn.workers.dev",
   vite: {
     plugins: [tailwindcss()],
   },

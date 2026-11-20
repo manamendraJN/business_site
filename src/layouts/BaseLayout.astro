@@ -32,8 +32,11 @@ const current = Astro.url.pathname;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL("/logo-512.png", Astro.site)} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={new URL("/og-image.jpg", Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Depthwyn: Websites that make people want to visit" />
+    <meta name="twitter:card" content="summary_large_image" />
 
     <Font cssVariable="--font-bricolage" preload />
     <Font cssVariable="--font-instrument" />
