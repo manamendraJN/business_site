@@ -19,7 +19,6 @@ export const business = {
   shortName: "Depthwyn",
   tagline: "Websites that make people want to visit.",
   location: "Malabe, Sri Lanka",
-  ownerName: "Navodya Manamendra",
   year: new Date().getFullYear(),
 };
 
@@ -65,7 +64,7 @@ export const meta = {
   home: {
     title: "Depthwyn — Websites that make people want to visit",
     description:
-      "Story-driven web design for every kind of business. I turn plain, forgettable websites into ones that make visitors want to visit you.",
+      "Story-driven web design for every kind of business. We turn plain, forgettable websites into ones that make visitors want to visit you.",
   },
   work: {
     title: "Work — Three concept projects | Depthwyn",
@@ -85,7 +84,7 @@ export const meta = {
   contact: {
     title: "Contact — Start your project | Depthwyn",
     description:
-      "Tell me about your business and I'll reply with simple next steps. Email, phone, WhatsApp or the short form — whatever is easiest for you.",
+      "Tell us about your business and we'll reply with simple next steps. Email, phone, WhatsApp or the short form — whatever is easiest for you.",
   },
   notFound: {
     title: "Page not found | Depthwyn",
@@ -123,8 +122,8 @@ export const home = {
   // Scene 2 — the turn
   turn: {
     eyebrow: "What if…",
-    headline: "What if your website told *your story* instead?",
-    sub: "I don't build pages. I build a story that walks your customer from first look to “I want this.”",
+    headline: "What if your website made people *want to visit?*",
+    sub: "We don't build pages. We build a story that walks your customer from first look to “I want this.”",
     // Label that pops up when the van delivers the website to the house
     delivered: "Your new website — delivered",
   },
@@ -133,7 +132,7 @@ export const home = {
     eyebrow: "The proof",
     headline: "Same change. *Three* different worlds.",
     intro:
-      "Three sample businesses, each a live site you can open and scroll through. These are concept projects I made to show the idea — they are not real clients.",
+      "Three sample businesses, each a live site you can open and scroll through. These are concept projects we made to show the idea — they are not real clients.",
     beforeLabel: "Before", // used on the Work page
     // short version on the Home page
     more: "See all three concepts",
@@ -144,14 +143,14 @@ export const home = {
   // CTA repeated after the proof
   proofCta: {
     headline: "Want this change for *your* business?",
-    text: "Tell me what you do. I'll show you the story your website could tell.",
+    text: "Tell us what you do. We'll show you what your website could become.",
     button: "Start a project",
   },
   // Scene 4 — the offer
   offer: {
     eyebrow: "The offer",
     headline: "Four ways to get there.",
-    sub: "Plain words, no tech talk. Pick one, or ask me which fits.",
+    sub: "Plain words, no tech talk. Pick one, or ask us which fits.",
     getsLabel: "What you get",
     forLabel: "Good for",
     // short version on the Home page
@@ -162,7 +161,7 @@ export const home = {
   method: {
     eyebrow: "How we work",
     headline: "Simple from *first call* to launch.",
-    sub: "You bring the business. I handle the rest, one clear step at a time, and you always know what happens next.",
+    sub: "You bring the business. We handle the rest, one clear step at a time, and you always know what happens next.",
     yourPartLabel: "Your part",
     // short version on the Home page
     more: "See every step in detail",
@@ -227,9 +226,9 @@ export const services: Service[] = [
   {
     slug: "motion-upgrade",
     name: "Motion Upgrade",
-    short: "I rebuild your existing site with story and animation.",
+    short: "We rebuild your existing site with story and animation.",
     plain:
-      "You keep what works. I rebuild the rest so your site finally feels like your business — with story, depth and movement.",
+      "You keep what works. We rebuild the rest so your site finally feels like your business — with story, depth and movement.",
     goodFor: "Businesses whose website works, but looks like everyone else's.",
     gets: [
       "A friendly review of what your current site says (and doesn't)",
@@ -245,7 +244,7 @@ export const services: Service[] = [
     name: "Care Plan",
     short: "Monthly updates, hosting and support.",
     plain:
-      "I look after your website every month, so you never have to think about hosting, updates or “how do I change this?” again.",
+      "We look after your website every month, so you never have to think about hosting, updates or “how do I change this?” again.",
     goodFor: "Anyone who would rather run their business than their website.",
     gets: [
       "Hosting, security updates and backups taken care of",
@@ -259,18 +258,18 @@ export const services: Service[] = [
 ];
 
 /* --------------------------------------------------------------------------
-   METHOD — how I work
+   METHOD — how we work
    -------------------------------------------------------------------------- */
 export const steps = [
   {
     title: "A friendly first call",
     text: "We talk about your business, your customers and what you want your website to do. No jargon, no pressure.",
-    yourPart: "Just tell me about your business.",
+    yourPart: "Just tell us about your business.",
   },
   {
     title: "Your story map",
-    text: "I write down the story your site will tell: who your customer is, what they worry about, and what makes them say yes.",
-    yourPart: "Read it and tell me if it sounds like you.",
+    text: "We map out what your site will say: who your customer is, what they worry about, and what makes them say yes.",
+    yourPart: "Read it and tell us if it sounds like you.",
   },
   {
     title: "A first look",
@@ -279,12 +278,12 @@ export const steps = [
   },
   {
     title: "Build and polish",
-    text: "I build the site, test it on phones and computers, and make sure it loads quickly.",
-    yourPart: "Send photos, menus or details when I ask.",
+    text: "We build the site, test it on phones and computers, and make sure it loads quickly.",
+    yourPart: "Send photos, menus or details when we ask.",
   },
   {
     title: "Launch day",
-    text: "Your site goes live on your own web address. I show you how everything works, and the Care Plan can keep it fresh.",
+    text: "Your site goes live on your own web address. We show you how everything works, and the Care Plan can keep it fresh.",
     yourPart: "Celebrate, and share it with your customers.",
   },
 ];
@@ -390,7 +389,7 @@ export const workPage = {
   eyebrow: "Work",
   headline: "Three businesses. *Three stories.*",
   intro:
-    "Every project on this page is a concept: a sample I designed and built to show how a plain website can become a story. Each one is live, so open it and scroll through. Real client work will appear here soon.",
+    "Every project on this page is a concept: a sample we designed and built to show how a plain website can become a story. Each one is live, so open it and scroll through. Real client work will appear here soon.",
   problemLabel: "The plain version",
   storyLabel: "The story",
   momentsLabel: "Key moments",
@@ -410,7 +409,7 @@ export const servicesPage = {
     "Every service is built around one idea: your website should show what makes you different and make it easy for customers to choose you. Here is what each one includes.",
   askLabel: "Ask about",
   howLink: "How we work, step by step",
-  needHeadline: "What I'll need from you",
+  needHeadline: "What we'll need from you",
   needs: [
     "A short call to talk about your business",
     "Your logo, if you have one (if not, we can talk about it)",
@@ -421,15 +420,15 @@ export const servicesPage = {
   faq: [
     {
       q: "Do I need to know anything about websites?",
-      a: "Not at all. You know your business — that's the important part. I explain everything in plain words and handle all the technical work.",
+      a: "Not at all. You know your business — that's the important part. We explain everything in plain words and handle all the technical work.",
     },
     {
       q: "How much does it cost?",
-      a: "Every business is different, so after our first call I send you a clear quote. You will know the price before any work starts.",
+      a: "Every business is different, so after our first call we send you a clear quote. You will know the price before any work starts.",
     },
     {
       q: "How long does it take?",
-      a: "It depends on the size of your site. Your quote includes a simple timeline, and I keep you updated at every step.",
+      a: "It depends on the size of your site. Your quote includes a simple timeline, and we keep you updated at every step.",
     },
     {
       q: "Will all this motion make my site slow?",
@@ -437,7 +436,7 @@ export const servicesPage = {
     },
     {
       q: "Can I change things myself later?",
-      a: "Yes. I can set up simple editing for text and photos, or the Care Plan can take care of changes for you.",
+      a: "Yes. We can set up simple editing for text and photos, or the Care Plan can take care of changes for you.",
     },
     {
       q: "I already have a website. Do I start again?",
@@ -474,12 +473,12 @@ export const aboutPage = {
 export const contactPage = {
   eyebrow: "Contact",
   headline: "Start your *project.*",
-  intro: "Tell me a little about your business. I'll reply with simple next steps.",
+  intro: "Tell us a little about your business. We'll reply with simple next steps.",
   directHeadline: "Rather talk directly?",
   nextHeadline: "What happens next",
   next: [
-    "I read your message and think about your story.",
-    "I reply with a few questions and a time to talk.",
+    "We read your message and think about what your website should do.",
+    "We reply with a few questions and a time to talk.",
     "We have a friendly call and plan your first step.",
   ],
   fields: {
@@ -490,7 +489,7 @@ export const contactPage = {
     service: "What are you interested in?",
     notSure: "Not sure yet",
     website: "Current website (if you have one)",
-    message: "Tell me about your business and your customers",
+    message: "Tell us about your business and your customers",
     messagePlaceholder: "What do you do, who are your customers, and what would you like your website to do for you?",
     email: "Email",
     phone: "Phone or WhatsApp",
@@ -500,11 +499,11 @@ export const contactPage = {
   },
   success: {
     title: "Thank you — your message is on its way.",
-    text: "I'll read it carefully and reply with simple next steps soon.",
+    text: "We'll read it carefully and reply with simple next steps soon.",
   },
   error:
-    "Sorry, something went wrong sending your message. Please try again, or email me directly.",
-  privacy: "I'll only use your details to reply to your enquiry.",
+    "Sorry, something went wrong sending your message. Please try again, or email us directly.",
+  privacy: "We'll only use your details to reply to your enquiry.",
 };
 
 /* --------------------------------------------------------------------------
@@ -532,7 +531,7 @@ const faqAnswer = (start: string) =>
   servicesPage.faq.find((f) => f.q.startsWith(start))?.a ?? "";
 const whatsappWith = (text: string) => `${contact.whatsappHref}?text=${encodeURIComponent(text)}`;
 const talkLinks: ChatLink[] = [
-  { label: "Message on WhatsApp", href: whatsappWith("Hi Navodya, I found Depthwyn's website and have a question."), external: true },
+  { label: "Message on WhatsApp", href: whatsappWith("Hi Depthwyn, I found your website and have a question."), external: true },
   { label: "Send an enquiry", href: "/contact/" },
 ];
 
@@ -541,12 +540,12 @@ export const chatbot = {
   title: "Ask Depthwyn",
   status: "Quick answers, any time",
   close: "Close chat",
-  greeting: `Hi! I'm the ${business.name} helper. Pick a topic below or type your question — I'll answer straight away.`,
+  greeting: `Hi! Welcome to ${business.name}. Pick a topic below or type your question for a quick answer.`,
   inputLabel: "Type your question",
   inputPlaceholder: "Type your question…",
   send: "Send",
   menuLabel: "Show all topics",
-  notSure: `I'm not sure about that one — but ${business.ownerName.split(" ")[0]} can help. Send a quick message and you'll get a real answer.`,
+  notSure: "We don't have a quick answer for that one — send us a message and you'll get a real reply.",
   // the first buttons a visitor sees
   start: ["services", "price", "time", "process", "work", "human"],
   // the buttons behind "Show all topics"
@@ -633,9 +632,9 @@ export const chatbot = {
     },
     {
       id: "about",
-      ask: "Who is behind Depthwyn?",
-      keywords: ["who", "about", "owner", "founder", "navodya", "team", "where", "location", "based", "sri lanka", "malabe"],
-      answer: `${business.name} is run by ${business.ownerName}, based in ${business.location}. ${aboutPage.lead}`,
+      ask: "Who is Depthwyn?",
+      keywords: ["who", "about", "owner", "founder", "team", "studio", "where", "location", "based", "sri lanka", "malabe"],
+      answer: `${business.name} is a web design studio based in ${business.location}. ${aboutPage.lead}`,
       links: [{ label: "Read the story", href: "/about/" }],
       next: ["process", "human"],
     },
@@ -643,9 +642,9 @@ export const chatbot = {
       id: "human",
       ask: "Talk to a person",
       keywords: ["contact", "talk", "call", "phone", "email", "whatsapp", "message", "person", "human", "reach", "hello", "hi", "number", "hours"],
-      answer: `You can reach ${business.ownerName.split(" ")[0]} directly:`,
+      answer: "You can reach us directly:",
       list: [
-        { label: "WhatsApp", note: contact.whatsapp, href: whatsappWith("Hi Navodya, I found Depthwyn's website and have a question.") },
+        { label: "WhatsApp", note: contact.whatsapp, href: whatsappWith("Hi Depthwyn, I found your website and have a question.") },
         { label: "Phone", note: contact.phone, href: contact.phoneHref },
         { label: "Email", note: contact.email, href: `mailto:${contact.email}` },
       ],
