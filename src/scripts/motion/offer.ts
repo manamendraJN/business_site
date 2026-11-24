@@ -1,5 +1,5 @@
 /**
- * OFFER — the four services as stacking sheets.
+ * OFFER — the services as stacking sheets.
  *
  * Home ("The offer"): each sheet sticks near the top (CSS sticky) and the
  * next one rises over it; the covered sheet shrinks and darkens. Each

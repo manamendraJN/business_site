@@ -1,8 +1,8 @@
 ---
 /**
  * SCENE 4 — THE OFFER (short version for Home)
- * Message: "Four ways to get there."
- * Four paper sheets, one per service, each linking to the full details on
+ * Title: "Our services"
+ * One paper sheet per service, each linking to the full details on
  * the Services page.
  * - Tablets and computers: stacking pages. Each sheet sticks near the top
  *   and the next one rises over it; the covered sheet shrinks and darkens.
@@ -26,7 +26,7 @@ const arrow = "M5 12h13M13 6l6 6-6 6";
   <div class="grid gap-6 px-gutter pt-section md:grid-cols-12">
     <div class="md:col-span-8">
       <p class="eyebrow text-clay-deep">{o.eyebrow}</p>
-      <h2 id="offer-title" class="mt-3 text-mega"><PopText as="span" text={o.headline} /></h2>
+      <h2 id="offer-title" class="mt-3 text-mega"><PopText as="span" text={o.headline} emClass="text-clay-deep" /></h2>
     </div>
     <div class="self-end md:col-span-4 md:pb-4">
       <p class="max-w-[28ch] text-lead">{o.sub}</p>

@@ -26,11 +26,11 @@ export const business = {
    (country code +94, then the number without its leading 0). */
 export const contact = {
   email: "depthwyn@gmail.com",
-  phone: "+94 76 868 5811",
-  phoneHref: "tel:+94768685811",
-  whatsapp: "+94 76 439 0987",
+  phone: "+94 76 439 0987",
+  phoneHref: "tel:+94764390987",
+  whatsapp: "+94 76 868 5811",
   // international format, digits only
-  whatsappHref: "https://wa.me/94764390987",
+  whatsappHref: "https://wa.me/94768685811",
 };
 
 /* The contact form posts here. Create a free form at https://formspree.io,
@@ -67,14 +67,14 @@ export const meta = {
       "Story-driven web design for every kind of business. We turn plain, forgettable websites into ones that make visitors want to visit you.",
   },
   work: {
-    title: "Work — Three concept projects | Depthwyn",
+    title: "Work — Concept projects | Depthwyn",
     description:
-      "See how a plain website becomes a story: live concept sites for a cafe, a florist and a clothing brand, each shown before and after.",
+      "See how a plain website becomes a story: live concept sites for different kinds of businesses, each shown before and after.",
   },
   services: {
     title: "Services — Launch Page, Business Site, Motion Upgrade, Care Plan | Depthwyn",
     description:
-      "Four simple ways to get a website your customers remember, explained in plain words: what you get, who it suits, and what happens next.",
+      "Our website services, explained simply: what you get, who each one suits, and what happens next.",
   },
   about: {
     title: "About — Depthwyn",
@@ -129,13 +129,13 @@ export const home = {
   },
   // Scene 3 — the proof
   proof: {
-    eyebrow: "The proof",
-    headline: "Same change. *Three* different worlds.",
+    eyebrow: "Portfolio",
+    headline: "Our *work*",
     intro:
-      "Three sample businesses, each a live site you can open and scroll through. These are concept projects we made to show the idea — they are not real clients.",
+      "Sample businesses, each a live site you can open and scroll through. These are concept projects we made to show the idea — they are not real clients.",
     beforeLabel: "Before", // used on the Work page
     // short version on the Home page
-    more: "See all three concepts",
+    more: "See all our work",
     tileLink: "See the concept",
     // label on each screenshot: the picture opens the live concept site
     visitLabel: "Visit site",
@@ -148,9 +148,9 @@ export const home = {
   },
   // Scene 4 — the offer
   offer: {
-    eyebrow: "The offer",
-    headline: "Four ways to get there.",
-    sub: "Plain words, no tech talk. Pick one, or ask us which fits.",
+    eyebrow: "Services",
+    headline: "Our *services*",
+    sub: "Choose the one that fits your business. Not sure? Ask us and we'll help you choose.",
     getsLabel: "What you get",
     forLabel: "Good for",
     // short version on the Home page
@@ -387,7 +387,7 @@ export const projects: Project[] = [
    -------------------------------------------------------------------------- */
 export const workPage = {
   eyebrow: "Work",
-  headline: "Three businesses. *Three stories.*",
+  headline: "Our *projects*",
   intro:
     "Every project on this page is a concept: a sample we designed and built to show how a plain website can become a story. Each one is live, so open it and scroll through. Real client work will appear here soon.",
   problemLabel: "The plain version",
@@ -404,7 +404,7 @@ export const workPage = {
    -------------------------------------------------------------------------- */
 export const servicesPage = {
   eyebrow: "Services",
-  headline: "Plain words. *Clear outcomes.*",
+  headline: "Our *services*",
   intro:
     "Every service is built around one idea: your website should show what makes you different and make it easy for customers to choose you. Here is what each one includes.",
   askLabel: "Ask about",
@@ -453,9 +453,9 @@ export const aboutPage = {
   headline: "We're *Depthwyn.*",
   lead: "We build websites that feel like walking into your business.",
   story: [
-    "Depthwyn started because we kept seeing wonderful local businesses hidden behind plain websites.",
-    "Most websites are built like forms: a logo, a photo, a button. We build them like stories. Each scroll answers a question your customer is already asking, until they feel ready to visit, call or book.",
-    "We keep the process simple, because you have a business to run. You'll always know what's happening, what we need from you, and what comes next.",
+    "Depthwyn designs and builds websites for businesses, whether you need your first website or a better version of the one you have.",
+    "Most websites follow the same template: a logo, a photo and a button. We plan each page around the questions your customers ask, in the order they ask them, so that by the end of the page they are ready to visit, call or book.",
+    "Our process is clear and simple, because your time is valuable. At every stage you will know what we are working on, what we need from you, and what happens next.",
   ],
   beliefsHeadline: "What we believe",
   beliefs: [
@@ -555,7 +555,7 @@ export const chatbot = {
       id: "services",
       ask: "What do you offer?",
       keywords: ["offer", "service", "services", "package", "packages", "do you do", "build", "make", "website", "site", "help"],
-      answer: "There are four ways to work together. Tap one to learn more:",
+      answer: "Here are our services. Tap one to learn more:",
       list: services.map((s) => ({ label: s.name, note: s.short, href: `/services/#${s.slug}` })),
       next: services.map((s) => s.slug),
     },
