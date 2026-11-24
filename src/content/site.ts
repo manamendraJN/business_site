@@ -19,7 +19,10 @@ export const business = {
   shortName: "Depthwyn",
   tagline: "Websites that make people want to visit.",
   location: "Malabe, Sri Lanka",
-  year: new Date().getFullYear(),
+  // The year in the footer. The visitor's browser fills in the current year
+  // (see Footer.astro); this is only the fallback written into the page. Some
+  // hosts build with the clock at 0 (1 January 1970), so never go below 2026.
+  year: Math.max(new Date().getFullYear(), 2026),
 };
 
 /* Contact details. Phone numbers use the international format
@@ -494,6 +497,14 @@ export const contactPage = {
     email: "Email",
     phone: "Phone or WhatsApp",
     phoneHint: "Please enter a phone number we can call or message, e.g. +94 77 123 4567",
+    // shown under a field when it is empty (missing) or not in the right format (invalid)
+    errors: {
+      name: { missing: "Please enter your name." },
+      email: { missing: "Please enter your email address.", invalid: "Please check your email address, e.g. name@example.com." },
+      phone: { missing: "Please enter a phone number we can call or message.", invalid: "Please check the number, e.g. +94 77 123 4567." },
+      website: { invalid: "Please enter the full address, starting with https://" },
+      message: { missing: "Please tell us a little about your business." },
+    },
     submit: "Send my enquiry",
     sending: "Sending…",
   },

@@ -12,8 +12,8 @@ const tilts = ["-rotate-3", "rotate-2", "rotate-[-1deg]", "rotate-3"];
   <!-- Hero: who we are -->
   <section class="relative overflow-hidden px-gutter pt-[calc(var(--spacing-header)+3rem)] pb-section">
     <p class="eyebrow text-clay-deep">{a.eyebrow}</p>
-    <PopText as="h1" pop="load" text={a.headline} class="mt-3 text-mega" emClass="text-clay-deep" />
-    <p class="mt-8 max-w-[24ch] text-big font-extrabold leading-[1.05]">{a.lead}</p>
+    <PopText as="h1" pop="load" text={a.headline} class="mt-3 text-display" emClass="text-clay-deep" />
+    <p class="mt-6 max-w-[30ch] font-display text-title">{a.lead}</p>
   </section>
 
   <!-- Story -->
@@ -25,7 +25,7 @@ const tilts = ["-rotate-3", "rotate-2", "rotate-[-1deg]", "rotate-3"];
       </div>
       <p class="md:col-span-4 md:col-start-9 text-ink-soft" data-reveal>
         <span class="eyebrow block text-clay-deep">{a.basedLabel}</span>
-        <span class="mt-2 block text-title font-extrabold text-ink">{business.location}</span>
+        <span class="mt-2 block font-display text-title text-ink">{business.location}</span>
       </p>
     </div>
   </section>
@@ -33,7 +33,7 @@ const tilts = ["-rotate-3", "rotate-2", "rotate-[-1deg]", "rotate-3"];
   <!-- Beliefs: four notes pinned to the board -->
   <section class="relative bg-sea-deep px-gutter py-section text-paper">
     <TornEdge color="sea-deep" side="top" seed={137} class="absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
-    <PopText as="h2" text={a.beliefsHeadline} class="text-huge" />
+    <PopText as="h2" text={a.beliefsHeadline} class="text-heading" />
     <ul class="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
       {a.beliefs.map((b, i) => (
         <li class={`belief relative p-7 pt-9 text-ink shadow-lift ${noteTones[i % 4]} ${tilts[i % 4]} ${i % 2 ? "lg:mt-16" : ""}`} data-reveal>

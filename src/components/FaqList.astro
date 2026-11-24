@@ -14,9 +14,9 @@ const { class: className = "" } = Astro.props;
 <div class:list={["space-y-4", className]}>
   {servicesPage.faq.map((f) => (
     <details class="faq group rounded-paper bg-paper-deep shadow-paper">
-      <summary class="flex cursor-pointer list-none items-center justify-between gap-6 p-6 text-lg font-bold">
+      <summary class="flex cursor-pointer list-none items-center justify-between gap-6 p-6 font-display text-[1.3rem] leading-snug">
         {f.q}
-        <span class="faq-icon grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink text-paper" aria-hidden="true">+</span>
+        <span class="faq-icon grid h-9 w-9 shrink-0 place-items-center rounded-full border border-current font-sans text-lg text-ink" aria-hidden="true">+</span>
       </summary>
       <p class="max-w-[60ch] px-6 pb-6">{f.a}</p>
     </details>

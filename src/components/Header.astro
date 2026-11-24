@@ -15,7 +15,7 @@ const isActive = (href: string) => (href === "/" ? current === "/" : current.sta
 <header class="site-header" data-header>
   <a href="/" class="tab tab-logo" aria-label={`${business.name} — home`}>
     <Logo class="h-7 w-7" />
-    <span class="font-extrabold tracking-tight">{business.shortName}</span>
+    <span class="font-semibold tracking-tight">{business.shortName}</span>
   </a>
 
   <nav class="tab-nav" aria-label="Main">
@@ -64,18 +64,28 @@ const isActive = (href: string) => (href === "/" ? current === "/" : current.sta
     const menu = document.querySelector<HTMLElement>("[data-menu]");
     const label = document.querySelector<HTMLElement>("[data-menu-label]");
     if (!toggle || !menu) return;
-    const setOpen = (open: boolean) => {
+    // While the menu is open, everything except the menu and its Close button
+    // is made inert, so Tab and screen readers stay inside the menu.
+    const outside = () => [
+      ...Array.from(document.body.children).filter((el) => el !== menu && !el.contains(toggle)),
+      ...Array.from(document.querySelectorAll<HTMLElement>("[data-header] a")),
+    ];
+    const setOpen = (open: boolean, returnFocus = false) => {
+      const wasOpen = toggle.getAttribute("aria-expanded") === "true";
       toggle.setAttribute("aria-expanded", String(open));
       menu.hidden = !open;
       if (label) label.textContent = open ? "Close" : "Menu";
       document.documentElement.classList.toggle("menu-open", open);
+      outside().forEach((el) => el.toggleAttribute("inert", open));
+      if (open) menu.querySelector<HTMLElement>("a")?.focus();
+      else if (wasOpen && returnFocus) toggle.focus();
     };
-    toggle.addEventListener("click", () => setOpen(toggle.getAttribute("aria-expanded") !== "true"), { signal });
+    toggle.addEventListener("click", () => setOpen(toggle.getAttribute("aria-expanded") !== "true", true), { signal });
     menu.addEventListener("click", (e) => {
       if ((e.target as HTMLElement).closest("a")) setOpen(false);
     }, { signal });
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") setOpen(false, true);
     }, { signal });
   }
   document.addEventListener("astro:page-load", bindMenu);
@@ -103,8 +113,9 @@ const isActive = (href: string) => (href === "/" ? current === "/" : current.sta
     border-radius: 0 0 0.6rem 0.6rem;
     background: var(--color-paper);
     color: var(--color-ink);
-    font-weight: 700;
+    font-weight: 500;
     font-size: 0.95rem;
+    letter-spacing: 0.01em;
     line-height: 1;
     box-shadow: var(--shadow-paper);
     transition: transform 0.35s var(--ease-paper), background-color 0.25s;
@@ -117,11 +128,12 @@ const isActive = (href: string) => (href === "/" ? current === "/" : current.sta
   /* page tabs: the same crisp cream as the logo tab, warm marigold on hover,
      and the current page in ink */
   .tab-page { background: var(--color-paper); color: var(--color-ink-soft); padding-top: 1rem; }
-  .tab-page:hover { background: var(--color-marigold); color: var(--color-ink); }
+  .tab-page:hover { background: var(--color-paper-deep); color: var(--color-ink); }
   .tab-page.is-active { background: var(--color-ink); color: var(--color-paper); padding-top: 1.4rem; }
 
-  .tab-cta { background: var(--color-clay); color: var(--color-paper); padding-top: 1.35rem; padding-bottom: 0.9rem; }
-  .tab-cta:hover { background: var(--color-clay-deep); }
+  /* a faint light ring keeps it visible on the deep terracotta project band */
+  .tab-cta { background: var(--color-clay-deep); color: var(--color-paper); box-shadow: 0 0 0 1px rgb(245 238 226 / 0.25), var(--shadow-paper); padding-top: 1.35rem; padding-bottom: 0.9rem; }
+  .tab-cta:hover { background: color-mix(in srgb, var(--color-clay-deep) 82%, var(--color-ink)); }
   .tab-menu { background: var(--color-ink); color: var(--color-paper); cursor: pointer; }
 
   @media (min-width: 900px) {
@@ -145,10 +157,11 @@ const isActive = (href: string) => (href === "/" ? current === "/" : current.sta
     display: flex;
     align-items: baseline;
     gap: 0.75rem;
-    font-size: var(--text-big);
+    font-size: var(--text-heading);
     line-height: 1.15;
-    font-weight: 800;
-    letter-spacing: -0.03em;
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.012em;
   }
   .menu-link.is-active { color: var(--color-clay-deep); }
   :global(html.menu-open) { overflow: hidden; }

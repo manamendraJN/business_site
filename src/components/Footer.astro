@@ -7,7 +7,7 @@ import { business, nav, contact, footer, cta } from "@/content/site";
   <TornEdge color="ink" side="top" seed={47} class="footer-edge absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
   <div class="grid gap-12 px-gutter pt-20 pb-10 md:grid-cols-12">
     <div class="md:col-span-6">
-      <p class="text-big font-extrabold tracking-tight">
+      <p class="text-heading font-semibold tracking-tight">
         <Logo tone="paper" class="mr-[0.2em] inline-block h-[0.85em] w-[0.85em] align-[-0.08em]" />{business.shortName}<span class="text-marigold">.</span>
       </p>
       <p class="mt-4 max-w-[42ch] text-paper-deep">{footer.line}</p>
@@ -15,22 +15,26 @@ import { business, nav, contact, footer, cta } from "@/content/site";
     </div>
     <nav class="md:col-span-2" aria-label="Footer">
       <p class="eyebrow text-marigold">{footer.pagesLabel}</p>
-      <ul class="mt-4 space-y-2">
-        {nav.map((n) => <li><a class="hover:text-marigold" href={n.href}>{n.label}</a></li>)}
+      <ul class="mt-2">
+        {nav.map((n) => <li><a class="inline-block py-2.5 hover:text-marigold" href={n.href}>{n.label}</a></li>)}
       </ul>
     </nav>
     <div class="md:col-span-4">
       <p class="eyebrow text-marigold">{footer.contactLabel}</p>
-      <ul class="mt-4 space-y-2">
-        <li><a class="hover:text-marigold" href={`mailto:${contact.email}`}>{contact.email}</a></li>
-        <li><a class="hover:text-marigold" href={contact.phoneHref}>{contact.phone}</a></li>
-        <li><a class="hover:text-marigold" href={contact.whatsappHref} target="_blank" rel="noopener">WhatsApp {contact.whatsapp}</a></li>
-        <li class="text-paper-deep">{business.location}</li>
+      <ul class="mt-2">
+        <li><a class="inline-block py-2.5 hover:text-marigold" href={`mailto:${contact.email}`}>{contact.email}</a></li>
+        <li><a class="inline-block py-2.5 hover:text-marigold" href={contact.phoneHref}>{contact.phone}</a></li>
+        <li><a class="inline-block py-2.5 hover:text-marigold" href={contact.whatsappHref} target="_blank" rel="noopener">WhatsApp {contact.whatsapp}</a></li>
+        <li class="py-2.5 text-paper-deep">{business.location}</li>
       </ul>
     </div>
   </div>
   <div class="flex flex-wrap justify-between gap-3 border-t border-ink-soft px-gutter py-6 text-sm text-paper-shade">
-    <p>© {business.year} {business.name}</p>
+    <p>© <span data-current-year>{business.year}</span> {business.name}</p>
+    <!-- always show the current year, whenever and wherever the site was built -->
+    <script is:inline>
+      document.querySelectorAll("[data-current-year]").forEach((el) => { el.textContent = String(new Date().getFullYear()); });
+    </script>
     <p>{footer.conceptNote}</p>
   </div>
 </footer>

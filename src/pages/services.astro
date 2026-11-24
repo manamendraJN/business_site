@@ -9,8 +9,8 @@ import FaqList from "@/components/FaqList.astro";
 import { meta, servicesPage as sp, services, cta, home } from "@/content/site";
 
 const tones = [
-  { bg: "bg-marigold", token: "marigold", text: "text-ink", accent: "text-clay-deep" },
-  { bg: "bg-sea", token: "sea", text: "text-paper", accent: "text-marigold" },
+  { bg: "bg-marigold", token: "marigold", text: "text-ink", accent: "text-clay-ink" },
+  { bg: "bg-sea", token: "sea", text: "text-paper", accent: "text-marigold-soft" },
   { bg: "bg-clay-deep", token: "clay-deep", text: "text-paper", accent: "text-marigold-soft" },
   { bg: "bg-paper-deep", token: "paper-deep", text: "text-ink", accent: "text-clay-deep" },
 ];
@@ -21,7 +21,7 @@ const tones = [
     <div class="grid gap-10 md:grid-cols-12">
       <div class="md:col-span-7">
         <p class="eyebrow text-clay-deep">{sp.eyebrow}</p>
-        <PopText as="h1" pop="load" text={sp.headline} class="mt-3 text-mega" emClass="text-clay-deep" />
+        <PopText as="h1" pop="load" text={sp.headline} class="mt-3 text-display" emClass="text-clay-deep" />
       </div>
       <p class="max-w-[36ch] self-end text-lead md:col-span-5">{sp.intro}</p>
     </div>
@@ -30,8 +30,8 @@ const tones = [
       {services.map((s, i) => (
         <li>
           <a href={`#${s.slug}`} class="contents-row group grid grid-cols-[3rem_1fr] items-center gap-x-4 border-b-2 border-ink py-5 md:grid-cols-[6rem_1fr_1.2fr_auto] md:py-7">
-            <span class="serif-em text-[2.4rem] leading-none text-clay-deep md:text-[3.5rem]">0{i + 1}</span>
-            <span class="text-title font-extrabold tracking-tight md:text-big">{s.name}</span>
+            <span class="serif-em text-title leading-none text-clay-deep">0{i + 1}</span>
+            <span class="font-display text-title">{s.name}</span>
             <span class="col-start-2 text-ink-soft md:col-start-auto">{s.short}</span>
             <span class="contents-arrow hidden md:block" aria-hidden="true">
               <svg viewBox="0 0 24 24" class="h-8 w-8"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
@@ -57,14 +57,14 @@ const tones = [
         <div class="grid gap-12 px-gutter py-section md:grid-cols-12" data-service-body>
           <div class:list={["md:col-span-5", i % 2 && "md:order-2"]}>
             <div class="relative">
-              <span class="serif-em pointer-events-none absolute -top-10 left-0 text-[clamp(8rem,20vw,16rem)] leading-none opacity-15" aria-hidden="true">0{i + 1}</span>
+              <span class="serif-em pointer-events-none absolute -top-10 left-0 text-[clamp(5rem,11vw,8rem)] leading-none opacity-15" aria-hidden="true">0{i + 1}</span>
               <ServiceEmblem emblem={s.emblem} class="relative h-48 w-48 md:h-64 md:w-64" />
             </div>
             <p class="serif-em mt-8 max-w-[22ch] text-title">{s.outcome}</p>
           </div>
           <div class:list={["md:col-span-7", i % 2 && "md:order-1"]}>
-            <p class={`eyebrow ${t.accent}`}>{s.short}</p>
-            <h2 id={`${s.slug}-title`} class="mt-3 text-huge">{s.name}</h2>
+            <p class={`text-lead font-semibold ${t.accent}`}>{s.short}</p>
+            <h2 id={`${s.slug}-title`} class="mt-3 text-heading">{s.name}</h2>
             <p class="mt-6 max-w-[44ch] text-lead">{s.plain}</p>
             <p class="mt-6"><strong class={t.accent}>{home.offer.forLabel}:</strong> {s.goodFor}</p>
             <p class={`eyebrow mt-10 ${t.accent}`}>{home.offer.getsLabel}</p>
@@ -101,7 +101,7 @@ const tones = [
         </div>
       </aside>
       <div class="md:col-span-8">
-        <PopText as="h2" text={sp.faqHeadline} class="text-big" />
+        <PopText as="h2" text={sp.faqHeadline} class="text-heading" />
         <FaqList class="mt-10" />
         <div class="mt-16">
           <CtaButton href={cta.href} label={cta.label} />

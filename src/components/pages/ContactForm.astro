@@ -8,8 +8,10 @@
  */
 import { form, contactPage as c, services, contact } from "@/content/site";
 const f = c.fields;
+// the error messages travel with the form, so the script can read them
+const errors = JSON.stringify(f.errors);
 ---
-<form class="enquiry" action={form.endpoint} method="POST" data-enquiry novalidate>
+<form class="enquiry" action={form.endpoint} method="POST" data-enquiry data-errors={errors} novalidate>
   <input type="hidden" name="_subject" value="New project enquiry from the website" />
   <!-- spam trap: real people never see or fill this -->
   <div class="hidden" aria-hidden="true">
@@ -17,22 +19,31 @@ const f = c.fields;
   </div>
 
   <div class="grid gap-x-8 gap-y-7 sm:grid-cols-2">
-    <label class="field">
-      <span>{f.name} *</span>
-      <input name="name" type="text" autocomplete="name" required />
-    </label>
+    <div>
+      <label class="field">
+        <span>{f.name} *</span>
+        <input name="name" type="text" autocomplete="name" required aria-describedby="name-error" data-check />
+      </label>
+      <p id="name-error" class="field-error" data-error-for="name" hidden></p>
+    </div>
     <label class="field">
       <span>{f.business}</span>
       <input name="business" type="text" autocomplete="organization" />
     </label>
-    <label class="field">
-      <span>{f.email} *</span>
-      <input name="email" type="email" autocomplete="email" required />
-    </label>
-    <label class="field">
-      <span>{f.phone} *</span>
-      <input name="phone" type="tel" inputmode="tel" autocomplete="tel" required pattern="[+]?[0-9 \(\)\-]{7,20}" title={f.phoneHint} />
-    </label>
+    <div>
+      <label class="field">
+        <span>{f.email} *</span>
+        <input name="email" type="email" autocomplete="email" required aria-describedby="email-error" data-check />
+      </label>
+      <p id="email-error" class="field-error" data-error-for="email" hidden></p>
+    </div>
+    <div>
+      <label class="field">
+        <span>{f.phone} *</span>
+        <input name="phone" type="tel" inputmode="tel" autocomplete="tel" required pattern="[+]?[0-9 \(\)\-]{7,20}" aria-describedby="phone-error" data-check />
+      </label>
+      <p id="phone-error" class="field-error" data-error-for="phone" hidden></p>
+    </div>
     <label class="field">
       <span>{f.businessType}</span>
       <select name="business_type">
@@ -40,10 +51,13 @@ const f = c.fields;
         {f.businessTypes.map((t) => <option>{t}</option>)}
       </select>
     </label>
-    <label class="field">
-      <span>{f.website}</span>
-      <input name="website" type="url" inputmode="url" placeholder="https://" />
-    </label>
+    <div>
+      <label class="field">
+        <span>{f.website}</span>
+        <input name="website" type="url" inputmode="url" placeholder="https://" aria-describedby="website-error" data-check />
+      </label>
+      <p id="website-error" class="field-error" data-error-for="website" hidden></p>
+    </div>
   </div>
 
   <fieldset class="mt-9">
@@ -62,10 +76,13 @@ const f = c.fields;
     </div>
   </fieldset>
 
-  <label class="field mt-9 block">
-    <span>{f.message} *</span>
-    <textarea name="message" rows="5" required placeholder={f.messagePlaceholder}></textarea>
-  </label>
+  <div class="mt-9">
+    <label class="field block">
+      <span>{f.message} *</span>
+      <textarea name="message" rows="5" required placeholder={f.messagePlaceholder} aria-describedby="message-error" data-check></textarea>
+    </label>
+    <p id="message-error" class="field-error" data-error-for="message" hidden></p>
+  </div>
 
   <div class="mt-10 flex flex-wrap items-center gap-6">
     <button type="submit" class="btn-cta cursor-pointer" data-magnetic data-submit>
@@ -86,7 +103,7 @@ const f = c.fields;
     <path d="M6 14l54 38 54-38" fill="none" stroke="var(--color-clay)" stroke-width="5" stroke-linejoin="round" />
     <circle cx="96" cy="16" r="14" fill="var(--color-marigold)" />
   </svg>
-  <h2 class="mt-6 text-big">{c.success.title}</h2>
+  <h2 class="mt-6 text-heading">{c.success.title}</h2>
   <p class="mt-4 max-w-[40ch] text-lead">{c.success.text}</p>
 </div>
 
@@ -99,6 +116,30 @@ const f = c.fields;
     const submit = formEl.querySelector<HTMLButtonElement>("[data-submit]");
     const label = formEl.querySelector<HTMLElement>("[data-submit-label]");
     const idleText = label?.textContent ?? "";
+    const messages: Record<string, { missing?: string; invalid?: string }> = JSON.parse(formEl.dataset.errors || "{}");
+    const checked = Array.from(formEl.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-check]"));
+    let tried = false; // only check while typing once they have tried to send
+
+    // Show or clear the message under one field. Returns true if it is fine.
+    const check = (field: HTMLInputElement | HTMLTextAreaElement) => {
+      const out = formEl.querySelector<HTMLElement>(`[data-error-for="${field.name}"]`);
+      const text = messages[field.name] ?? {};
+      // a value that is only spaces counts as empty
+      if (field.required && !field.value.trim()) field.setCustomValidity(text.missing ?? " ");
+      else field.setCustomValidity("");
+      const v = field.validity;
+      const problem = v.valid ? "" : v.customError || v.valueMissing ? text.missing : text.invalid ?? text.missing;
+      field.setAttribute("aria-invalid", String(!v.valid));
+      if (out) {
+        out.textContent = problem ?? "";
+        out.hidden = v.valid;
+      }
+      return v.valid;
+    };
+    checked.forEach((field) => {
+      field.addEventListener("input", () => { if (tried) check(field); });
+      field.addEventListener("blur", () => { if (tried) check(field); });
+    });
 
     // Pre-select a service from ?service=slug
     const wanted = new URLSearchParams(location.search).get("service");
@@ -110,8 +151,11 @@ const f = c.fields;
     formEl.addEventListener("submit", async (e) => {
       e.preventDefault();
       error?.classList.add("hidden");
-      if (!formEl.checkValidity()) {
-        formEl.reportValidity();
+      tried = true;
+      const bad = checked.filter((field) => !check(field));
+      if (bad.length) {
+        // take them to the first field that needs fixing; its message is read out with it
+        bad[0].focus();
         return;
       }
       if (submit) submit.disabled = true;
@@ -163,6 +207,33 @@ const f = c.fields;
     box-shadow: 0 2px 0 0 var(--color-clay);
   }
   .field ::placeholder { color: var(--color-ink-soft); opacity: 0.7; }
+  /* a field that needs fixing: a red line under it and a short message */
+  .field [aria-invalid="true"] { border-bottom-color: var(--color-clay-deep); }
+  .field-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--color-clay-deep);
+  }
+  .field-error::before {
+    content: "!";
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: 0.05rem;
+    border-radius: 50%;
+    background: var(--color-clay-deep);
+    color: var(--color-paper);
+    font-size: 0.72rem;
+    font-weight: 800;
+  }
+  .field-error[hidden] { display: none; }
 
   .chip span {
     display: inline-block;

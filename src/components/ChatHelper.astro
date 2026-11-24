@@ -83,15 +83,17 @@ const data = JSON.stringify({
     justify-content: center;
     padding: 0 1rem;
     border-radius: 999px;
-    background: var(--color-clay);
+    background: var(--color-clay-deep);
     color: var(--color-paper);
-    font-weight: 700;
-    box-shadow: var(--shadow-lift);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    /* a faint light ring keeps it visible on the deep terracotta project band */
+    box-shadow: 0 0 0 1px rgb(245 238 226 / 0.25), var(--shadow-lift);
     cursor: pointer;
     transition: background-color 0.25s var(--ease-paper), transform 0.35s var(--ease-paper);
   }
-  .chat-launcher:hover { background: var(--color-clay-deep); }
-  :global(html.motion) .chat-launcher:hover { transform: translateY(-3px) rotate(-2deg); }
+  .chat-launcher:hover { background: color-mix(in srgb, var(--color-clay-deep) 82%, var(--color-ink)); }
+  :global(html.motion) .chat-launcher:hover { transform: translateY(-2px); }
   .chat-icon { width: 1.6rem; height: 1.6rem; flex-shrink: 0; }
   .chat-icon-close { display: none; width: 1.35rem; height: 1.35rem; }
   .chat-launcher[aria-expanded="true"] .chat-icon-open { display: none; }
@@ -140,7 +142,7 @@ const data = JSON.stringify({
     height: 2.4rem;
 
   }
-  .chat-title { font-size: 1.05rem; font-weight: 800; line-height: 1.2; }
+  .chat-title { font-size: 1.4rem; font-weight: 400; line-height: 1.1; }
   .chat-status { font-size: 0.78rem; opacity: 0.72; }
   .chat-close {
     margin-left: auto;
@@ -183,7 +185,7 @@ const data = JSON.stringify({
     background: #fffaf2;
     font-size: 1rem; /* 16px stops phones from zooming in */
   }
-  .chat-form input:focus { border-color: var(--color-clay); outline: none; }
+  .chat-form input:focus { border-color: var(--color-clay-deep); outline: none; }
   .chat-send {
     display: grid;
     place-items: center;
@@ -191,12 +193,12 @@ const data = JSON.stringify({
     height: 2.75rem;
     flex-shrink: 0;
     border-radius: 50%;
-    background: var(--color-clay);
+    background: var(--color-clay-deep);
     color: var(--color-paper);
     cursor: pointer;
     transition: background-color 0.2s;
   }
-  .chat-send:hover { background: var(--color-clay-deep); }
+  .chat-send:hover { background: color-mix(in srgb, var(--color-clay-deep) 82%, var(--color-ink)); }
 
   /* ---- Messages (built by the script, so styled globally inside .chat) ---- */
   .chat :global(.msg) {
@@ -240,17 +242,17 @@ const data = JSON.stringify({
   .chat :global(.chip) {
     padding: 0.45rem 0.8rem;
     border-radius: 999px;
-    border: 2px solid var(--color-clay);
+    border: 1px solid var(--color-clay-deep);
     background: var(--color-paper);
     color: var(--color-clay-deep);
     font-size: 0.85rem;
-    font-weight: 700;
+    font-weight: 500;
     line-height: 1.2;
     text-align: left;
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
   }
-  .chat :global(.chip:hover) { background: var(--color-clay); color: var(--color-paper); }
+  .chat :global(.chip:hover) { background: var(--color-clay-deep); color: var(--color-paper); }
   .chat :global(.chip-quiet) { border-color: var(--color-paper-shade); color: var(--color-ink-soft); }
 
   .chat :global(.typing) { display: inline-flex; gap: 0.3rem; padding: 0.85rem 1rem; }

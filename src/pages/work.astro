@@ -10,8 +10,8 @@ import { meta, workPage as w, projects, projectsNote, cta, home } from "@/conten
 
 const bands = {
   kopi: { token: "clay-deep", bg: "bg-clay-deep", fg: "text-paper", accent: "text-marigold-soft" },
-  petal: { token: "blush", bg: "bg-blush", fg: "text-ink", accent: "text-ink-soft" },
-  loom: { token: "paper-shade", bg: "bg-paper-shade", fg: "text-ink", accent: "text-clay-deep" },
+  petal: { token: "blush", bg: "bg-blush", fg: "text-ink", accent: "text-ink" },
+  loom: { token: "paper-shade", bg: "bg-paper-shade", fg: "text-ink", accent: "text-clay-ink" },
 } as const;
 // three prints: two on top, one below in the middle (offsets are in print
 // widths and heights, so the pile scales with the screen)
@@ -26,7 +26,7 @@ const fan = [
   <section class="relative grid gap-12 overflow-hidden px-gutter pt-[calc(var(--spacing-header)+4rem)] pb-section md:grid-cols-12">
     <div class="relative z-10 md:col-span-6">
       <p class="eyebrow text-clay-deep">{w.eyebrow}</p>
-      <PopText as="h1" pop="load" text={w.headline} class="mt-3 text-huge" emClass="text-clay-deep" />
+      <PopText as="h1" pop="load" text={w.headline} class="mt-3 text-display" emClass="text-clay-deep" />
       <p class="mt-8 max-w-[40ch] text-lead">{w.intro}</p>
     </div>
     <div class="relative min-h-[17rem] md:col-span-6 md:min-h-[30rem]" data-parallax-root>
@@ -53,8 +53,8 @@ const fan = [
             <div class:list={["md:col-span-5", i % 2 && "md:order-2"]}>
               <span class="concept-badge">Concept project</span>
               <p class="eyebrow mt-6 opacity-80">0{i + 1} · {p.kind}</p>
-              <h2 id={`${p.slug}-title`} class="mt-2 text-huge">{p.name}</h2>
-              <p class="mt-5 text-title font-bold"><Emphasis text={p.after.headline} /></p>
+              <h2 id={`${p.slug}-title`} class="mt-2 text-heading">{p.name}</h2>
+              <p class="mt-5 font-display text-title"><Emphasis text={p.after.headline} /></p>
               <a href={p.url} target="_blank" rel="noopener" class="visit mt-8">
                 {w.visitLabel}
                 <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path d="M8 16L17 7M9 7h8v8" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
@@ -74,7 +74,7 @@ const fan = [
               <!-- the plain "before" site, tucked under the bottom-left corner -->
               <TemplateMini class="before-card pointer-events-none absolute bottom-0 left-0 w-[30%] max-w-[11rem] -rotate-6" title={p.before.title} text={p.before.text} label={home.proof.beforeLabel} />
               </div>
-              <p class="mt-4 text-sm opacity-80">{w.screenshotLabel}: <a href={p.url} target="_blank" rel="noopener" class="underline underline-offset-2">{new URL(p.url).host}</a>. {projectsNote}</p>
+              <p class="mt-4 text-sm opacity-80">{w.screenshotLabel}: <a href={p.url} target="_blank" rel="noopener" class="tap-target underline underline-offset-2">{new URL(p.url).host}</a>. {projectsNote}</p>
             </div>
           </div>
 
@@ -106,10 +106,10 @@ const fan = [
     <TornEdge color="paper" side="top" seed={88} class="absolute inset-x-0 -top-[clamp(17px,2.9vw,39px)]" />
     <div class="grid items-center gap-12 md:grid-cols-12">
       <div class="placeholder-box aspect-[4/3] rotate-2 rounded-paper p-8 md:col-span-5">
-        <p class="text-title font-extrabold">Your business here</p>
+        <p class="font-display text-title">Your business here</p>
       </div>
       <div class="md:col-span-7">
-        <PopText as="h2" text={w.nextHeadline} class="text-huge" emClass="text-clay-deep" />
+        <PopText as="h2" text={w.nextHeadline} class="text-heading" emClass="text-clay-deep" />
         <p class="mt-6 max-w-[36ch] text-lead">{w.nextText}</p>
         <CtaButton href={cta.href} label={cta.label} class="mt-9" />
       </div>
@@ -150,7 +150,7 @@ const fan = [
     gap: 0.35rem;
     padding: 0.45rem 0.9rem;
     border-radius: 999px;
-    background: var(--color-clay);
+    background: var(--color-clay-deep);
     color: var(--color-paper);
     font-size: 0.9rem;
     font-weight: 700;
@@ -158,7 +158,7 @@ const fan = [
     transition: background-color 0.25s var(--ease-paper);
   }
   .visit-tag svg { width: 1rem; height: 1rem; transition: transform 0.3s var(--ease-paper); }
-  .shot:hover .visit-tag { background: var(--color-clay-deep); }
+  .shot:hover .visit-tag { background: color-mix(in srgb, var(--color-clay-deep) 82%, var(--color-ink)); }
   .shot:hover .visit-tag svg { transform: translate(2px, -2px); }
   @media (max-width: 639px) {
     /* a smaller, simpler "before" card so it stays in its corner */

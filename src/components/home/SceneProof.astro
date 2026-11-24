@@ -26,7 +26,7 @@ const arrow = "M5 12h13M13 6l6 6-6 6";
   <div class="grid items-end gap-8 px-gutter md:grid-cols-12">
     <div class="md:col-span-7">
       <p class="eyebrow text-clay-deep">{p.eyebrow}</p>
-      <h2 id="proof-title" class="mt-4 text-huge"><PopText as="span" text={p.headline} emClass="text-clay-deep" /></h2>
+      <h2 id="proof-title" class="mt-4 text-heading"><PopText as="span" text={p.headline} emClass="text-clay-deep" /></h2>
     </div>
     <div class="md:col-span-5">
       <p class="max-w-[38ch] text-lead">{p.intro}</p>
@@ -55,9 +55,9 @@ const arrow = "M5 12h13M13 6l6 6-6 6";
         <span class="concept-badge mt-5 text-ink-soft sm:mt-6">Concept</span>
         <h3 class="mt-3 text-lg leading-tight sm:text-title">{proj.name}</h3>
         <p class="text-xs text-ink-soft sm:text-sm">{proj.kind}</p>
-        <p class="mt-2 text-sm font-bold sm:mt-3 sm:text-base"><Emphasis text={proj.after.headline} emClass="text-clay-deep" /></p>
+        <p class="mt-2 font-display text-lg leading-snug sm:mt-3 sm:text-xl"><Emphasis text={proj.after.headline} emClass="text-clay-deep" /></p>
         <!-- the words lead to the full story on the Work page -->
-        <a href={`/work/#${proj.slug}`} class="tile-link mt-3 inline-flex items-center gap-2 text-sm font-bold text-clay-deep sm:mt-4" aria-label={`${p.tileLink}: ${proj.name}`}>
+        <a href={`/work/#${proj.slug}`} class="tile-link tap-target mt-3 inline-flex items-center gap-2 text-sm font-bold text-clay-deep sm:mt-4" aria-label={`${p.tileLink}: ${proj.name}`}>
           {p.tileLink}
           <svg viewBox="0 0 24 24" class="h-4 w-4" aria-hidden="true"><path d={arrow} stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </a>
@@ -68,7 +68,7 @@ const arrow = "M5 12h13M13 6l6 6-6 6";
   <!-- repeated call to action -->
   <div class="proof-cta mx-gutter mt-section grid items-center gap-8 rounded-paper bg-marigold p-8 text-ink shadow-lift md:grid-cols-12 md:p-12">
     <div class="md:col-span-8">
-      <PopText as="h2" text={c.headline} class="text-big" emClass="text-clay-deep" />
+      <PopText as="h2" text={c.headline} class="text-heading" emClass="text-clay-deep" />
       <p class="mt-4 max-w-[44ch] text-lead">{c.text}</p>
     </div>
     <div class="md:col-span-4 md:justify-self-end">
@@ -124,7 +124,7 @@ const arrow = "M5 12h13M13 6l6 6-6 6";
     gap: 0.3rem;
     padding: 0.35rem 0.7rem;
     border-radius: 999px;
-    background: var(--color-clay);
+    background: var(--color-clay-deep);
     color: var(--color-paper);
     font-size: 0.8rem;
     font-weight: 700;
@@ -132,7 +132,7 @@ const arrow = "M5 12h13M13 6l6 6-6 6";
     transition: background-color 0.25s var(--ease-paper);
   }
   .visit-tag svg { width: 0.95rem; height: 0.95rem; transition: transform 0.3s var(--ease-paper); }
-  .group:hover .visit-tag { background: var(--color-clay-deep); }
+  .group:hover .visit-tag { background: color-mix(in srgb, var(--color-clay-deep) 82%, var(--color-ink)); }
   .group:hover .visit-tag svg { transform: translate(2px, -2px); }
   .proof-cta { transform: rotate(-0.6deg); }
   .proof-tile { width: calc(50% - 0.5rem); }

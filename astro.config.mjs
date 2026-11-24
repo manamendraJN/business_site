@@ -14,9 +14,9 @@ export default defineConfig({
   fonts: [
     {
       provider: fontProviders.google(),
-      name: "Bricolage Grotesque",
-      cssVariable: "--font-bricolage",
-      weights: ["400 800"],
+      name: "Inter",
+      cssVariable: "--font-inter",
+      weights: ["400 700"],
       styles: ["normal"],
       subsets: ["latin"],
       fallbacks: ["sans-serif"],
