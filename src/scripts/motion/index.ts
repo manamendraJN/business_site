@@ -24,6 +24,9 @@ gsap.registerPlugin(ScrollTrigger);
 
 let lenis: Lenis | null = null;
 let mm: gsap.MatchMedia | null = null;
+// Where to put the visitor back after Back / Forward (the position saved for
+// that page), applied once the page has finished measuring itself.
+let restoreY: number | null = null;
 const raf = (time: number) => lenis?.raf(time * 1000);
 
 function start() {
@@ -54,7 +57,16 @@ function start() {
   const ready = document.fonts?.ready ?? Promise.resolve();
   ready.then(() => {
     ScrollTrigger.refresh();
-    if (location.hash) jumpToHash(location.hash, true);
+    if (restoreY !== null) {
+      // Back / Forward: return exactly to where the visitor left this page
+      const y = restoreY;
+      restoreY = null;
+      if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+      else window.scrollTo({ top: y, behavior: "auto" });
+      ScrollTrigger.update();
+    } else if (location.hash) {
+      jumpToHash(location.hash, true);
+    }
   });
 }
 
@@ -109,6 +121,20 @@ function stop() {
     lenis = null;
   }
 }
+
+/* ---- Back / Forward ------------------------------------------------------
+   The router saves each page's scroll position in its history entry and
+   restores it during the swap. Note it here, and set it again once the page
+   is fully laid out, so nothing that settles later can move the visitor. */
+let traversing = false;
+document.addEventListener("astro:before-preparation", (e) => {
+  traversing = (e as Event & { navigationType?: string }).navigationType === "traverse";
+});
+document.addEventListener("astro:after-swap", () => {
+  const saved = history.state && typeof history.state.scrollY === "number" ? history.state.scrollY : null;
+  restoreY = traversing ? saved : null;
+  traversing = false;
+});
 
 initPageTransitions();
 document.addEventListener("astro:page-load", start);

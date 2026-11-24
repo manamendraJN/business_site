@@ -142,6 +142,8 @@ export const home = {
     tileLink: "See the concept",
     // label on each screenshot: the picture opens the live concept site
     visitLabel: "Visit site",
+    // label on each row of the project list
+    conceptLabel: "Concept",
   },
   // CTA repeated after the proof
   proofCta: {

@@ -49,11 +49,20 @@ const current = Astro.url.pathname;
     <script is:inline>
       (function () {
         var root = document.documentElement;
+        function motionOn() {
+          return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        }
         function apply() {
-          var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-          root.classList.toggle("motion", !reduce);
+          root.classList.toggle("motion", motionOn());
         }
         apply();
+        // The router copies <html>'s attributes from the incoming page, which
+        // has no `motion` class yet. Give it the class before the swap, so the
+        // page already has its animated layout when the router restores the
+        // scroll position (otherwise "Back" lands in the wrong place).
+        document.addEventListener("astro:before-swap", function (e) {
+          e.newDocument.documentElement.classList.toggle("motion", motionOn());
+        });
         document.addEventListener("astro:after-swap", apply);
       })();
     </script>
