@@ -13,10 +13,7 @@
  */
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { MOTION, layersOf } from "./common";
-
-gsap.registerPlugin(MotionPathPlugin);
 
 export function initHero(mm: gsap.MatchMedia) {
   const hero = document.querySelector<HTMLElement>('[data-scene="hero"]');
@@ -43,6 +40,8 @@ export function initHero(mm: gsap.MatchMedia) {
     const bubble = q("[data-ghost-bubble]");
     const world = q("[data-turn-world]");
     const L = layersOf(world);
+    // the van's layer rises with the road's layer, so it is always on the road
+    const vehicle = world.querySelector<HTMLElement>('[data-layer="vehicle"]');
     const words = hero.querySelectorAll(".turn-title .pop-word");
     const eyebrow = q("[data-turn-eyebrow]");
     const sub = q("[data-turn-sub]");
@@ -70,7 +69,13 @@ export function initHero(mm: gsap.MatchMedia) {
       .to(bubble, { opacity: 1, duration: 0.2 })
       .to(ghost, { opacity: 0, duration: 0.3 }, "<0.25")
       .to(bubble, { opacity: 0, duration: 0.3 }, "+=1.2");
-    const onRefresh = () => ghostTl.invalidate();
+    // The camera's forward move (below) zooms toward the house's door, so
+    // that point has to be found on screen again whenever the size changes.
+    let aimCamera = () => {};
+    const onRefresh = () => {
+      ghostTl.invalidate();
+      aimCamera();
+    };
     ScrollTrigger.addEventListener("refresh", onRefresh);
 
     /* ---- Beat 2: the page breaks open -------------------------------- */
@@ -124,7 +129,7 @@ export function initHero(mm: gsap.MatchMedia) {
       .fromTo(world, { scale: 0.82 }, { scale: 1, duration: 0.28, ease: "power2.out" }, 0.15)
       .fromTo(L.bg, { scale: 1.12 }, { scale: 1, duration: 0.28 }, 0.17)
       .fromTo(L.far, { yPercent: 8 }, { yPercent: 0, duration: 0.26, ease: "power2.out" }, 0.17)
-      .fromTo(L.mid, { yPercent: 18 }, { yPercent: 0, duration: 0.26, ease: "power2.out" }, 0.19)
+      .fromTo([L.mid, vehicle], { yPercent: 18 }, { yPercent: 0, duration: 0.26, ease: "power2.out" }, 0.19)
       .fromTo(L.fg, { yPercent: 40, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.24 }, 0.22);
 
     /* ---- Beat 3: the delivery, in step with the headline ------------- */
@@ -142,32 +147,43 @@ export function initHero(mm: gsap.MatchMedia) {
       .fromTo(words, { rotateX: -96, opacity: 0 }, { rotateX: 0, opacity: 1, duration: 0.08, stagger: driveTime * 0.085, ease: "back.out(1.6)" }, DRIVE_START + 0.04)
       .fromTo(sub, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.08 }, ARRIVE);
 
-    const vehicle = world.querySelector<HTMLElement>('[data-layer="vehicle"]');
     const vanHome = world.querySelector<SVGGElement>("[data-van-home]");
-    const van = world.querySelector<SVGGElement>("[data-van]");
     const body = world.querySelector<SVGGElement>("[data-van-body]");
     const parcel = world.querySelector<SVGGElement>("[data-parcel]");
-    const road = world.querySelector<SVGPathElement>("#story-drive-line");
     const glow = world.querySelectorAll<SVGElement>("[data-house-glow]");
     const label = world.querySelector<SVGGElement>("[data-delivered]");
 
-    if (vehicle && vanHome && van && road) {
-      // Without motion the van is already parked at the house; with motion
-      // it starts at the near end of the road.
-      gsap.set(vanHome, { attr: { transform: "translate(0 0)" } });
+    if (vehicle && vanHome?.dataset.drive) {
+      // Without motion the van is already parked in front of the house; with
+      // motion it drives there up the road (see art/StoryPath.astro).
+      const drive: { horizon: number; start: number; stop: number; k: number; road: [number, number][] } = JSON.parse(vanHome.dataset.drive);
+      const { horizon, start, stop, k, road } = drive;
+      // the centre of the road at a given height
+      const xAt = (y: number) => {
+        for (let i = 1; i < road.length; i++) {
+          const [x0, y0] = road[i - 1];
+          const [x1, y1] = road[i];
+          if (y >= y1) return x0 + ((x1 - x0) * (y - y0)) / (y1 - y0);
+        }
+        return road[road.length - 1][0];
+      };
+      // A steady speed along the ground: in perspective that is a steady
+      // change in 1 / (distance below the horizon), so the van slows down
+      // on screen and shrinks as it drives away, just as a real one does.
+      const near = 1 / (start - horizon);
+      const far = 1 / (stop - horizon);
+      const place = (t: number) => {
+        const y = horizon + 1 / (near + (far - near) * t);
+        vanHome.setAttribute("transform", `translate(${xAt(y).toFixed(2)} ${y.toFixed(2)}) scale(${(k * (y - horizon)).toFixed(4)})`);
+      };
+      const trip = { t: 0 };
       tl.fromTo(vehicle, { opacity: 0 }, { opacity: 1, duration: 0.04 }, DRIVE_START - 0.05).fromTo(
-        van,
-        { scale: 1, transformOrigin: "50% 100%" },
-        {
-          scale: 0.2, // smaller as it drives into the distance
-          transformOrigin: "50% 100%",
-          motionPath: { path: road, align: road, alignOrigin: [0.5, 1], start: 0.05, end: 1 },
-          immediateRender: true,
-          duration: driveTime,
-          ease: "power1.inOut",
-        },
+        trip,
+        { t: 0 },
+        { t: 1, duration: driveTime, ease: "sine.inOut", immediateRender: true, onUpdate: () => place(trip.t) },
         DRIVE_START,
       );
+      place(0);
       // a gentle bounce on the road while it drives (stops when scrolling stops)
       if (body) {
         const bumps = 14;
@@ -184,6 +200,37 @@ export function initHero(mm: gsap.MatchMedia) {
 
     // a short pause at the house before the page moves on
     tl.to({}, { duration: 0.08 }, DELIVERED);
+
+    /* ---- Real 3D depth: the camera moves forward with the van ---------- */
+    // Like a camera travelling up the road, near things grow faster than far
+    // ones: the grass most, the fields, road, house and van together, the far
+    // hills a little, and the sky (at infinity) not at all. Everything grows
+    // from the house's door, the point the camera travels toward.
+    const DOOR = [1332, 595]; // in the scene's own units (1600 × 1000)
+    const dolly: [HTMLElement | null, number][] = [
+      [L.far, 1.03],
+      [L.mid, 1.08],
+      [vehicle, 1.08],
+      [L.fg, 1.06],
+    ];
+    aimCamera = () => {
+      dolly.forEach(([layer]) => {
+        const svg = layer?.querySelector("svg");
+        if (!layer || !svg) return;
+        // the scene fills its picture like "cover", anchored bottom-right
+        const w = svg.clientWidth;
+        const h = svg.clientHeight;
+        const k = Math.max(w / 1600, h / 1000);
+        const x = w - 1600 * k + DOOR[0] * k;
+        // the dark land in front grows from the bottom edge, so it stays in view
+        const y = layer === L.fg ? layer.clientHeight : layer.clientHeight - 1000 * k + DOOR[1] * k;
+        gsap.set(layer, { transformOrigin: `${x.toFixed(1)}px ${y.toFixed(1)}px` });
+      });
+    };
+    aimCamera();
+    dolly.forEach(([layer, s]) => {
+      if (layer) tl.fromTo(layer, { scale: 1 }, { scale: s, duration: DELIVERED - DRIVE_START, ease: "power1.inOut", immediateRender: false }, DRIVE_START);
+    });
 
     /* ---- Handover: the proof rises over the hero ---------------------- */
     // Scroll-driven: as the next section slides up over the stuck stage,

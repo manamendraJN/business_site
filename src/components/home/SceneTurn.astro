@@ -14,7 +14,9 @@ import { home } from "@/content/site";
 const t = home.turn;
 ---
 <div class="scene-turn" data-turn>
-  <div class="turn-world" data-turn-world>
+  <!-- data-parallax-root: on computers, the scene's layers follow the
+       pointer by their depth (scripts/motion/common.ts), like a window -->
+  <div class="turn-world" data-turn-world data-parallax-root>
     <StoryPath />
   </div>
 

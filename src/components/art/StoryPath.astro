@@ -8,10 +8,9 @@
  *
  * Drawn to look like real paper photographed in warm evening light:
  *  - atmospheric perspective: each ridge further away is paler and hazier
- *  - backlight: ridge edges, the house, the tree and the grass tips catch
- *    the sun, while the sides facing us fall into soft shade
- *  - every sheet casts a soft shadow on the sheet behind it (drawn as soft
- *    strokes, not filters, so nothing is recomputed while the layers move)
+ *  - backlight: the house, the tree and the grass tips catch the sun,
+ *    while the sides facing us fall into soft shade
+ *  - the hills meet without outlines: each is told apart by its colour
  *  - long shadows fall toward the viewer
  *  - one static paper-tooth texture over the whole scene
  *
@@ -36,21 +35,66 @@ const line = (pts: P[]) => `M${pts.map(fmt).join(" L")}`;
 const sheet = (pts: P[], bottom = 1000) =>
   `${line(pts)} L${pts[pts.length - 1][0].toFixed(1)} ${bottom} L${pts[0][0].toFixed(1)} ${bottom} Z`;
 
-/** A hand-cut edge through key points: smooth rolling hills between the
- *  keys, plus the slight wobble of paper cut by hand. */
-function edge(keys: P[], seed: number, wobble = 1.2, step = 8): P[] {
+/**
+ * A hand-cut edge through key points:
+ *  - a smooth rolling curve through the keys (it keeps its slope through
+ *    each key, so the hills flow into each other instead of flattening out)
+ *  - uneven waves along it, like a line cut by hand with scissors
+ *  - the slight wobble of the blade
+ * `calm` is a stretch [x0, x1] kept level (where a house or road sits on it).
+ */
+function edge(keys: P[], seed: number, wobble = 1.2, step = 8, ripple = 0, calm?: [number, number]): P[] {
   const rand = seeded(seed);
+  const n = keys.length;
+  // the slope at each key, from its neighbours (Catmull-Rom, as a function of x)
+  const slope = keys.map((_, i) => {
+    const a = keys[Math.max(0, i - 1)];
+    const b = keys[Math.min(n - 1, i + 1)];
+    return (b[1] - a[1]) / (b[0] - a[0]);
+  });
+  const p1 = rand() * Math.PI * 2;
+  const p2 = rand() * Math.PI * 2;
+  const p3 = rand() * Math.PI * 2;
   const pts: P[] = [];
-  for (let i = 0; i < keys.length - 1; i++) {
+  for (let i = 0; i < n - 1; i++) {
     const [x0, y0] = keys[i];
     const [x1, y1] = keys[i + 1];
+    const h = x1 - x0;
     for (let x = x0; x < x1; x += step) {
-      const s = (1 - Math.cos(((x - x0) / (x1 - x0)) * Math.PI)) / 2;
-      pts.push([x, y0 + (y1 - y0) * s + (rand() - 0.5) * wobble]);
+      const t = (x - x0) / h;
+      const t2 = t * t;
+      const t3 = t2 * t;
+      const y =
+        (2 * t3 - 3 * t2 + 1) * y0 + (t3 - 2 * t2 + t) * h * slope[i] + (-2 * t3 + 3 * t2) * y1 + (t3 - t2) * h * slope[i + 1];
+      // quieter near (and fading into) the calm stretch
+      let k = 1;
+      if (calm) {
+        const d = x < calm[0] ? calm[0] - x : x > calm[1] ? x - calm[1] : 0;
+        k = Math.min(1, d / 80);
+      }
+      const waves = ripple * (Math.sin(x / 47 + p1) + 0.55 * Math.sin(x / 19 + p2) + 0.3 * Math.sin(x / 8.5 + p3));
+      pts.push([x, y + k * (waves + (rand() - 0.5) * wobble)]);
     }
   }
-  pts.push(keys[keys.length - 1]);
+  pts.push(keys[n - 1]);
   return pts;
+}
+/**
+ * A layer of hills: a hand-cut edge (see edge) with rounded hills rising
+ * out of it. Each hill is [centre x, half-width, height]; hills of
+ * different sizes overlap, so the outline reads as real rolling country
+ * rather than a ruled line.
+ */
+type Hill = [number, number, number];
+function hills(base: P[], domes: Hill[], seed: number, wobble: number, step: number, ripple: number, calm?: [number, number]): P[] {
+  return edge(base, seed, wobble, step, ripple, calm).map(([x, y]): P => {
+    let lift = 0;
+    for (const [c, w, h] of domes) {
+      const u = (x - c) / w;
+      if (u > -1 && u < 1) lift += (h * (Math.cos(u * Math.PI) + 1)) / 2;
+    }
+    return [x, y - lift];
+  });
 }
 /** The height of an edge at x (to plant trees and grass on it). */
 function heightAt(pts: P[], x: number): number {
@@ -102,13 +146,26 @@ const clouds: [number, number, number, number][] = [
 ];
 
 /* ---- FAR: three receding ridges (the sun sets behind the farthest) ---- */
-const R1 = edge([[-40, 510], [230, 494], [480, 518], [760, 500], [1000, 530], [1160, 548], [1360, 520], [1640, 496]], 11, 0.9);
-const R2 = edge([[-40, 538], [200, 552], [440, 530], [700, 554], [940, 544], [1120, 568], [1300, 552], [1500, 536], [1640, 548]], 12, 1.1);
-const R3 = edge([[-40, 570], [260, 556], [520, 578], [780, 562], [1000, 582], [1170, 586], [1300, 578], [1440, 570], [1640, 580]], 13, 1.3);
-// distant woods along the nearest ridge, in a few loose clusters
+const R1 = hills(
+  [[-40, 516], [600, 520], [1100, 538], [1640, 528]],
+  [[150, 250, 34], [560, 190, 22], [860, 290, 46], [1430, 270, 44], [1640, 150, 18]],
+  11, 0.8, 8, 0.8,
+);
+const R2 = hills(
+  [[-40, 548], [700, 552], [1150, 566], [1640, 548]],
+  [[30, 190, 24], [380, 230, 34], [720, 210, 26], [1480, 230, 30]],
+  12, 1, 8, 1,
+);
+const R3 = hills(
+  [[-40, 580], [700, 578], [1180, 590], [1640, 580]],
+  [[180, 200, 28], [560, 250, 32], [900, 170, 20], [1580, 150, 18]],
+  13, 1.1, 8, 1.2,
+);
+// distant woods along the nearest ridge: only beside the house and its tree,
+// so nothing sits behind the words on the left
 const woodsRand = seeded(14);
 const woods: string[] = [];
-for (const [from, to] of [[30, 260], [380, 560], [700, 930], [1490, 1640]] as const) {
+for (const [from, to] of [[1490, 1640]] as const) {
   for (let x = from; x < to; x += 9 + woodsRand() * 14) {
     const r = 4 + woodsRand() * 4.5;
     woods.push(lump(x, heightAt(R3, x) - r * 0.25, r, 100 + Math.round(x), 6, 0.1, 1.1));
@@ -116,31 +173,17 @@ for (const [from, to] of [[30, 260], [380, 560], [700, 930], [1490, 1640]] as co
 }
 
 /* ---- MID: the fields, nearest last ---- */
-const F1 = edge([[-40, 608], [300, 598], [640, 610], [960, 598], [1180, 596], [1330, 589], [1480, 592], [1640, 600]], 21, 0.8);
-const F2 = edge([[-40, 704], [240, 682], [520, 700], [820, 672], [1060, 660], [1220, 648], [1400, 652], [1640, 640]], 22, 1.2);
-const F3 = edge([[-40, 846], [280, 812], [600, 840], [900, 806], [1140, 790], [1640, 800]], 23, 1.6);
-// a hedgerow along the top of the middle field
-const hedgeRand = seeded(24);
-const hedge: { x: number; y: number; r: number; seed: number }[] = [];
-for (let x = -10; x < 1000; x += 7 + hedgeRand() * 8) {
-  if (hedgeRand() < 0.07) x += 50; // gaps between the hedges
-  const r = 4.5 + hedgeRand() * 4.5;
-  hedge.push({ x, y: heightAt(F2, x) - r * 0.2, r, seed: 300 + Math.round(x) });
-}
-// furrows in the middle field, running toward a point on the horizon
-const VP: P = [760, 596];
-const furrows = Array.from({ length: 27 }, (_, i) => {
-  const bx = VP[0] + (i - 13) * 150;
-  return `M${VP[0] - 0.3} ${VP[1]} L${VP[0] + 0.3} ${VP[1]} L${bx + 3.2} 1000 L${bx - 3.2} 1000 Z`;
-});
+const F1 = hills(
+  [[-40, 624], [600, 626], [1100, 612], [1225, 596], [1330, 589], [1480, 592], [1640, 598]],
+  [[110, 200, 30], [430, 240, 38], [770, 200, 24], [1040, 150, 18]],
+  21, 0.8, 7, 1.6, [1225, 1500],
+);
 
 /* ---- The road: one centre line, sampled into a perspective ribbon ---- */
 const curves: [P, P, P, P][] = [
   [[1405, 1000], [1380, 900], [1240, 820], [1270, 740]],
-  [[1270, 740], [1285, 700], [1318, 628], [1330, 592]],
+  [[1270, 740], [1285, 700], [1320, 630], [1332, 595]],
 ];
-// the line the van drives (same curve as the road)
-const driveLine = "M1405 1000 C1380 900 1240 820 1270 740 C1285 700 1318 628 1330 592";
 
 const bez = ([a, b, c, d]: [P, P, P, P], t: number): P => {
   const u = 1 - t;
@@ -150,11 +193,24 @@ const bez = ([a, b, c, d]: [P, P, P, P], t: number): P => {
   ];
 };
 const STEPS = 28;
-const centre: P[] = curves.flatMap((curve, ci) =>
-  Array.from({ length: STEPS + 1 }, (_, i) => bez(curve, i / STEPS)).slice(ci ? 1 : 0),
-);
-// wide near the viewer, narrow at the horizon
-const width = (y: number) => 12 + 300 * Math.pow(Math.max(0, (y - 592) / 408), 1.5);
+const centre: P[] = [
+  // the road carries on below the picture, so moving it never shows its end
+  [1428, 1090],
+  ...curves.flatMap((curve, ci) => Array.from({ length: STEPS + 1 }, (_, i) => bez(curve, i / STEPS)).slice(ci ? 1 : 0)),
+];
+/* The van keeps its size: full size where it first appears near us, and
+ * 0.2 of that when it stops at the house, just in front of the door. Its
+ * size falls off evenly with distance, toward one vanishing height, and the
+ * road is made wide enough for it at every point (the van is always 41% of
+ * the road's width), so it never leaves the road. */
+const VAN_START = { y: 985, scale: 1 }; // where the van first appears, near us
+const VAN_STOP = { y: 608, scale: 0.2 }; // parked just in front of the door
+const VANISH =
+  (VAN_START.scale * VAN_STOP.y - VAN_STOP.scale * VAN_START.y) / (VAN_START.scale - VAN_STOP.scale);
+const VAN_K = VAN_START.scale / (VAN_START.y - VANISH); // van scale per unit below VANISH
+const vanScale = (y: number) => VAN_K * (y - VANISH);
+// the road narrows toward the same height, 312 wide at the bottom
+const width = (y: number) => (312 * Math.max(0, y - VANISH)) / (1000 - VANISH);
 const roadL = centre.map(([x, y]): P => [x - width(y) / 2, y]);
 const roadR = centre.map(([x, y]): P => [x + width(y) / 2, y]);
 const road = `M${roadL.map(fmt).join(" L")} L${[...roadR].reverse().map(fmt).join(" L")} Z`;
@@ -169,17 +225,203 @@ const dashes = centre
     return `M${p[0] - hw} ${p[1]} L${p[0] + hw} ${p[1]} L${q[0] + hq} ${q[1]} L${q[0] - hq} ${q[1]} Z`;
   });
 
+/* ---- The van's drive: placed on the road's centre line, sized as above.
+ * scripts/motion/hero.ts reads these numbers from data-drive. */
+const DRIVE = {
+  horizon: VANISH,
+  start: VAN_START.y,
+  stop: VAN_STOP.y,
+  k: VAN_K,
+  road: centre.map(([x, y]) => [Math.round(x * 10) / 10, Math.round(y * 10) / 10]),
+};
+// the centre of the road at a given height (the road runs steadily up the picture)
+const roadX = (y: number) => {
+  for (let i = 1; i < centre.length; i++) {
+    const [x0, y0] = centre[i - 1];
+    const [x1, y1] = centre[i];
+    if (y >= y1) return x0 + ((x1 - x0) * (y - y0)) / (y1 - y0);
+  }
+  return centre[centre.length - 1][0];
+};
+// without motion the van is already parked at its stop
+const vanParked = `translate(${roadX(DRIVE.stop).toFixed(1)} ${DRIVE.stop}) scale(${vanScale(DRIVE.stop).toFixed(3)})`;
+
+/* ---- Things on the ground in front of the house, in perspective ----
+ * Bushes, grass clumps and stones, and a row of fence posts along the road.
+ * All stand on one ground plane seen by one camera: big near us, smaller,
+ * closer together and hazier toward the house (the same vanishing height as
+ * the road and the van). The low sun is behind them, so their tops catch the
+ * light and their soft shadows fall toward us. */
+// how big something is at a given height: 1 at the bottom, smaller with distance
+const sizeAt = (y: number) => (y - VANISH) / (1000 - VANISH);
+type Thing = { kind: "bush" | "grass" | "stone" | "rock" | "post"; x: number; y: number; k: number; seed: number; size?: number };
+const things: Thing[] = [];
+const groundRand = seeded(41);
+const Z_NEAR = 1 / (1010 - VANISH);
+const Z_FAR = 1 / (632 - VANISH);
+const clearOf = (x: number, y: number, k: number) => {
+  if (y < heightAt(F1, x) + 6) return false; // on the ground, below its skyline
+  if (Math.abs(x - roadX(y)) < width(y) / 2 + 16 * k) return false; // off the road
+  if (x > 1215 && x < 1395 && y < 660) return false; // not in front of the house's walls
+  if (x > 1405 && x < 1505 && y < 650) return false; // nor the tree
+  return true;
+};
+for (let i = 0; i < 4000 && things.length < 120; i++) {
+  // even spacing on the ground: deeper rows hold more things on screen
+  const z = Z_NEAR + (Z_FAR - Z_NEAR) * groundRand();
+  if (groundRand() > 0.3 + 0.7 * (z / Z_FAR)) continue;
+  const y = VANISH + 1 / z;
+  const x = -40 + groundRand() * 1680;
+  const k = sizeAt(y);
+  const r = groundRand();
+  const kind = r < 0.36 ? "bush" : r < 0.82 ? "grass" : "stone";
+  if (!clearOf(x, y, k)) continue;
+  things.push({ kind, x, y, k, seed: 500 + i });
+}
+// rocks: a big one, often with a smaller one or two beside it
+const rockRand = seeded(61);
+for (let g = 0, tries = 0; g < 13 && tries < 800; tries++) {
+  // more groups near us than far away
+  const z = Z_NEAR + (Z_FAR - Z_NEAR) * Math.pow(rockRand(), 1.4);
+  const y = VANISH + 1 / z;
+  const x = -20 + rockRand() * 1640;
+  const k = sizeAt(y);
+  const big = 0.75 + rockRand() * 0.5;
+  const reach = 90 * big * k;
+  if (!clearOf(x, y, k) || !clearOf(x - reach, y, k) || !clearOf(x + reach, y, k)) continue;
+  things.push({ kind: "rock", x, y, k, seed: 1200 + tries, size: big });
+  // smaller neighbours, a little in front or behind
+  const extra = Math.floor(rockRand() * 3);
+  for (let e = 0; e < extra; e++) {
+    const side = rockRand() < 0.5 ? -1 : 1;
+    const nx = x + side * (70 + rockRand() * 40) * big * k;
+    const ny = y + (rockRand() - 0.4) * 10 * k;
+    if (clearOf(nx, ny, k)) things.push({ kind: "rock", x: nx, y: ny, k: sizeAt(ny), seed: 1300 + tries * 4 + e, size: 0.3 + rockRand() * 0.3 });
+  }
+  g++;
+}
+// fence posts along the left side of the road, evenly spaced on the ground
+for (let i = 0; i < 16; i++) {
+  const z = Z_NEAR + ((Z_FAR - Z_NEAR) * i) / 15;
+  const y = VANISH + 1 / z;
+  const k = sizeAt(y);
+  things.push({ kind: "post", x: roadX(y) - width(y) / 2 - 22 * k, y, k, seed: 900 + i });
+}
+// far things first, so nearer ones stand in front of them
+things.sort((a, b) => a.y - b.y);
+
+// how each thing is drawn (shapes in scene units)
+const thingShapes = things.map(({ kind, x, y, k, seed, size = 1 }) => {
+  const rand = seeded(seed);
+  // the shadow falls toward us, and away from the sun on either side
+  const dx = (x - SUN.x) * 0.05 * k;
+  const haze = Math.min(1, 0.35 + 0.75 * k); // farther things fade into the haze
+  if (kind === "post") {
+    const h = 40 * k;
+    const w = Math.max(1, 5 * k);
+    return {
+      haze,
+      shadow: `M${fmt([x - w, y])} L${fmt([x + w, y])} L${fmt([x + w + dx, y + 9 * k])} L${fmt([x - w + dx, y + 9 * k])} Z`,
+      body: [
+        { d: `M${fmt([x - w / 2, y])} L${fmt([x - w / 2, y - h])} L${fmt([x + w / 2, y - h - 0.8 * k])} L${fmt([x + w / 2, y])} Z`, fill: "var(--sp-post)" },
+        { d: `M${fmt([x - w / 2, y - h])} L${fmt([x + w / 2, y - h - 0.8 * k])} L${fmt([x + w / 2, y - h + 1.6 * k])} L${fmt([x - w / 2, y - h + 2.2 * k])} Z`, fill: "var(--sp-glint)" },
+      ],
+    };
+  }
+  if (kind === "bush") {
+    const r = (17 + rand() * 15) * k;
+    const cy = y - r * 0.55;
+    return {
+      haze,
+      shadow: `M${fmt([x - r, y])} Q${fmt([x + dx * 0.5, y + 12 * k])} ${fmt([x + r + dx, y + 2 * k])} Z`,
+      body: [
+        // the whole bush in light first, then again in shade a little lower,
+        // which leaves a sunlit rim along its top
+        { d: lump(x, cy, r, seed, 6, 0.14, 0.78), fill: "var(--sp-bush-lit)" },
+        { d: lump(x, cy + Math.max(0.6, 1.6 * k), r * 0.97, seed, 6, 0.14, 0.78), fill: "var(--sp-bush)" },
+      ],
+    };
+  }
+  if (kind === "rock") {
+    // a faceted rock: the low sun is behind it, so its top catches the light,
+    // the side toward the sun is half lit, and the face toward us is in shade
+    const rx = (50 + rand() * 34) * size * k;
+    const h = rx * (0.78 + rand() * 0.32);
+    const sunSide = x < SUN.x ? 1 : -1;
+    // the outline: corners along an uneven dome, the bottom sunk into the ground
+    const n = 7;
+    const top: P[] = Array.from({ length: n }, (_, i) => {
+      const a = Math.PI + (i / (n - 1)) * Math.PI; // left, over the top, to the right
+      const j = 0.82 + rand() * 0.3;
+      return [x + Math.cos(a) * rx * (0.92 + rand() * 0.12), y + Math.sin(a) * h * j];
+    });
+    top[0] = [x - rx, y + 1.5 * k];
+    top[n - 1] = [x + rx, y + 1.5 * k];
+    const peak = top.reduce((m, p) => (p[1] < m[1] ? p : m), top[0]);
+    const poly = (pts: P[]) => `M${pts.map(fmt).join(" L")} Z`;
+    const body = poly([...top, [x + rx * 0.85, y + 3 * k], [x - rx * 0.85, y + 3 * k]]);
+    // the side facing the sun: from the peak down to the base on that side
+    const sideEnd = sunSide > 0 ? top[n - 1] : top[0];
+    const inner: P = [peak[0] - sunSide * rx * 0.12, y - h * 0.18];
+    const sideFacet = poly(
+      sunSide > 0
+        ? [peak, ...top.slice(top.indexOf(peak) + 1), [sideEnd[0] - rx * 0.1, y + 2 * k], inner]
+        : [...top.slice(0, top.indexOf(peak) + 1), inner, [sideEnd[0] + rx * 0.1, y + 2 * k]],
+    );
+    // the top: the upper corners and the same corners a little lower
+    const upper = top.slice(1, n - 1);
+    const topFacet = poly([...upper, ...upper.map(([px, py]): P => [x + (px - x) * 0.82, py + h * 0.24]).reverse()]);
+    return {
+      haze,
+      shadow: `M${fmt([x - rx * 1.05, y + 1 * k])} Q${fmt([x + dx * 0.6, y + 16 * k * size])} ${fmt([x + rx * 1.1 + dx, y + 3 * k])} Z`,
+      body: [
+        { d: body, fill: "var(--sp-rock)" },
+        { d: sideFacet, fill: "var(--sp-rock-mid)" },
+        { d: topFacet, fill: "var(--sp-rock-lit)" },
+        // a soft dark line where the rock meets the ground
+        { d: `M${fmt([x - rx * 0.9, y + 3 * k])} Q${fmt([x, y + 6 * k])} ${fmt([x + rx * 0.9, y + 3 * k])} Q${fmt([x, y + 1 * k])} ${fmt([x - rx * 0.9, y + 3 * k])} Z`, fill: "var(--sp-rock-foot)" },
+      ],
+    };
+  }
+  if (kind === "stone") {
+    const rx = (9 + rand() * 9) * k;
+    const ry = rx * 0.5;
+    return {
+      haze,
+      shadow: `M${fmt([x - rx, y])} Q${fmt([x + dx * 0.5, y + 8 * k])} ${fmt([x + rx + dx, y + 1 * k])} Z`,
+      body: [
+        { d: `M${fmt([x - rx, y])} Q${fmt([x - rx, y - ry * 1.6])} ${fmt([x, y - ry * 1.7])} Q${fmt([x + rx, y - ry * 1.6])} ${fmt([x + rx, y])} Z`, fill: "var(--sp-stone)" },
+        { d: `M${fmt([x - rx * 0.7, y - ry * 1.1])} Q${fmt([x, y - ry * 1.75])} ${fmt([x + rx * 0.7, y - ry * 1.1])} Q${fmt([x, y - ry * 1.4])} ${fmt([x - rx * 0.7, y - ry * 1.1])} Z`, fill: "var(--sp-stone-lit)" },
+      ],
+    };
+  }
+  // a clump of grass: a few blades fanning out, their tips lit by the sun
+  const blades = 4 + Math.floor(rand() * 4);
+  const h = (30 + rand() * 26) * k;
+  const parts: { d: string; fill: string }[] = [];
+  for (let b = 0; b < blades; b++) {
+    const lean = (b / (blades - 1) - 0.5) * 1.3 + (rand() - 0.5) * 0.4;
+    const bh = h * (0.7 + rand() * 0.45);
+    const bw = Math.max(0.5, 2.2 * k);
+    const bx = x + (b - blades / 2) * 2.4 * k;
+    const tip: P = [bx + lean * bh * 0.55, y - bh];
+    const mid: P = [bx + lean * bh * 0.15, y - bh * 0.6];
+    parts.push({ d: `M${fmt([bx - bw, y])} Q${fmt(mid)} ${fmt(tip)} Q${fmt([mid[0] + bw, mid[1]])} ${fmt([bx + bw, y])} Z`, fill: "var(--sp-tuft)" });
+  }
+  return {
+    haze,
+    shadow: `M${fmt([x - 6 * k, y])} Q${fmt([x + dx * 0.5, y + 7 * k])} ${fmt([x + 6 * k + dx, y + 1 * k])} Z`,
+    body: parts,
+  };
+});
+
 /* ---- FG: dark grasses, their tips lit by the sun behind them ---- */
 const moundL = edge([[-40, 918], [120, 896], [330, 918], [520, 952], [700, 992], [820, 1012]], 31, 2.4, 6);
 const moundR = edge([[1460, 1012], [1530, 972], [1600, 950], [1640, 944]], 32, 2.4, 6);
-const grassRand = seeded(33);
-const blades = [
-  ...Array.from({ length: 30 }, () => ({ x: grassRand() * 520, h: 70 + grassRand() * 150 })),
-  ...Array.from({ length: 12 }, () => ({ x: 1520 + grassRand() * 90, h: 60 + grassRand() * 120 })),
-].map(({ x, h }) => {
-  const ground = x < 900 ? heightAt(moundL, x) : heightAt(moundR, x);
-  const bend = (grassRand() - 0.55) * h * 0.45;
-  const w = 2.4 + grassRand() * 3.2;
+/** One blade of grass growing from the ground at x, with its sunlit edge. */
+function grassBlade(x: number, h: number, ground: number, rand: () => number) {
+  const bend = (rand() - 0.55) * h * 0.45;
+  const w = 2.4 + rand() * 3.2;
   const base = ground + 14;
   const tip: P = [x + bend, ground - h * 0.55];
   const mid: P = [x + bend * 0.35, base - (base - tip[1]) * 0.6];
@@ -191,7 +433,20 @@ const blades = [
     blade: `M${fmt(start)} Q${fmt(mid)} ${fmt(tip)} Q${fmt([mid[0] + w * 0.4, mid[1]])} ${x + w / 2} ${base} Z`,
     glint: `M${fmt(half)} Q${fmt(halfCtrl)} ${fmt(tip)}`,
   };
-});
+}
+/** A tall seed head on its stem, growing from the ground at x. */
+function seedHead(x: number, h: number, lean: number, ground: number) {
+  const tip: P = [x + lean, ground - h];
+  const ctrl: P = [x + lean * 0.15, ground - h * 0.6];
+  const angle = (Math.atan2(tip[1] - ctrl[1], tip[0] - ctrl[0]) * 180) / Math.PI + 90;
+  return { stem: `M${x} ${ground + 10} Q${fmt(ctrl)} ${fmt(tip)}`, tip, angle };
+}
+const groundAt = (x: number) => (x < 900 ? heightAt(moundL, x) : heightAt(moundR, x));
+const grassRand = seeded(33);
+const blades = [
+  ...Array.from({ length: 30 }, () => ({ x: grassRand() * 520, h: 70 + grassRand() * 150 })),
+  ...Array.from({ length: 12 }, () => ({ x: 1520 + grassRand() * 90, h: 60 + grassRand() * 120 })),
+].map(({ x, h }) => grassBlade(x, h, groundAt(x), grassRand));
 // a few tall seed heads
 const seedHeads = [
   { x: 70, h: 190, lean: 26 },
@@ -199,13 +454,22 @@ const seedHeads = [
   { x: 236, h: 205, lean: 18 },
   { x: 352, h: 168, lean: 30 },
   { x: 1574, h: 176, lean: -22 },
-].map(({ x, h, lean }) => {
-  const ground = x < 900 ? heightAt(moundL, x) : heightAt(moundR, x);
-  const tip: P = [x + lean, ground - h];
-  const ctrl: P = [x + lean * 0.15, ground - h * 0.6];
-  const angle = (Math.atan2(tip[1] - ctrl[1], tip[0] - ctrl[0]) * 180) / Math.PI + 90;
-  return { stem: `M${x} ${ground + 10} Q${fmt(ctrl)} ${fmt(tip)}`, tip, angle };
-});
+].map(({ x, h, lean }) => seedHead(x, h, lean, groundAt(x)));
+
+/* Narrow screens (phones, portrait tablets) show only the right part of the
+ * scene, where the dark land above is out of view. There, the same dark land
+ * and grass rise in the bottom-left corner of what is shown, sloping down to
+ * the edge of the road so they never cover the van. */
+const moundN = edge([[800, 878], [930, 866], [1040, 888], [1130, 932], [1200, 978], [1252, 1016]], 34, 2.4, 6);
+const narrowRand = seeded(35);
+const bladesN = Array.from({ length: 20 }, () => ({ x: 830 + narrowRand() * 360, h: 50 + narrowRand() * 110 })).map(({ x, h }) =>
+  grassBlade(x, h, heightAt(moundN, x), narrowRand),
+);
+const seedHeadsN = [
+  { x: 952, h: 170, lean: 22 },
+  { x: 1030, h: 140, lean: 28 },
+  { x: 1098, h: 118, lean: 16 },
+].map(({ x, h, lean }) => seedHead(x, h, lean, heightAt(moundN, x)));
 
 // the tree's front clumps: [cx, cy, r, seed]
 const crown: [number, number, number, number][] = [
@@ -222,7 +486,7 @@ const labelW = 30 + delivered.length * 8.6;
 <div class="story-path absolute inset-0 overflow-hidden" aria-hidden="true">
   <!-- BG: sky, the low sun and its glow -->
   <div class="layer" data-layer="bg">
-    <div data-depth="0.06" class="sky h-full w-full">
+    <div data-depth="0" class="sky h-full w-full">
       <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
         <defs>
           <radialGradient id="sp-bloom" gradientUnits="userSpaceOnUse" cx={SUN.x} cy={SUN.y} r="720">
@@ -273,12 +537,6 @@ const labelW = 30 + delivered.length * 8.6;
           <linearGradient id="sp-r3" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stop-color="var(--sp-r3)" /><stop offset="0.2" stop-color="var(--sp-r3-haze)" />
           </linearGradient>
-          <!-- backlight along the cut edges: brightest near the sun -->
-          <radialGradient id="sp-rim" gradientUnits="userSpaceOnUse" cx={SUN.x} cy={SUN.y} r="760">
-            <stop offset="0" stop-color="var(--sp-sun)" stop-opacity="1" />
-            <stop offset="0.3" stop-color="var(--sp-sun-glow)" stop-opacity="0.7" />
-            <stop offset="1" stop-color="var(--sp-sun-glow)" stop-opacity="0.08" />
-          </radialGradient>
           <linearGradient id="sp-facade" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stop-color="var(--sp-facade-top)" /><stop offset="1" stop-color="var(--sp-facade)" />
           </linearGradient>
@@ -298,23 +556,61 @@ const labelW = 30 + delivered.length * 8.6;
           </linearGradient>
         </defs>
 
-        <!-- the farthest ridge, almost the colour of the haze -->
+        <!-- the distant hills, layer behind layer: the farthest palest, each
+             nearer one a shade deeper (no outlines: the colours tell them apart) -->
         <path d={sheet(R1, 760)} fill="url(#sp-r1)" />
-        <path d={line(R1)} fill="none" stroke="url(#sp-rim)" stroke-width="1.4" opacity="0.7" />
-
-        <!-- each nearer ridge: its soft shadow on the ridge behind, the sheet, then its sunlit edge -->
-        <g class="sp-shadow" opacity="0.6">
-          <path d={line(R2)} stroke-width="16" /><path d={line(R2)} stroke-width="8" /><path d={line(R2)} stroke-width="3" />
-        </g>
         <path d={sheet(R2, 760)} fill="url(#sp-r2)" />
-        <path d={line(R2)} fill="none" stroke="url(#sp-rim)" stroke-width="1.5" opacity="0.8" />
-
-        <g class="sp-shadow" opacity="0.8">
-          <path d={line(R3)} stroke-width="16" /><path d={line(R3)} stroke-width="8" /><path d={line(R3)} stroke-width="3" />
-        </g>
         <path d={sheet(R3, 760)} fill="url(#sp-r3)" />
         {woods.map((d) => <path d={d} fill="var(--sp-woods)" />)}
-        <path d={line(R3)} fill="none" stroke="url(#sp-rim)" stroke-width="1.6" opacity="0.85" />
+
+      </svg>
+    </div>
+  </div>
+
+  <!-- MID: the fields and the road -->
+  <div class="layer" data-layer="mid">
+    <div data-depth="0.4">
+      <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
+        <defs>
+          <!-- the ground in front of the house: one surface, its colour deepening
+               smoothly from the house down to us -->
+          <linearGradient id="sp-ground" gradientUnits="userSpaceOnUse" x1="0" y1="585" x2="0" y2="1000">
+            <stop offset="0" stop-color="var(--sp-ground-1)" />
+            <stop offset="0.14" stop-color="var(--sp-ground-2)" />
+            <stop offset="0.38" stop-color="var(--sp-ground-3)" />
+            <stop offset="0.62" stop-color="var(--sp-ground-4)" />
+            <stop offset="0.84" stop-color="var(--sp-ground-5)" />
+            <stop offset="1" stop-color="var(--sp-ground-6)" />
+          </linearGradient>
+          <linearGradient id="sp-road" gradientUnits="userSpaceOnUse" x1="0" y1="592" x2="0" y2="1000">
+            <stop offset="0" stop-color="var(--sp-road-far)" /><stop offset="1" stop-color="var(--sp-road)" />
+          </linearGradient>
+          <!-- long shadows, fading with distance from what casts them -->
+          <linearGradient id="sp-long-shadow" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="var(--color-ink)" stop-opacity="0.3" /><stop offset="1" stop-color="var(--color-ink)" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+
+        <!-- the ground in front of the house: one surface, no layers, no lines -->
+        <path d={sheet(F1, 1090)} fill="url(#sp-ground)" />
+
+        <!-- the road -->
+        <path d={road} fill="url(#sp-road)" />
+        {dashes.map((d) => <path d={d} fill="var(--sp-dash)" />)}
+
+        <!-- long shadows of the house and the tree, falling toward us -->
+        <path d="M1238 591 L1372 594.5 L1446 628 L1296 630 Z" fill="url(#sp-long-shadow)" />
+        <path d="M1446 596 L1459 596 L1528 634 L1514 636 Z" fill="url(#sp-long-shadow)" />
+
+        <!-- bushes, grass, stones and fence posts on the ground, in perspective -->
+        <g class="sp-things">
+          {thingShapes.map(({ haze, shadow, body }) => (
+            <g opacity={haze.toFixed(2)}>
+              <path d={shadow} fill="var(--color-ink)" opacity="0.22" />
+              {body.map(({ d, fill }) => <path d={d} fill={fill} />)}
+            </g>
+          ))}
+        </g>
 
         <!-- the client's house, seen from the front-left; the sun is behind it,
              so the side facing us is in soft shade and the left wall is lit -->
@@ -379,84 +675,11 @@ const labelW = 30 + delivered.length * 8.6;
     </div>
   </div>
 
-  <!-- MID: the fields and the road -->
-  <div class="layer" data-layer="mid">
-    <div data-depth="0.4">
-      <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
-        <defs>
-          <linearGradient id="sp-f1" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="var(--sp-f1-haze)" /><stop offset="0.3" stop-color="var(--sp-f1)" />
-          </linearGradient>
-          <linearGradient id="sp-f2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="var(--sp-f2)" /><stop offset="0.5" stop-color="var(--sp-f2-deep)" />
-          </linearGradient>
-          <linearGradient id="sp-f3" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="var(--sp-f3)" /><stop offset="1" stop-color="var(--sp-f3-deep)" />
-          </linearGradient>
-          <linearGradient id="sp-road" gradientUnits="userSpaceOnUse" x1="0" y1="592" x2="0" y2="1000">
-            <stop offset="0" stop-color="var(--sp-road-far)" /><stop offset="1" stop-color="var(--sp-road)" />
-          </linearGradient>
-          <radialGradient id="sp-rim-mid" gradientUnits="userSpaceOnUse" cx={SUN.x} cy={SUN.y} r="760">
-            <stop offset="0" stop-color="var(--sp-sun)" stop-opacity="1" />
-            <stop offset="0.3" stop-color="var(--sp-sun-glow)" stop-opacity="0.7" />
-            <stop offset="1" stop-color="var(--sp-sun-glow)" stop-opacity="0.06" />
-          </radialGradient>
-          <!-- long shadows, fading with distance from what casts them -->
-          <linearGradient id="sp-long-shadow" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="var(--color-ink)" stop-opacity="0.3" /><stop offset="1" stop-color="var(--color-ink)" stop-opacity="0" />
-          </linearGradient>
-          <clipPath id="sp-f2-clip"><path d={sheet(F2)} /></clipPath>
-        </defs>
-
-        <!-- the far fields, where the house stands -->
-        <g class="sp-shadow" opacity="0.8">
-          <path d={line(F1)} stroke-width="14" /><path d={line(F1)} stroke-width="7" /><path d={line(F1)} stroke-width="3" />
-        </g>
-        <path d={sheet(F1)} fill="url(#sp-f1)" />
-        <path d={line(F1)} fill="none" stroke="url(#sp-rim-mid)" stroke-width="1.5" opacity="0.8" />
-
-        <!-- the middle field, with furrows and a hedgerow -->
-        <g class="sp-shadow">
-          <path d={line(F2)} stroke-width="18" /><path d={line(F2)} stroke-width="9" /><path d={line(F2)} stroke-width="3.5" />
-        </g>
-        <path d={sheet(F2)} fill="url(#sp-f2)" />
-        <g clip-path="url(#sp-f2-clip)" fill="var(--sp-furrow)" opacity="0.24">
-          {furrows.map((d) => <path d={d} />)}
-        </g>
-        <path d={line(F2)} fill="none" stroke="url(#sp-rim-mid)" stroke-width="1.6" opacity="0.7" />
-        <!-- hedges: lit edge first, then the shaded body just below it -->
-        {hedge.map(({ x, y, r, seed }) => <path d={lump(x, y, r, seed, 6, 0.1, 0.85)} fill="var(--sp-hedge-lit)" opacity="0.9" />)}
-        {hedge.map(({ x, y, r, seed }) => <path d={lump(x + 0.6, y + 1.5, r, seed, 6, 0.1, 0.85)} fill="var(--sp-hedge)" />)}
-
-        <!-- the near field -->
-        <g class="sp-shadow">
-          <path d={line(F3)} stroke-width="22" /><path d={line(F3)} stroke-width="11" /><path d={line(F3)} stroke-width="4" />
-        </g>
-        <path d={sheet(F3)} fill="url(#sp-f3)" />
-        <path d={line(F3)} fill="none" stroke="url(#sp-rim-mid)" stroke-width="1.6" opacity="0.55" />
-
-        <!-- the road: a strip of paper laid on the fields -->
-        <g class="sp-shadow" opacity="0.7">
-          <path d={road} stroke-width="7" /><path d={road} stroke-width="3" />
-        </g>
-        <path d={road} fill="url(#sp-road)" />
-        <path d={road} fill="none" stroke="var(--sp-road-edge)" stroke-width="1" opacity="0.5" />
-        {dashes.map((d) => <path d={d} fill="var(--sp-dash)" />)}
-
-        <!-- long shadows of the house and the tree, falling toward us -->
-        <path d="M1238 591 L1372 594.5 L1446 628 L1296 630 Z" fill="url(#sp-long-shadow)" />
-        <path d="M1446 596 L1459 596 L1528 634 L1514 636 Z" fill="url(#sp-long-shadow)" />
-        <ellipse cx="1536" cy="640" rx="34" ry="7" fill="var(--color-ink)" opacity="0.08" />
-      </svg>
-    </div>
-  </div>
-
   <!-- VEHICLE: the van. Without motion it is already parked at the house. -->
   <div class="layer" data-layer="vehicle">
-    <div>
+    <div data-depth="0.4">
       <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
-        <path id="story-drive-line" d={driveLine} fill="none" stroke="none" />
-        <g data-van-home transform="translate(1372 596) scale(0.2)">
+        <g data-van-home transform={vanParked} data-drive={JSON.stringify(DRIVE)}>
           <g data-van>
             <Van />
           </g>
@@ -465,12 +688,12 @@ const labelW = 30 + delivered.length * 8.6;
     </div>
   </div>
 
-  <!-- FG: dark grasses nearest to us, their tips lit by the sun -->
+  <!-- FG: the dark land nearest to us, with grasses whose tips catch the sun -->
   <div class="layer" data-layer="fg">
-    <div data-depth="1.1">
+    <div data-depth="0.8">
       <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
-        <path d={sheet(moundL, 1010)} fill="var(--sp-near)" />
-        <path d={sheet(moundR, 1010)} fill="var(--sp-near)" />
+        <path d={sheet(moundL, 1090)} fill="var(--sp-near)" />
+        <path d={sheet(moundR, 1090)} fill="var(--sp-near)" />
         {seedHeads.map(({ stem }) => <path d={stem} fill="none" stroke="var(--sp-near)" stroke-width="2" stroke-linecap="round" />)}
         {seedHeads.map(({ tip, angle }) => (
           <g transform={`translate(${fmt(tip)}) rotate(${angle.toFixed(1)})`}>
@@ -480,7 +703,19 @@ const labelW = 30 + delivered.length * 8.6;
         ))}
         {blades.map(({ blade }) => <path d={blade} fill="var(--sp-near)" />)}
         {blades.map(({ glint }) => <path d={glint} fill="none" stroke="var(--sp-glint)" stroke-width="1" stroke-linecap="round" opacity="0.75" />)}
-        <path d={line(moundL)} fill="none" stroke="var(--sp-glint)" stroke-width="1.2" opacity="0.35" />
+        <!-- narrow screens: the dark land in the bottom-left corner of what is shown -->
+        <g class="sp-near-narrow">
+          <path d={sheet(moundN, 1090)} fill="var(--sp-near)" />
+          {seedHeadsN.map(({ stem }) => <path d={stem} fill="none" stroke="var(--sp-near)" stroke-width="2" stroke-linecap="round" />)}
+          {seedHeadsN.map(({ tip, angle }) => (
+            <g transform={`translate(${fmt(tip)}) rotate(${angle.toFixed(1)})`}>
+              <ellipse cx="0" cy="8" rx="4.2" ry="12" fill="var(--sp-near)" />
+              <path d="M-4 12 Q-4.6 2 0 -4" fill="none" stroke="var(--sp-glint)" stroke-width="1.2" opacity="0.85" />
+            </g>
+          ))}
+          {bladesN.map(({ blade }) => <path d={blade} fill="var(--sp-near)" />)}
+          {bladesN.map(({ glint }) => <path d={glint} fill="none" stroke="var(--sp-glint)" stroke-width="1" stroke-linecap="round" opacity="0.75" />)}
+        </g>
       </svg>
     </div>
   </div>
@@ -523,18 +758,26 @@ const labelW = 30 + delivered.length * 8.6;
     --sp-leaf: #4d5a2b;
     --sp-leaf-lit: #d9c56e;
 
-    --sp-f1-haze: #ebb68a;
-    --sp-f1: #df9b6b;
-    --sp-f2: #d8a062;
-    --sp-f2-deep: #c4844b;
-    --sp-furrow: #9a6331;
-    --sp-hedge: #a07a4f;
-    --sp-hedge-lit: #f6cf8e;
-    --sp-f3: #b2603a;
-    --sp-f3-deep: #7a3620;
+    /* the ground in front of the house, from the house down to us */
+    --sp-ground-1: #ebb68a;
+    --sp-ground-2: #e0a06f;
+    --sp-ground-3: #d38d58;
+    --sp-ground-4: #bf7144;
+    --sp-ground-5: #9e512e;
+    --sp-ground-6: #7a3620;
+    /* things on the ground in front of the house */
+    --sp-bush: #6e5432;
+    --sp-bush-lit: #d6a95e;
+    --sp-tuft: #5e4327;
+    --sp-stone: #8c6a52;
+    --sp-stone-lit: #e2bb8c;
+    --sp-rock: #6a4636;
+    --sp-rock-mid: #93694f;
+    --sp-rock-lit: #d8aa80;
+    --sp-rock-foot: #3a251b;
+    --sp-post: #4a3424;
     --sp-road-far: #fdebcd;
     --sp-road: #ecc89c;
-    --sp-road-edge: #8a4a2a;
     --sp-dash: #dc9c74;
 
     --sp-near: #2a1f19;
@@ -549,8 +792,6 @@ const labelW = 30 + delivered.length * 8.6;
       var(--sp-sky-glow) 100%
     );
   }
-  /* soft shadows: wide, faint strokes stacked so they fade out like a blur */
-  .sp-shadow :global(path) { fill: none; stroke: var(--color-ink); stroke-opacity: 0.045; stroke-linejoin: round; }
 
   /* In the still version the website is already delivered: the roof is empty. */
   :global(html:not(.motion)) .story-path :global([data-parcel]) { display: none; }
@@ -570,8 +811,15 @@ const labelW = 30 + delivered.length * 8.6;
   }
   /* Phones: draw the landscape a little shorter so more of its width fits,
      keeping the road, the van and the house on screen. */
-  .story-path :global(.layer) svg { position: absolute; left: 0; bottom: 0; }
+  .story-path :global(.layer) svg { position: absolute; left: 0; bottom: 0; overflow: visible; }
+  /* each depth layer is its own picture for the browser: moving it is cheap */
+  .story-path :global([data-depth]) { will-change: transform; }
   @media (max-width: 767px) {
     .story-path :global(.layer) svg { height: 78%; }
+  }
+  /* the dark land for narrow screens: only where the main one is out of view */
+  .sp-near-narrow { display: none; }
+  @media (max-width: 767px), (max-aspect-ratio: 5/4) {
+    .sp-near-narrow { display: inline; }
   }
 </style>
