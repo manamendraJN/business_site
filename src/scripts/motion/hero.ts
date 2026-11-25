@@ -36,6 +36,7 @@ export function initHero(mm: gsap.MatchMedia) {
     const veil = q("[data-hook-veil]");
     const sharpStamp = q("[data-hook-stamp]");
     const halfStamps = hero.querySelectorAll(".hook-half .tpl-stamp");
+    const rims = hero.querySelectorAll("[data-hook-rim]");
     const note = q("[data-hook-note]");
     const hint = q("[data-hook-hint]");
     const ghost = q("[data-ghost]");
@@ -112,6 +113,8 @@ export function initHero(mm: gsap.MatchMedia) {
       .to(halfL, { rotateY: -96, xPercent: -14, duration: 0.26, ease: "power2.in" }, 0.15)
       .to(halfR, { rotateY: 96, xPercent: 14, duration: 0.26, ease: "power2.in" }, 0.15)
       .to([halfL, halfR], { opacity: 0, duration: 0.07 }, 0.34)
+      // each half keeps its own pale torn edge as the rip line fades
+      .fromTo(rims, { opacity: 0 }, { opacity: 1, duration: 0.02 }, 0.13)
       .to(crack, { opacity: 0, duration: 0.03 }, 0.15)
       // the note flies past the viewer
       .to(note, { scale: 1.45, yPercent: 60, rotate: 8, opacity: 0, duration: 0.22, ease: "power1.in" }, 0.13)

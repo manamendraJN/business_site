@@ -1,18 +1,27 @@
 ---
 /**
- * The studio's world: "your new website, delivered to your door".
- * A calm paper landscape at golden hour. One road winds from the viewer to
- * the client's house on the horizon. On scroll, the studio's van drives the
- * road carrying the new website on its roof; when it arrives, the website
- * goes into the house and its window lights up.
+ * Our world: "your new website, delivered to your door".
+ * A cut-paper diorama at golden hour, lit from behind by a low sun. One road
+ * winds from the viewer to the client's house on the horizon. On scroll, our
+ * van drives the road carrying the new website on its roof; when it arrives,
+ * the website goes into the house and its windows light up.
+ *
+ * Drawn to look like real paper photographed in warm evening light:
+ *  - atmospheric perspective: each ridge further away is paler and hazier
+ *  - backlight: ridge edges, the house, the tree and the grass tips catch
+ *    the sun, while the sides facing us fall into soft shade
+ *  - every sheet casts a soft shadow on the sheet behind it (drawn as soft
+ *    strokes, not filters, so nothing is recomputed while the layers move)
+ *  - long shadows fall toward the viewer
+ *  - one static paper-tooth texture over the whole scene
  *
  * Depth layers (one shared 1600 × 1000 box, anchored bottom-right, so the
  * road lines up across layers on any screen shape):
- *   bg      → sky and sun glow                 (farthest)
- *   far     → soft distant hills, the house
- *   mid     → the ground (one smooth surface) and the road
+ *   bg      → sky, the sun, its glow and rays, thin clouds   (farthest)
+ *   far     → three receding ridges, the house and its tree
+ *   mid     → the fields and the road, with long shadows
  *   vehicle → the van, moved along the road by scroll
- *   fg      → grass silhouettes                (nearest)
+ *   fg      → dark grasses with sunlit tips                   (nearest)
  */
 import Van from "./Van.astro";
 import { home } from "@/content/site";
@@ -20,8 +29,112 @@ import { seeded } from "@/lib/paper";
 
 const ASPECT = "xMaxYMax slice";
 
-/* ---- The road: one centre line, sampled into a perspective ribbon ---- */
 type P = [number, number];
+const fmt = (p: P) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+const line = (pts: P[]) => `M${pts.map(fmt).join(" L")}`;
+// a paper sheet: its top edge, then straight down to the bottom of the box
+const sheet = (pts: P[], bottom = 1000) =>
+  `${line(pts)} L${pts[pts.length - 1][0].toFixed(1)} ${bottom} L${pts[0][0].toFixed(1)} ${bottom} Z`;
+
+/** A hand-cut edge through key points: smooth rolling hills between the
+ *  keys, plus the slight wobble of paper cut by hand. */
+function edge(keys: P[], seed: number, wobble = 1.2, step = 8): P[] {
+  const rand = seeded(seed);
+  const pts: P[] = [];
+  for (let i = 0; i < keys.length - 1; i++) {
+    const [x0, y0] = keys[i];
+    const [x1, y1] = keys[i + 1];
+    for (let x = x0; x < x1; x += step) {
+      const s = (1 - Math.cos(((x - x0) / (x1 - x0)) * Math.PI)) / 2;
+      pts.push([x, y0 + (y1 - y0) * s + (rand() - 0.5) * wobble]);
+    }
+  }
+  pts.push(keys[keys.length - 1]);
+  return pts;
+}
+/** The height of an edge at x (to plant trees and grass on it). */
+function heightAt(pts: P[], x: number): number {
+  const i = pts.findIndex((p) => p[0] >= x);
+  if (i <= 0) return pts[Math.max(0, i)][1];
+  const [x0, y0] = pts[i - 1];
+  const [x1, y1] = pts[i];
+  return y0 + ((x - x0) / (x1 - x0)) * (y1 - y0);
+}
+/** A leafy lump: a circle with a soft, uneven outline. */
+function lump(cx: number, cy: number, r: number, seed: number, lumps = 7, rough = 0.12, squash = 0.92): string {
+  const rand = seeded(seed);
+  const phase = rand() * Math.PI * 2;
+  const pts: P[] = [];
+  const n = r > 12 ? 40 : 24;
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2;
+    const k = 1 + Math.sin(a * lumps + phase) * rough + (rand() - 0.5) * rough * 0.7;
+    pts.push([cx + Math.cos(a) * r * k, cy + Math.sin(a) * r * k * squash]);
+  }
+  return `${line(pts)} Z`;
+}
+/* ---- Light: a low sun over the far hills, behind the house ---- */
+const SUN = { x: 1112, y: 541, r: 34 };
+// faint shafts of light fanning up from the sun
+const rays = (
+  [
+    [196, 7],
+    [218, 5],
+    [241, 9],
+    [266, 6],
+    [292, 8],
+    [318, 5],
+    [338, 7],
+  ] as const
+).map(([deg, spread]) => {
+  const L = 1150;
+  const a1 = ((deg - spread / 2) * Math.PI) / 180;
+  const a2 = ((deg + spread / 2) * Math.PI) / 180;
+  return `M${SUN.x} ${SUN.y} L${fmt([SUN.x + Math.cos(a1) * L, SUN.y + Math.sin(a1) * L])} L${fmt([SUN.x + Math.cos(a2) * L, SUN.y + Math.sin(a2) * L])} Z`;
+});
+// soft streaks of evening cloud, lit by the sun: [cx, cy, rx, ry]
+const clouds: [number, number, number, number][] = [
+  [1400, 230, 240, 11],
+  [1272, 252, 150, 6],
+  [1060, 300, 200, 8],
+  [1530, 340, 140, 6],
+  [905, 366, 120, 4.5],
+];
+
+/* ---- FAR: three receding ridges (the sun sets behind the farthest) ---- */
+const R1 = edge([[-40, 510], [230, 494], [480, 518], [760, 500], [1000, 530], [1160, 548], [1360, 520], [1640, 496]], 11, 0.9);
+const R2 = edge([[-40, 538], [200, 552], [440, 530], [700, 554], [940, 544], [1120, 568], [1300, 552], [1500, 536], [1640, 548]], 12, 1.1);
+const R3 = edge([[-40, 570], [260, 556], [520, 578], [780, 562], [1000, 582], [1170, 586], [1300, 578], [1440, 570], [1640, 580]], 13, 1.3);
+// distant woods along the nearest ridge, in a few loose clusters
+const woodsRand = seeded(14);
+const woods: string[] = [];
+for (const [from, to] of [[30, 260], [380, 560], [700, 930], [1490, 1640]] as const) {
+  for (let x = from; x < to; x += 9 + woodsRand() * 14) {
+    const r = 4 + woodsRand() * 4.5;
+    woods.push(lump(x, heightAt(R3, x) - r * 0.25, r, 100 + Math.round(x), 6, 0.1, 1.1));
+  }
+}
+
+/* ---- MID: the fields, nearest last ---- */
+const F1 = edge([[-40, 608], [300, 598], [640, 610], [960, 598], [1180, 596], [1330, 589], [1480, 592], [1640, 600]], 21, 0.8);
+const F2 = edge([[-40, 704], [240, 682], [520, 700], [820, 672], [1060, 660], [1220, 648], [1400, 652], [1640, 640]], 22, 1.2);
+const F3 = edge([[-40, 846], [280, 812], [600, 840], [900, 806], [1140, 790], [1640, 800]], 23, 1.6);
+// a hedgerow along the top of the middle field
+const hedgeRand = seeded(24);
+const hedge: { x: number; y: number; r: number; seed: number }[] = [];
+for (let x = -10; x < 1000; x += 7 + hedgeRand() * 8) {
+  if (hedgeRand() < 0.07) x += 50; // gaps between the hedges
+  const r = 4.5 + hedgeRand() * 4.5;
+  hedge.push({ x, y: heightAt(F2, x) - r * 0.2, r, seed: 300 + Math.round(x) });
+}
+// furrows in the middle field, running toward a point on the horizon
+const VP: P = [760, 596];
+const furrows = Array.from({ length: 27 }, (_, i) => {
+  const bx = VP[0] + (i - 13) * 150;
+  return `M${VP[0] - 0.3} ${VP[1]} L${VP[0] + 0.3} ${VP[1]} L${bx + 3.2} 1000 L${bx - 3.2} 1000 Z`;
+});
+
+/* ---- The road: one centre line, sampled into a perspective ribbon ---- */
 const curves: [P, P, P, P][] = [
   [[1405, 1000], [1380, 900], [1240, 820], [1270, 740]],
   [[1270, 740], [1285, 700], [1318, 628], [1330, 592]],
@@ -42,10 +155,9 @@ const centre: P[] = curves.flatMap((curve, ci) =>
 );
 // wide near the viewer, narrow at the horizon
 const width = (y: number) => 12 + 300 * Math.pow(Math.max(0, (y - 592) / 408), 1.5);
-const fmt = (p: P) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
-const left = centre.map(([x, y]): P => [x - width(y) / 2, y]);
-const right = centre.map(([x, y]): P => [x + width(y) / 2, y]);
-const road = `M${left.map(fmt).join(" L")} L${right.reverse().map(fmt).join(" L")} Z`;
+const roadL = centre.map(([x, y]): P => [x - width(y) / 2, y]);
+const roadR = centre.map(([x, y]): P => [x + width(y) / 2, y]);
+const road = `M${roadL.map(fmt).join(" L")} L${[...roadR].reverse().map(fmt).join(" L")} Z`;
 // centre dashes that shrink with distance
 const dashes = centre
   .slice(0, -2)
@@ -57,71 +169,208 @@ const dashes = centre
     return `M${p[0] - hw} ${p[1]} L${p[0] + hw} ${p[1]} L${q[0] + hq} ${q[1]} L${q[0] - hq} ${q[1]} Z`;
   });
 
-/* ---- Foreground grass ---- */
-const rand = seeded(33);
+/* ---- FG: dark grasses, their tips lit by the sun behind them ---- */
+const moundL = edge([[-40, 918], [120, 896], [330, 918], [520, 952], [700, 992], [820, 1012]], 31, 2.4, 6);
+const moundR = edge([[1460, 1012], [1530, 972], [1600, 950], [1640, 944]], 32, 2.4, 6);
+const grassRand = seeded(33);
 const blades = [
-  ...Array.from({ length: 16 }, () => ({ x: rand() * 300, h: 60 + rand() * 120, b: (rand() - 0.5) * 70 })),
-  ...Array.from({ length: 8 }, () => ({ x: 1540 + rand() * 60, h: 50 + rand() * 90, b: (rand() - 0.6) * 60 })),
-].map(({ x, h, b }) => `M${x - 5} 1000 Q${x + b * 0.4} ${1000 - h * 0.6} ${x + b} ${1000 - h} Q${x + b * 0.4 + 3} ${1000 - h * 0.6} ${x + 5} 1000 Z`);
+  ...Array.from({ length: 30 }, () => ({ x: grassRand() * 520, h: 70 + grassRand() * 150 })),
+  ...Array.from({ length: 12 }, () => ({ x: 1520 + grassRand() * 90, h: 60 + grassRand() * 120 })),
+].map(({ x, h }) => {
+  const ground = x < 900 ? heightAt(moundL, x) : heightAt(moundR, x);
+  const bend = (grassRand() - 0.55) * h * 0.45;
+  const w = 2.4 + grassRand() * 3.2;
+  const base = ground + 14;
+  const tip: P = [x + bend, ground - h * 0.55];
+  const mid: P = [x + bend * 0.35, base - (base - tip[1]) * 0.6];
+  const start: P = [x - w / 2, base];
+  // the upper half of the blade's left edge (the same curve, from t = 0.5)
+  const half: P = [0.25 * start[0] + 0.5 * mid[0] + 0.25 * tip[0], 0.25 * start[1] + 0.5 * mid[1] + 0.25 * tip[1]];
+  const halfCtrl: P = [(mid[0] + tip[0]) / 2, (mid[1] + tip[1]) / 2];
+  return {
+    blade: `M${fmt(start)} Q${fmt(mid)} ${fmt(tip)} Q${fmt([mid[0] + w * 0.4, mid[1]])} ${x + w / 2} ${base} Z`,
+    glint: `M${fmt(half)} Q${fmt(halfCtrl)} ${fmt(tip)}`,
+  };
+});
+// a few tall seed heads
+const seedHeads = [
+  { x: 70, h: 190, lean: 26 },
+  { x: 168, h: 240, lean: 34 },
+  { x: 236, h: 205, lean: 18 },
+  { x: 352, h: 168, lean: 30 },
+  { x: 1574, h: 176, lean: -22 },
+].map(({ x, h, lean }) => {
+  const ground = x < 900 ? heightAt(moundL, x) : heightAt(moundR, x);
+  const tip: P = [x + lean, ground - h];
+  const ctrl: P = [x + lean * 0.15, ground - h * 0.6];
+  const angle = (Math.atan2(tip[1] - ctrl[1], tip[0] - ctrl[0]) * 180) / Math.PI + 90;
+  return { stem: `M${x} ${ground + 10} Q${fmt(ctrl)} ${fmt(tip)}`, tip, angle };
+});
+
+// the tree's front clumps: [cx, cy, r, seed]
+const crown: [number, number, number, number][] = [
+  [1441, 517, 18, 53],
+  [1465, 513, 19, 54],
+  [1452, 496, 17, 55],
+  [1447, 534, 14, 56],
+  [1464, 533, 13, 57],
+];
 
 const delivered = home.turn.delivered;
 const labelW = 30 + delivered.length * 8.6;
 ---
 <div class="story-path absolute inset-0 overflow-hidden" aria-hidden="true">
-  <!-- BG: sky and sun -->
+  <!-- BG: sky, the low sun and its glow -->
   <div class="layer" data-layer="bg">
     <div data-depth="0.06" class="sky h-full w-full">
       <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
-        <!-- the sun, up in the sky (kept clear of the house) -->
-        <circle cx="1490" cy="380" r="50" fill="var(--color-marigold)" opacity="0.25" />
-        <circle cx="1490" cy="380" r="32" fill="var(--color-marigold)" />
+        <defs>
+          <radialGradient id="sp-bloom" gradientUnits="userSpaceOnUse" cx={SUN.x} cy={SUN.y} r="720">
+            <stop offset="0" stop-color="var(--sp-sun)" stop-opacity="1" />
+            <stop offset="0.07" stop-color="var(--sp-sun)" stop-opacity="0.9" />
+            <stop offset="0.2" stop-color="var(--sp-sun-glow)" stop-opacity="0.55" />
+            <stop offset="0.45" stop-color="var(--sp-sky-glow)" stop-opacity="0.2" />
+            <stop offset="1" stop-color="var(--sp-sky-glow)" stop-opacity="0" />
+          </radialGradient>
+          <radialGradient id="sp-horizon" gradientUnits="userSpaceOnUse" cx={SUN.x} cy="556" r="1000" gradientTransform={`translate(${SUN.x} 556) scale(1 0.11) translate(${-SUN.x} -556)`}>
+            <stop offset="0" stop-color="var(--sp-sun)" stop-opacity="0.75" />
+            <stop offset="1" stop-color="var(--sp-sun-glow)" stop-opacity="0" />
+          </radialGradient>
+          <radialGradient id="sp-ray" gradientUnits="userSpaceOnUse" cx={SUN.x} cy={SUN.y} r="1150">
+            <stop offset="0" stop-color="var(--sp-sun)" stop-opacity="0.24" />
+            <stop offset="0.5" stop-color="var(--sp-sun)" stop-opacity="0.06" />
+            <stop offset="1" stop-color="var(--sp-sun)" stop-opacity="0" />
+          </radialGradient>
+          <radialGradient id="sp-cloud" cx="0.5" cy="0.62" r="0.5">
+            <stop offset="0" stop-color="var(--sp-cloud-lit)" stop-opacity="0.95" />
+            <stop offset="0.55" stop-color="var(--sp-cloud-top)" stop-opacity="0.55" />
+            <stop offset="1" stop-color="var(--sp-cloud-top)" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+        <rect x="-200" y="0" width="2000" height="1000" fill="url(#sp-bloom)" />
+        {rays.map((d) => <path d={d} fill="url(#sp-ray)" />)}
+        <rect x="-200" y="400" width="2000" height="300" fill="url(#sp-horizon)" />
+        <!-- thin streaks of cloud, lit from below -->
+        {clouds.map(([cx, cy, rx, ry]) => <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill="url(#sp-cloud)" />)}
+        <!-- the sun: a soft corona and a bright disc -->
+        <circle cx={SUN.x} cy={SUN.y} r={SUN.r + 16} fill="var(--sp-sun-glow)" opacity="0.45" />
+        <circle cx={SUN.x} cy={SUN.y} r={SUN.r} fill="var(--sp-sun)" />
       </svg>
     </div>
   </div>
 
-  <!-- FAR: soft distant hills and the client's house -->
-  <div class="layer layer-haze" data-layer="far">
+  <!-- FAR: three receding ridges, the client's house and its tree -->
+  <div class="layer" data-layer="far">
     <div data-depth="0.18">
       <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
-        <path d="M0 575 C 260 540, 540 572, 800 552 S 1250 560, 1600 540 V720 H0 Z" fill="var(--color-blush)" opacity="0.45" />
-        <!-- the house -->
-        <g>
-          <rect x="1300" y="508" width="10" height="26" fill="var(--color-clay-deep)" />
-          <path d="M1268 552 L1330 500 L1392 552 Z" fill="var(--color-clay-deep)" />
-          <rect x="1278" y="550" width="104" height="44" fill="var(--color-dawn)" />
-          <rect x="1278" y="550" width="104" height="6" fill="rgb(30 26 21 / 0.12)" />
-          <path d="M1320 594 V574 A10 10 0 0 1 1340 574 V594 Z" fill="var(--color-clay-deep)" />
+        <defs>
+          <linearGradient id="sp-r1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--sp-r1)" /><stop offset="0.25" stop-color="var(--sp-r1-haze)" />
+          </linearGradient>
+          <linearGradient id="sp-r2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--sp-r2)" /><stop offset="0.22" stop-color="var(--sp-r2-haze)" />
+          </linearGradient>
+          <linearGradient id="sp-r3" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--sp-r3)" /><stop offset="0.2" stop-color="var(--sp-r3-haze)" />
+          </linearGradient>
+          <!-- backlight along the cut edges: brightest near the sun -->
+          <radialGradient id="sp-rim" gradientUnits="userSpaceOnUse" cx={SUN.x} cy={SUN.y} r="760">
+            <stop offset="0" stop-color="var(--sp-sun)" stop-opacity="1" />
+            <stop offset="0.3" stop-color="var(--sp-sun-glow)" stop-opacity="0.7" />
+            <stop offset="1" stop-color="var(--sp-sun-glow)" stop-opacity="0.08" />
+          </radialGradient>
+          <linearGradient id="sp-facade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--sp-facade-top)" /><stop offset="1" stop-color="var(--sp-facade)" />
+          </linearGradient>
+          <linearGradient id="sp-side" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="var(--sp-side-lit)" /><stop offset="1" stop-color="var(--sp-side)" />
+          </linearGradient>
+          <linearGradient id="sp-roof" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="var(--sp-roof-lit)" /><stop offset="1" stop-color="var(--sp-roof)" />
+          </linearGradient>
+          <radialGradient id="sp-window-glow" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stop-color="var(--sp-lamp)" stop-opacity="0.95" />
+            <stop offset="0.35" stop-color="var(--sp-lamp)" stop-opacity="0.4" />
+            <stop offset="1" stop-color="var(--sp-lamp)" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id="sp-lit-window" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--sp-lamp)" /><stop offset="1" stop-color="var(--color-marigold)" />
+          </linearGradient>
+        </defs>
+
+        <!-- the farthest ridge, almost the colour of the haze -->
+        <path d={sheet(R1, 760)} fill="url(#sp-r1)" />
+        <path d={line(R1)} fill="none" stroke="url(#sp-rim)" stroke-width="1.4" opacity="0.7" />
+
+        <!-- each nearer ridge: its soft shadow on the ridge behind, the sheet, then its sunlit edge -->
+        <g class="sp-shadow" opacity="0.6">
+          <path d={line(R2)} stroke-width="16" /><path d={line(R2)} stroke-width="8" /><path d={line(R2)} stroke-width="3" />
+        </g>
+        <path d={sheet(R2, 760)} fill="url(#sp-r2)" />
+        <path d={line(R2)} fill="none" stroke="url(#sp-rim)" stroke-width="1.5" opacity="0.8" />
+
+        <g class="sp-shadow" opacity="0.8">
+          <path d={line(R3)} stroke-width="16" /><path d={line(R3)} stroke-width="8" /><path d={line(R3)} stroke-width="3" />
+        </g>
+        <path d={sheet(R3, 760)} fill="url(#sp-r3)" />
+        {woods.map((d) => <path d={d} fill="var(--sp-woods)" />)}
+        <path d={line(R3)} fill="none" stroke="url(#sp-rim)" stroke-width="1.6" opacity="0.85" />
+
+        <!-- the client's house, seen from the front-left; the sun is behind it,
+             so the side facing us is in soft shade and the left wall is lit -->
+        <g class="sp-house">
+          <ellipse cx="1306" cy="594" rx="86" ry="4" fill="var(--color-ink)" opacity="0.25" />
+          <!-- left wall, catching the sun -->
+          <path d="M1240 552 L1292 557 L1292 594 L1240 590 Z" fill="url(#sp-side)" />
+          <path d="M1255 565 L1272 566.6 L1272 579 L1255 577.4 Z" fill="var(--sp-glass)" />
+          <path d="M1255 565 L1272 566.6" stroke="var(--sp-sun-glow)" stroke-width="1" opacity="0.8" />
+          <!-- roof, with a chimney -->
+          <path d="M1332 515 L1282 510 L1233 553.5 L1287 559.5 Z" fill="url(#sp-roof)" />
+          <path d="M1296 527 L1296 501 L1306 502 L1306 520 Z" fill="var(--sp-roof)" />
+          <path d="M1296 501 L1306 502" stroke="var(--sp-sun)" stroke-width="1.4" />
+          <path d="M1282 510 L1332 515" stroke="var(--sp-sun)" stroke-width="1.5" opacity="0.9" />
+          <path d="M1233 553.5 L1287 559.5" stroke="var(--sp-roof-edge)" stroke-width="2" />
+          <!-- the gable end, facing us -->
+          <path d="M1292 557 L1332 519 L1372 557 L1372 594 L1292 594 Z" fill="url(#sp-facade)" />
+          <path d="M1286 561 L1332 516 L1378 561" fill="none" stroke="var(--sp-roof)" stroke-width="5" stroke-linejoin="miter" />
+          <path d="M1286 559.4 L1332 514.4" stroke="var(--sp-sun-glow)" stroke-width="1.2" opacity="0.9" />
+          <!-- door -->
+          <path d="M1324 594 V581 A8 8 0 0 1 1340 581 V594 Z" fill="var(--sp-door)" />
           <!-- windows: dark until the website arrives -->
-          <rect x="1288" y="563" width="22" height="17" rx="2" fill="var(--color-ink-soft)" />
-          <rect x="1350" y="563" width="22" height="17" rx="2" fill="var(--color-ink-soft)" />
+          <rect x="1299" y="566" width="17" height="14" rx="1.5" fill="var(--sp-glass)" />
+          <rect x="1348" y="566" width="17" height="14" rx="1.5" fill="var(--sp-glass)" />
           <g data-house-glow>
-            <rect x="1288" y="563" width="22" height="17" rx="2" fill="var(--color-marigold)" />
-            <rect x="1350" y="563" width="22" height="17" rx="2" fill="var(--color-marigold)" />
-            <rect x="1352" y="565" width="18" height="3" fill="var(--color-clay)" />
-            <rect x="1352" y="570" width="11" height="2" fill="var(--color-ink)" />
-            <rect x="1352" y="574" width="14" height="2" fill="var(--color-ink-soft)" />
+            <rect x="1299" y="566" width="17" height="14" rx="1.5" fill="url(#sp-lit-window)" />
+            <rect x="1348" y="566" width="17" height="14" rx="1.5" fill="url(#sp-lit-window)" />
+            <!-- the new website, on a screen inside -->
+            <rect x="1350" y="568" width="13" height="2.6" fill="var(--color-clay)" />
+            <rect x="1350" y="572" width="8" height="1.6" fill="var(--color-ink)" />
+            <rect x="1350" y="575" width="11" height="1.6" fill="var(--color-ink-soft)" />
+            <path d="M1324 594 V581 A8 8 0 0 1 1340 581 V594 Z" fill="var(--color-marigold)" opacity="0.55" />
           </g>
+          <!-- window frames -->
+          <path d="M1307.5 566 V580 M1299 573 H1316 M1356.5 566 V580" stroke="var(--sp-facade)" stroke-width="1" />
+          <!-- warm light spilling from the windows -->
+          <circle data-house-glow cx="1332" cy="574" r="64" fill="url(#sp-window-glow)" opacity="0.5" />
         </g>
-        <!-- a tree to the right of the house, with a gap between them -->
-        <g>
-          <ellipse cx="1452" cy="594" rx="24" ry="3.5" fill="var(--color-ink)" opacity="0.18" />
-          <!-- trunk tapering up, with two branches -->
-          <path d="M1446 595 C1448 575 1449 556 1448 536 L1456 536 C1455 556 1456 575 1459 595 Z" fill="var(--color-ink-soft)" />
-          <path d="M1450 556 C1444 548 1438 543 1431 540" fill="none" stroke="var(--color-ink-soft)" stroke-width="3.5" stroke-linecap="round" />
-          <path d="M1454 548 C1460 541 1466 537 1473 535" fill="none" stroke="var(--color-ink-soft)" stroke-width="3" stroke-linecap="round" />
-          <!-- leafy crown: dark clumps behind, lighter clumps in front, highlight top-left -->
-          <circle cx="1430" cy="530" r="17" fill="var(--color-moss-deep)" />
-          <circle cx="1474" cy="527" r="18" fill="var(--color-moss-deep)" />
-          <circle cx="1452" cy="512" r="22" fill="var(--color-moss-deep)" />
-          <circle cx="1440" cy="518" r="18" fill="var(--color-moss)" />
-          <circle cx="1464" cy="514" r="19" fill="var(--color-moss)" />
-          <circle cx="1452" cy="497" r="17" fill="var(--color-moss)" />
-          <circle cx="1446" cy="534" r="14" fill="var(--color-moss)" />
-          <circle cx="1463" cy="533" r="13" fill="var(--color-moss-deep)" />
-          <circle cx="1444" cy="500" r="8" fill="var(--color-mint)" opacity="0.45" />
-          <circle cx="1434" cy="514" r="6" fill="var(--color-mint)" opacity="0.35" />
+
+        <!-- a tree to the right of the house, backlit: dark leaves, bright edges -->
+        <g class="sp-tree">
+          <ellipse cx="1452" cy="595" rx="22" ry="3" fill="var(--color-ink)" opacity="0.25" />
+          <path d="M1447 596 C1449 576 1450 556 1449 534 L1456 534 C1455 556 1456 576 1459 596 Z" fill="var(--sp-trunk)" />
+          <path d="M1451 556 C1445 548 1439 543 1432 540" fill="none" stroke="var(--sp-trunk)" stroke-width="3.2" stroke-linecap="round" />
+          <path d="M1455 548 C1461 541 1467 537 1474 535" fill="none" stroke="var(--sp-trunk)" stroke-width="2.8" stroke-linecap="round" />
+          <path d={lump(1431, 529, 17, 51)} fill="var(--color-moss-deep)" />
+          <path d={lump(1475, 526, 18, 52)} fill="var(--color-moss-deep)" />
+          <!-- front clumps: the whole crown in sunlight, then again in shade nudged
+               away from the sun, which leaves a bright rim only on the sun side -->
+          {crown.map(([cx, cy, r, s]) => <path d={lump(cx, cy, r, s)} fill="var(--sp-leaf-lit)" />)}
+          {crown.map(([cx, cy, r, s]) => <path d={lump(cx + 2.2, cy + 1, r - 0.4, s)} fill="var(--sp-leaf)" />)}
+          <!-- a little depth inside the crown -->
+          {crown.slice(3).map(([cx, cy, r, s]) => <path d={lump(cx + 3, cy + 3, r * 0.7, s + 9)} fill="var(--color-moss-deep)" opacity="0.55" />)}
         </g>
-        <g data-delivered transform="translate(1330 486)">
+
+        <g data-delivered transform="translate(1332 488)">
           <rect x={-labelW / 2} y="-30" width={labelW} height="30" rx="15" fill="var(--color-ink)" />
           <path d="M-7 0 L0 9 L7 0 Z" fill="var(--color-ink)" />
           <text x="0" y="-10" text-anchor="middle" class="label-text">{delivered}</text>
@@ -130,20 +379,74 @@ const labelW = 30 + delivered.length * 8.6;
     </div>
   </div>
 
-  <!-- MID: the ground as one smooth surface, and the road -->
-  <div class="layer layer-mid" data-layer="mid">
+  <!-- MID: the fields and the road -->
+  <div class="layer" data-layer="mid">
     <div data-depth="0.4">
       <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
         <defs>
-          <linearGradient id="story-ground" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="var(--color-blush)" />
-            <stop offset="0.45" stop-color="var(--color-clay-soft)" />
-            <stop offset="1" stop-color="var(--color-clay-deep)" />
+          <linearGradient id="sp-f1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--sp-f1-haze)" /><stop offset="0.3" stop-color="var(--sp-f1)" />
           </linearGradient>
+          <linearGradient id="sp-f2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--sp-f2)" /><stop offset="0.5" stop-color="var(--sp-f2-deep)" />
+          </linearGradient>
+          <linearGradient id="sp-f3" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--sp-f3)" /><stop offset="1" stop-color="var(--sp-f3-deep)" />
+          </linearGradient>
+          <linearGradient id="sp-road" gradientUnits="userSpaceOnUse" x1="0" y1="592" x2="0" y2="1000">
+            <stop offset="0" stop-color="var(--sp-road-far)" /><stop offset="1" stop-color="var(--sp-road)" />
+          </linearGradient>
+          <radialGradient id="sp-rim-mid" gradientUnits="userSpaceOnUse" cx={SUN.x} cy={SUN.y} r="760">
+            <stop offset="0" stop-color="var(--sp-sun)" stop-opacity="1" />
+            <stop offset="0.3" stop-color="var(--sp-sun-glow)" stop-opacity="0.7" />
+            <stop offset="1" stop-color="var(--sp-sun-glow)" stop-opacity="0.06" />
+          </radialGradient>
+          <!-- long shadows, fading with distance from what casts them -->
+          <linearGradient id="sp-long-shadow" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="var(--color-ink)" stop-opacity="0.3" /><stop offset="1" stop-color="var(--color-ink)" stop-opacity="0" />
+          </linearGradient>
+          <clipPath id="sp-f2-clip"><path d={sheet(F2)} /></clipPath>
         </defs>
-        <path d="M0 610 C 300 592, 700 606, 1000 596 S 1400 588, 1600 594 V1000 H0 Z" fill="url(#story-ground)" />
-        <path d={road} fill="var(--color-dawn)" />
-        {dashes.map((d) => <path d={d} fill="var(--color-clay-soft)" />)}
+
+        <!-- the far fields, where the house stands -->
+        <g class="sp-shadow" opacity="0.8">
+          <path d={line(F1)} stroke-width="14" /><path d={line(F1)} stroke-width="7" /><path d={line(F1)} stroke-width="3" />
+        </g>
+        <path d={sheet(F1)} fill="url(#sp-f1)" />
+        <path d={line(F1)} fill="none" stroke="url(#sp-rim-mid)" stroke-width="1.5" opacity="0.8" />
+
+        <!-- the middle field, with furrows and a hedgerow -->
+        <g class="sp-shadow">
+          <path d={line(F2)} stroke-width="18" /><path d={line(F2)} stroke-width="9" /><path d={line(F2)} stroke-width="3.5" />
+        </g>
+        <path d={sheet(F2)} fill="url(#sp-f2)" />
+        <g clip-path="url(#sp-f2-clip)" fill="var(--sp-furrow)" opacity="0.24">
+          {furrows.map((d) => <path d={d} />)}
+        </g>
+        <path d={line(F2)} fill="none" stroke="url(#sp-rim-mid)" stroke-width="1.6" opacity="0.7" />
+        <!-- hedges: lit edge first, then the shaded body just below it -->
+        {hedge.map(({ x, y, r, seed }) => <path d={lump(x, y, r, seed, 6, 0.1, 0.85)} fill="var(--sp-hedge-lit)" opacity="0.9" />)}
+        {hedge.map(({ x, y, r, seed }) => <path d={lump(x + 0.6, y + 1.5, r, seed, 6, 0.1, 0.85)} fill="var(--sp-hedge)" />)}
+
+        <!-- the near field -->
+        <g class="sp-shadow">
+          <path d={line(F3)} stroke-width="22" /><path d={line(F3)} stroke-width="11" /><path d={line(F3)} stroke-width="4" />
+        </g>
+        <path d={sheet(F3)} fill="url(#sp-f3)" />
+        <path d={line(F3)} fill="none" stroke="url(#sp-rim-mid)" stroke-width="1.6" opacity="0.55" />
+
+        <!-- the road: a strip of paper laid on the fields -->
+        <g class="sp-shadow" opacity="0.7">
+          <path d={road} stroke-width="7" /><path d={road} stroke-width="3" />
+        </g>
+        <path d={road} fill="url(#sp-road)" />
+        <path d={road} fill="none" stroke="var(--sp-road-edge)" stroke-width="1" opacity="0.5" />
+        {dashes.map((d) => <path d={d} fill="var(--sp-dash)" />)}
+
+        <!-- long shadows of the house and the tree, falling toward us -->
+        <path d="M1238 591 L1372 594.5 L1446 628 L1296 630 Z" fill="url(#sp-long-shadow)" />
+        <path d="M1446 596 L1459 596 L1528 634 L1514 636 Z" fill="url(#sp-long-shadow)" />
+        <ellipse cx="1536" cy="640" rx="34" ry="7" fill="var(--color-ink)" opacity="0.08" />
       </svg>
     </div>
   </div>
@@ -162,36 +465,108 @@ const labelW = 30 + delivered.length * 8.6;
     </div>
   </div>
 
-  <!-- FG: grass silhouettes, nearest to the viewer -->
+  <!-- FG: dark grasses nearest to us, their tips lit by the sun -->
   <div class="layer" data-layer="fg">
     <div data-depth="1.1">
       <svg viewBox="0 0 1600 1000" preserveAspectRatio={ASPECT}>
-        <path d="M0 950 C 160 905, 360 935, 520 965 S 740 1000, 790 1000 H0 Z" fill="var(--color-ink)" />
-        {blades.map((d) => <path d={d} fill="var(--color-ink)" />)}
+        <path d={sheet(moundL, 1010)} fill="var(--sp-near)" />
+        <path d={sheet(moundR, 1010)} fill="var(--sp-near)" />
+        {seedHeads.map(({ stem }) => <path d={stem} fill="none" stroke="var(--sp-near)" stroke-width="2" stroke-linecap="round" />)}
+        {seedHeads.map(({ tip, angle }) => (
+          <g transform={`translate(${fmt(tip)}) rotate(${angle.toFixed(1)})`}>
+            <ellipse cx="0" cy="8" rx="4.2" ry="12" fill="var(--sp-near)" />
+            <path d="M-4 12 Q-4.6 2 0 -4" fill="none" stroke="var(--sp-glint)" stroke-width="1.2" opacity="0.85" />
+          </g>
+        ))}
+        {blades.map(({ blade }) => <path d={blade} fill="var(--sp-near)" />)}
+        {blades.map(({ glint }) => <path d={glint} fill="none" stroke="var(--sp-glint)" stroke-width="1" stroke-linecap="round" opacity="0.75" />)}
+        <path d={line(moundL)} fill="none" stroke="var(--sp-glint)" stroke-width="1.2" opacity="0.35" />
       </svg>
     </div>
   </div>
+
+  <!-- the tooth of the paper over the whole scene (one static texture) -->
+  <div class="sp-paper" aria-hidden="true"></div>
 </div>
 
 <style>
-  .sky {
-    background: linear-gradient(180deg, var(--color-dawn) 0%, var(--color-marigold-soft) 55%, var(--color-blush) 100%);
+  /* The scene's own palette: golden hour, with haze in the distance */
+  .story-path {
+    --sp-sky-top: #ede0cc;
+    --sp-sky-mid: #f3d8b3;
+    --sp-sky-low: #f7cd99;
+    --sp-sky-glow: #f9c98a;
+    --sp-sun: #fff7e4;
+    --sp-sun-glow: #ffe3a8;
+    --sp-cloud-top: #fbe9d2;
+    --sp-cloud-lit: #fff3dc;
+
+    --sp-r1: #efc4a2;
+    --sp-r1-haze: #f4d3ae;
+    --sp-r2: #e2a98a;
+    --sp-r2-haze: #edc09e;
+    --sp-r3: #d18f73;
+    --sp-r3-haze: #e2ad8d;
+    --sp-woods: #c78a6f;
+
+    --sp-facade-top: #ecd3b0;
+    --sp-facade: #d8b38c;
+    --sp-side-lit: #fbe4be;
+    --sp-side: #f0cfa2;
+    --sp-roof-lit: #b54e2b;
+    --sp-roof: #86351d;
+    --sp-roof-edge: #6f2a16;
+    --sp-door: #7a2d16;
+    --sp-glass: #5b4a42;
+    --sp-lamp: #ffd77e;
+    --sp-trunk: #3f2d22;
+    --sp-leaf: #4d5a2b;
+    --sp-leaf-lit: #d9c56e;
+
+    --sp-f1-haze: #ebb68a;
+    --sp-f1: #df9b6b;
+    --sp-f2: #d8a062;
+    --sp-f2-deep: #c4844b;
+    --sp-furrow: #9a6331;
+    --sp-hedge: #a07a4f;
+    --sp-hedge-lit: #f6cf8e;
+    --sp-f3: #b2603a;
+    --sp-f3-deep: #7a3620;
+    --sp-road-far: #fdebcd;
+    --sp-road: #ecc89c;
+    --sp-road-edge: #8a4a2a;
+    --sp-dash: #dc9c74;
+
+    --sp-near: #2a1f19;
+    --sp-glint: #f6c66f;
   }
+  .sky {
+    background: linear-gradient(
+      180deg,
+      var(--sp-sky-top) 0%,
+      var(--sp-sky-mid) 34%,
+      var(--sp-sky-low) 54%,
+      var(--sp-sky-glow) 100%
+    );
+  }
+  /* soft shadows: wide, faint strokes stacked so they fade out like a blur */
+  .sp-shadow :global(path) { fill: none; stroke: var(--color-ink); stroke-opacity: 0.045; stroke-linejoin: round; }
+
   /* In the still version the website is already delivered: the roof is empty. */
   :global(html:not(.motion)) .story-path :global([data-parcel]) { display: none; }
-  .layer-haze { filter: drop-shadow(0 6px 8px rgb(30 26 21 / 0.12)); }
-  /* Phones and tablets: these soft shadows would be redrawn on every scroll
-     frame while the landscape rises and the van drives, which makes the hero
-     stutter. They are barely visible at phone size, so leave them out there. */
-  @media (pointer: coarse) {
-    .layer-haze,
-    .story-path :global(.layer-mid) { filter: none; }
-  }
   .label-text {
     font-family: var(--font-sans);
     font-size: 15px;
     font-weight: 700;
     fill: var(--color-paper);
+  }
+  .sp-paper {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: var(--texture-paper);
+    background-size: 260px 260px;
+    opacity: 0.32;
   }
   /* Phones: draw the landscape a little shorter so more of its width fits,
      keeping the road, the van and the house on screen. */
